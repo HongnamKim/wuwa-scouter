@@ -1,0 +1,46 @@
+[
+  {
+    "id": "kido",
+    "name": "소리 없이 내려앉은 기도의 눈",
+    "buffs": [
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "응결" },
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 5, "always": false, "element": "응결", "id": "set_5pc_element", "label": "응결피해 +10% (5세트 효과)" },
+      { "type": "critical_rate", "value": 0.25, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "label": "크리티컬 +25% (5세트 효과)" }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "void_god_echo",
+        "name": "공명의 메아리 · 명식 · 허무의 신",
+        "buffs": [
+          { "type": "element_damage_bonus", "value": 0.12, "always": true, "target":"self", "note": "메인슬롯 패시브" },
+          { "type": "resonance_liberation_bonus", "value": 0.12, "always": true, "target": "self","note": "메인슬롯 패시브" }
+        ]
+      },
+      {
+        "id": "glommoth",
+        "name": "글로모스",
+        "buffs": [
+          { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "note": "다음 변주 등장 캐릭터에게 제공" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aemeath_echo_set",
+    "name": "긴 여정을 떠나는 별",
+    "buffs": [
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "용융" },
+      { "type": "element_damage_bonus", "value": 0.20, "set_pieces": 5, "always": false, "element": "용융", "id": "set_5pc_element", "label": "용융피해 +20% (5세트 효과)" },
+      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "label": "크리티컬 +20% (5세트 효과)" }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "sigillum",
+        "name": "시길룸",
+        "buffs": [
+          { "type": "resonance_liberation_bonus", "value": 0.25, "always": true, "target": "self","note": "메인슬롯 패시브" }
+        ]
+      }
+    ]
+  }
+]

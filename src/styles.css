@@ -1,0 +1,72 @@
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; line-height: 1.5; }
+.app { max-width: 1000px; margin: 0 auto; padding: 16px; padding-top: 68px; }
+.app-header { position: fixed; top: 0; left: 0; right: 0; height: 52px; display: flex; align-items: center; background: #1f2430; color: #fff; padding: 0 20px; z-index: 100; box-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+.app-header .brand { font-weight: bold; font-size: 1.15rem; cursor: pointer; }
+.header-nav { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.header-nav button { background: transparent; border: none; color: #cfd3dc; font-size: 0.95rem; cursor: pointer; padding: 6px 14px; border-radius: 6px; }
+.header-nav button:hover { color: #fff; }
+.header-nav button.active { background: #2563eb; color: #fff; font-weight: bold; }
+h2 { font-size: 1.05rem; margin-top: 24px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+h3 { font-size: 0.95rem; margin: 16px 0 4px; }
+.nav { display: flex; gap: 8px; margin: 8px 0 16px; }
+.nav button { padding: 8px 16px; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; cursor: pointer; font-size: 0.95rem; }
+.nav button.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: bold; }
+.card-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0; }
+.char-card { width: 160px; border: 1px solid #ccc; border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: #fff; }
+.char-card:hover { border-color: #2563eb; box-shadow: 0 2px 10px rgba(0,0,0,0.12); }
+.card-image { width: 100%; height: 160px; object-fit: contain; }
+.card-image.not-recorded { filter: grayscale(100%); opacity: 0.6; }
+.card-name { font-weight: bold; margin-top: 6px; }
+.card-score { font-size: 1.2rem; font-weight: bold; margin-top: 6px; }
+.save-btn { background: #2563eb; color: #fff; border: none; padding: 8px 22px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 1px 4px rgba(37,99,235,0.4); }
+.save-btn:hover:not(:disabled) { background: #1d4ed8; }
+.save-btn:disabled { background: #c4c4c4; color: #f0f0f0; cursor: default; box-shadow: none; }
+.help { position: relative; display: inline-block; }
+.help-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; margin-left: 4px; border: 1px solid #888; border-radius: 50%; font-size: 0.7rem; color: #888; cursor: help; }
+.help-tip { display: none; position: absolute; left: 0; top: 140%; z-index: 10; width: 260px; padding: 8px 10px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; font-size: 0.78rem; font-weight: normal; line-height: 1.45; white-space: normal; text-align: left; }
+.help:hover .help-tip { display: block; }
+.two-col { display: flex; gap: 24px; align-items: flex-start; }
+.left-col, .right-col { flex: 1; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+th, td { border: 1px solid #ddd; padding: 4px 6px; text-align: center; font-size: 0.9rem; }
+th { background: #f5f5f5; }
+.spec-table th { text-align: left; width: 45%; }
+.spec-table td { text-align: right; font-weight: bold; }
+.config { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 8px 0; }
+.config label { display: flex; gap: 4px; align-items: center; font-size: 0.9rem; }
+.top-row { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+.top-reco { flex: 1; min-width: 340px; }
+.char-config { display: flex; gap: 24px; align-items: flex-start; margin: 12px 0; flex-wrap: wrap; }
+.char-left { display: flex; flex-direction: column; gap: 8px; }
+.char-image { max-width: 280px; max-height: 360px; object-fit: contain; }
+.char-right { display: flex; flex-direction: column; gap: 0; min-width: 240px; }
+.setting { padding: 8px 0; }
+.setting + .setting { border-top: 1px solid #ddd; }
+.setting-label { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; }
+.setting-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.echo-set-item { display: inline-flex; gap: 2px; align-items: center; }
+
+/* 커스텀 드롭다운 */
+.dropdown { position: relative; display: inline-block; width: 220px; }
+.dropdown-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 10px; background: #fff; color: #222; border: 1px solid #bbb; border-radius: 6px; cursor: pointer; font-size: 0.9rem; text-align: left; }
+.dropdown-trigger:hover { border-color: #2563eb; }
+.dropdown-arrow { color: #888; font-size: 0.7rem; flex: 0 0 auto; }
+.dropdown-menu { position: absolute; left: 0; top: 105%; z-index: 20; min-width: 100%; width: max-content; max-width: 340px; max-height: 320px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #bbb; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.dropdown-option { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 4px; cursor: pointer; }
+.dropdown-option:hover { background: #eef2ff; }
+.dropdown-option.selected { background: #2563eb; color: #fff; }
+.dropdown-item { display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0; }
+.dropdown-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dropdown-img { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; flex: 0 0 auto; }
+.score { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0; }
+.score-box { border: 1px solid #999; padding: 10px 14px; min-width: 160px; }
+.score-box .val { font-size: 1.6rem; font-weight: bold; }
+.score-box .lbl { font-size: 0.8rem; color: #555; }
+.muted { color: #777; font-size: 0.85rem; }
+.echo-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.echo-tab { padding: 6px 14px; border: 1px solid #bbb; border-radius: 6px; cursor: pointer; background: #fafafa; }
+.echo-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: bold; }
+.sub-row { display: flex; gap: 8px; margin: 6px 0; align-items: center; }
+.cmp-result { font-weight: bold; margin: 8px 0; }
+@media (max-width: 720px) { .two-col { flex-direction: column; } }

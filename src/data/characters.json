@@ -1,0 +1,38 @@
+[
+  {
+    "id": "hiyuki",
+    "name": "히유키",
+    "version": 3,
+    "element": "응결",
+    "scale_stat": "attack",
+    "base_attack": 462,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_liberation",
+    "energy_regen_mode": "premise",
+    "recommended_echo_sets": ["kido"],
+    "recommended_weapons": ["frostbound_flame", "millennium_eddy"],
+    "signature_weapon": "frostbound_flame",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "note": "스킬 노드" }
+    ]
+  },
+  {
+    "id": "aemeath",
+    "name": "에이메스",
+    "version": 3,
+    "element": "용융",
+    "scale_stat": "attack",
+    "base_attack": 425,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_liberation",
+    "energy_regen_mode": "premise",
+    "recommended_echo_sets": ["aemeath_echo_set"],
+    "recommended_weapons": ["eternal_morningstar", "millennium_eddy"],
+    "signature_weapon": "eternal_morningstar",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "note": "스킬 노드" }
+    ]
+  }
+]

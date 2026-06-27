@@ -1,0 +1,31 @@
+[
+  {
+    "id": "frostbound_flame",
+    "name": "서린 불꽃",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "note": "무기 패시브" },
+      { "type": "element_damage_amplify", "value": 0.28, "always": false, "element": "응결", "id": "weapon_glacio_amplify", "label": "응결피해 +28% 부스트" },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "label": "방어력 무시 +10%" }
+    ]
+  },
+  {
+    "id": "millennium_eddy",
+    "name": "천년의 회류",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "energy_regen", "value": 0.128, "always": true, "note": "무기 패시브" },
+      { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_atk_stack", "label": "공격력 +12%" }
+    ]
+  },
+  {
+    "id": "eternal_morningstar",
+    "name": "영원한 샛별",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "element_damage_bonus", "value": 0.12, "always": true, "note": "무기 패시브" },
+      { "type": "defense_ignore", "value": 0.32, "always": false, "id": "weapon_def_ignore", "label": "방어력 무시 +32%" },
+      { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "label": "용융 저항 무시 +10%" }
+    ]
+  }
+]
