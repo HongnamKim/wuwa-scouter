@@ -6,11 +6,12 @@ export interface PerfInput {
   criticalDamage: number; // 1.5 포함
   increaseBonus: number;  // 증가피해보너스 소수 합
   amplify: number;        // 부스트 소수 합
+  defResFactor?: number;  // 방무·저무 상대 배수 (기준 0 대비). 미지정 시 1
 }
 
 export function computePerf(i: PerfInput): number {
   const atk = i.baseAttack * (1 + i.attackPercent) + i.flatAttack;
   const crit = Math.min(i.criticalRate, 1);
   const critExpectation = 1 + crit * (i.criticalDamage - 1);
-  return atk * (1 + i.increaseBonus) * (1 + i.amplify) * critExpectation;
+  return atk * (1 + i.increaseBonus) * (1 + i.amplify) * critExpectation * (i.defResFactor ?? 1);
 }

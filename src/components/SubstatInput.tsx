@@ -4,6 +4,7 @@ import { emptySubstats } from '../state/store';
 import { recommendedMainPicks } from '../engine/theory';
 import { SUBSTAT_STAGES } from '../engine/constants';
 import { sumEffectiveSubstats } from '../engine/build';
+import { Dropdown } from './Dropdown';
 import type { StatKey } from '../types/domain';
 
 const SUB_LABEL: Partial<Record<StatKey, string>> = {
@@ -31,6 +32,17 @@ export function SubstatInput({ state, setState }: Props) {
 
   const sum = sumEffectiveSubstats(state);
 
+  // 옵션 순서: 캐릭터 유효옵을 상단(★), 그 외는 뒤에
+  const eff = state.character.effective_substats;
+  const orderedKeys: StatKey[] = [
+    ...eff.filter((k) => SUB_LABEL[k]),
+    ...OPTION_KEYS.filter((k) => !eff.includes(k)),
+  ];
+  const optionList = [
+    { value: '', label: '옵션 선택' },
+    ...orderedKeys.map((k) => ({ value: k, label: (eff.includes(k) ? '★ ' : '') + SUB_LABEL[k] })),
+  ];
+
   return (
     <div>
       <div className="echo-tabs">
@@ -42,17 +54,17 @@ export function SubstatInput({ state, setState }: Props) {
       </div>
       {lines.map((line, li) => {
         const stages = line.type ? SUBSTAT_STAGES[line.type] : undefined;
+        const suffix = line.type && line.type.startsWith('flat') ? '' : '%';
+        const valueOptions = stages
+          ? [{ value: '', label: '수치' }, ...stages.map((v) => ({ value: String(v), label: `${v}${suffix}` }))]
+          : [{ value: '', label: '-' }];
         return (
           <div className="sub-row" key={li}>
-            <select value={line.type} onChange={(e) => update(li, { type: e.target.value as StatKey | '', value: null })}>
-              <option value="">옵션 선택</option>
-              {OPTION_KEYS.map((k) => <option key={k} value={k}>{SUB_LABEL[k]}</option>)}
-            </select>
-            <select className="val" disabled={!stages} value={line.value ?? ''}
-              onChange={(e) => update(li, { value: e.target.value === '' ? null : parseFloat(e.target.value) })}>
-              <option value="">수치</option>
-              {stages?.map((v) => <option key={v} value={v}>{v}{line.type?.startsWith('flat') ? '' : '%'}</option>)}
-            </select>
+            <Dropdown className="dd-grow" value={line.type} options={optionList}
+              onChange={(v) => update(li, { type: v as StatKey | '', value: null })} />
+            <Dropdown className="dd-narrow" value={line.value != null ? String(line.value) : ''}
+              options={valueOptions}
+              onChange={(v) => update(li, { value: v === '' ? null : parseFloat(v) })} />
           </div>
         );
       })}
@@ -71,7 +83,7 @@ export function SubstatInput({ state, setState }: Props) {
         style={{ marginTop: 8 }}
         onClick={() => setState({ ...state, mainPrimary: recommendedMainPicks(state), substats: emptySubstats() })}
       >
-        초기화 (메인=크크작 추천, 부옵=비움)
+        입력 초기화
       </button>
     </div>
   );

@@ -2,37 +2,95 @@
   {
     "id": "hiyuki",
     "name": "히유키",
-    "version": 3,
+    "version": 3.3,
     "element": "응결",
+    "weapon_type": "sword",
     "scale_stat": "attack",
     "base_attack": 462,
     "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
     "damage_bonus_type": "resonance_liberation",
     "energy_regen_mode": "premise",
-    "recommended_echo_sets": ["kido"],
-    "recommended_weapons": ["frostbound_flame", "millennium_eddy"],
+    "default_required_energy_regen": 25,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["wishes_of_quiet_snowfall"],
+    "recommended_main_echo": ["void_god_echo"],
+    "recommended_weapons": ["frostbound_flame", "emerald_of_genesis"],
     "signature_weapon": "frostbound_flame",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "note": "스킬 노드" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_1", "min_ascension": 0, "label": "눈의 침식 1스택 · 크피 +40% (자력)" },
+      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_2", "min_ascension": 6, "label": "눈의 침식 2스택 · 크피 +40% (6돌)" }
     ]
   },
   {
     "id": "aemeath",
     "name": "에이메스",
-    "version": 3,
+    "version": 3.1,
     "element": "용융",
+    "weapon_type": "sword",
     "scale_stat": "attack",
     "base_attack": 425,
     "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
     "damage_bonus_type": "resonance_liberation",
     "energy_regen_mode": "premise",
-    "recommended_echo_sets": ["aemeath_echo_set"],
-    "recommended_weapons": ["eternal_morningstar", "millennium_eddy"],
+    "default_required_energy_regen": 25,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["trailblazing_star"],
+    "recommended_main_echo": ["sigillum"],
+    "recommended_weapons": ["eternal_morningstar", "emerald_of_genesis"],
     "signature_weapon": "eternal_morningstar",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "note": "스킬 노드" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "critical_damage", "value": 0.30, "always": false, "id": "aemeath_chain_1", "min_ascension": 0, "label": "별과 별 사이 1스택 · 크피 +30% (자력)" },
+      { "type": "critical_damage", "value": 0.30, "always": false, "id": "aemeath_chain_2", "min_ascension": 0, "label": "별과 별 사이 2스택 · 크피 +30% (3돌 또는 파티원)" }
+    ]
+  },
+  {
+    "id": "lucilla",
+    "name": "루실라",
+    "version": 3.4,
+    "element": "응결",
+    "weapon_type": "rectifier",
+    "scale_stat": "attack",
+    "base_attack": 375,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "basic_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "basic_attack",
+    "energy_regen_mode": "deal_conversion",
+    "default_required_energy_regen": 0,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["wishes_of_quiet_snowfall"],
+    "recommended_main_echo": ["glommoth"],
+    "recommended_weapons": ["freeze_frame", "stringmaster", "cosmic_ripples", "augment"],
+    "signature_weapon": "freeze_frame",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" }
+    ]
+  },
+  {
+    "id": "sigrika",
+    "name": "시그리카",
+    "version": 3.2,
+    "element": "기류",
+    "weapon_type": "gauntlets",
+    "scale_stat": "attack",
+    "base_attack": 437,
+    "effective_substats": ["critical_damage", "critical_rate", "energy_regen", "attack_percent", "flat_attack"],
+    "damage_bonus_type": "echo_skill",
+    "energy_regen_mode": "deal_conversion",
+    "default_required_energy_regen": 150,
+    "special_mechanism": "sigrika_er_to_echo",
+    "recommended_echo_sets": ["sound_of_true_name"],
+    "recommended_main_echo": ["nameless_explorer"],
+    "recommended_weapons": ["solsworn_ciphers", "blazing_justice", "pulsation_bracer", "stonard", "aether_strike", "celestial_spiral"],
+    "signature_weapon": "solsworn_ciphers",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "element_damage_bonus", "value": 0.48, "always": false, "element": "기류", "id": "skill_blessing_aero", "min_ascension": 0, "label": "함의의 축복: 기류피해 48% (6스택)" },
+      { "type": "echo_skill_bonus", "value": 0.48, "always": false, "id": "skill_blessing_echo", "min_ascension": 0, "label": "함의의 축복: 에코피해 48% (6스택)" }
     ]
   }
 ]

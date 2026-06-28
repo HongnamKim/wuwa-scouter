@@ -28,4 +28,6 @@ export interface CalcContext {
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
   requiredEnergyRegen?: number; // 필요 공효(%). 이론 최고에서 도달 최소 줄 수만큼 딜 슬롯 차감(전제형). 미지정 시 30
+  ascensionLevel?: number; // 돌파(공명 체인) 0~6. 일부 캐릭터의 스택형 자체 버프에 영향. 미지정 시 0
+  refinementLevel?: number; // 무기 재련(공진) 1~5. 무기 버프량에 영향. 미지정 시 1
 }

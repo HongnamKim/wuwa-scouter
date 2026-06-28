@@ -1,6 +1,7 @@
 import type { CalcContext } from './context';
-import { buildPerfInput, sumMainPrimary, sumEffectiveSubstats } from './build';
+import { buildPerfInput, sumMainPrimary, sumEffectiveSubstats, computeEnergyRegen } from './build';
 import { aggregateBuffs } from './buffs';
+import { mechanismDamageTypeBonus } from './mechanisms';
 
 export interface DisplaySpec {
   attack: number;
@@ -24,12 +25,9 @@ export function computeDisplaySpec(ctx: CalcContext): DisplaySpec {
     : null;
   const subDmgTypeBonus = dmgTypeBonusKey ? (sub[dmgTypeBonusKey] ?? 0) / 100 : 0;
 
-  // 공명효율 = 기본 100% + 무기 베이스 + 부옵(무효옵 포함) + 활성 버프
-  const subEnergyRegen = ctx.substats
-    .flat()
-    .filter((l) => l.type === 'energy_regen' && l.value != null)
-    .reduce((s, l) => s + (l.value as number), 0);
-  const energyRegen = 1 + (ctx.weapon.base_stats.energy_regen ?? 0) + subEnergyRegen / 100 + buffs.energy_regen;
+  const energyRegen = computeEnergyRegen(ctx);
+  // 특별 메커니즘(예: 시그리카 공효→에코 전환)으로 얻는 추가 피해유형 보너스
+  const mechBonus = mechanismDamageTypeBonus(ctx.character.special_mechanism, energyRegen);
 
   return {
     attack: i.baseAttack * (1 + i.attackPercent) + i.flatAttack,
@@ -37,7 +35,7 @@ export function computeDisplaySpec(ctx: CalcContext): DisplaySpec {
     criticalRate: Math.min(i.criticalRate, 1),
     criticalDamage: i.criticalDamage,
     elementBonus: buffs.element_bonus + (main.element_damage_bonus ?? 0),
-    damageTypeBonus: buffs.damage_type_bonus + subDmgTypeBonus,
+    damageTypeBonus: buffs.damage_type_bonus + subDmgTypeBonus + mechBonus,
     amplify: i.amplify,
     energyRegen,
   };

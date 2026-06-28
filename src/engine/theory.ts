@@ -1,21 +1,73 @@
-import type { StatKey, Cost } from '../types/domain';
+import type { StatKey, Cost, CostLayout } from '../types/domain';
 import type { CalcContext, MainPrimaryPick } from './context';
 import { buildPerfInput, sumEffectiveSubstats } from './build';
 import { computePerf } from './perf';
 import { COST_LAYOUTS, MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
+import { hasEnergyConversion } from './mechanisms';
+
+// 크크작 시 평균적으로 따라오는 공명효율(%). 30만건 시뮬레이션 평균(약 1.37줄 ≈ 13.1%).
+// ER 전환형 캐릭터의 크크작 분모에만 반영한다.
+const KKJAK_ENERGY_REGEN = 13.1;
+
+export type ThreeCoMode =
+  | 'soksok' | 'sokgong' | 'gonggong' | 'er_sok' | 'er_gong' | 'er_er'  // 43311: 3코 가변
+  | 'four_cc' | 'four_ccr' | 'four_cca' | 'four_crcr' | 'four_cra' | 'four_aa'; // 44111: 4코 가변
+
+// 크크작 조합 모드: 라벨 + 가변 슬롯에 넣을 메인 옵션 페어 + 적용 레이아웃. er=공효 포함(전환형 전용)
+// 43311은 3코 두 슬롯이 가변(4코=크피·1코=공% 고정), 44111은 4코 두 슬롯이 가변(1코=공% 고정).
+const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: [StatKey, StatKey]; layout: CostLayout; er: boolean }> = {
+  soksok: { label: '속속', pair: ['element_damage_bonus', 'element_damage_bonus'], layout: '43311', er: false },
+  sokgong: { label: '속공', pair: ['element_damage_bonus', 'attack_percent'], layout: '43311', er: false },
+  gonggong: { label: '공공', pair: ['attack_percent', 'attack_percent'], layout: '43311', er: false },
+  er_sok: { label: '공효속', pair: ['energy_regen', 'element_damage_bonus'], layout: '43311', er: true },
+  er_gong: { label: '공효공', pair: ['energy_regen', 'attack_percent'], layout: '43311', er: true },
+  er_er: { label: '공효공효', pair: ['energy_regen', 'energy_regen'], layout: '43311', er: true },
+  four_cc: { label: '크피+크피', pair: ['critical_damage', 'critical_damage'], layout: '44111', er: false },
+  four_ccr: { label: '크피+크리', pair: ['critical_damage', 'critical_rate'], layout: '44111', er: false },
+  four_cca: { label: '크피+공%', pair: ['critical_damage', 'attack_percent'], layout: '44111', er: false },
+  four_crcr: { label: '크리+크리', pair: ['critical_rate', 'critical_rate'], layout: '44111', er: false },
+  four_cra: { label: '크리+공%', pair: ['critical_rate', 'attack_percent'], layout: '44111', er: false },
+  four_aa: { label: '공%+공%', pair: ['attack_percent', 'attack_percent'], layout: '44111', er: false },
+};
+
+/** 코스트 구성별 선택 가능한 크크작 조합 모드 (43311=3코 조합, 44111=4코 조합; ER 전환형만 공효 모드 노출) */
+export function threeCoModeOptions(ctx: CalcContext): { value: ThreeCoMode; label: string }[] {
+  const erChar = hasEnergyConversion(ctx.character.special_mechanism);
+  return (Object.keys(KKJAK_MODES) as ThreeCoMode[])
+    .filter((m) => KKJAK_MODES[m].layout === ctx.costLayout && (erChar || !KKJAK_MODES[m].er))
+    .map((m) => ({ value: m, label: KKJAK_MODES[m].label }));
+}
+
+/** 가변 슬롯 코스트 (43311→3코, 44111→4코) */
+function variableCost(layout: CostLayout): Cost {
+  return layout === '44111' ? 4 : 3;
+}
+
+/** 모드에 해당하는 전체 메인 옵션 구성 (가변 슬롯=모드 페어, 4코 고정=크피[43311], 1코 고정=공%) */
+function kkjakModePicks(ctx: CalcContext, mode: ThreeCoMode): MainPrimaryPick[] {
+  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
+  const varCost = variableCost(ctx.costLayout);
+  const pair = KKJAK_MODES[mode].pair;
+  let ti = 0;
+  return layout.map((cost) => {
+    if (cost === varCost) return { cost, type: pair[ti++] };
+    if (cost === 4) return { cost, type: 'critical_damage' as StatKey };
+    return { cost, type: 'attack_percent' as StatKey };
+  });
+}
 
 export interface TheoryResult {
   perf: number;
   subAllocation: Partial<Record<StatKey, number>>; // 줄 수
   mainPicks: MainPrimaryPick[];                     // 슬롯별 메인 선택(표시는 UI에서 한글화)
-  threeCoMode: 'soksok' | 'sokgong' | 'gonggong';
+  threeCoMode: ThreeCoMode;
 }
 
 /** 해당 슬롯 코스트에서 가능한 메인 옵션 키 목록 (딜 관련만) */
 function mainOptionsFor(cost: Cost): StatKey[] {
   const all = Object.keys(MAIN_PRIMARY[cost]) as StatKey[];
   // 딜 관련: attack_percent, element_damage_bonus, critical_rate, critical_damage
-  const dealKeys: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage'];
+  const dealKeys: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
   return all.filter((k) => dealKeys.includes(k));
 }
 
@@ -45,12 +97,15 @@ function* subAllocations(keys: StatKey[], totalLines: number): Generator<number[
   yield* rec(0, totalLines, []);
 }
 
-function threeCoModeOf(picks: MainPrimaryPick[]): 'soksok' | 'sokgong' | 'gonggong' {
-  const threeCo = picks.filter((p) => p.cost === 3);
-  const ele = threeCo.filter((p) => p.type === 'element_damage_bonus').length;
-  if (ele === 2) return 'soksok';
-  if (ele === 1) return 'sokgong';
-  return 'gonggong';
+function threeCoModeOf(ctx: CalcContext, picks: MainPrimaryPick[]): ThreeCoMode {
+  const varCost = variableCost(ctx.costLayout);
+  const vars = picks.filter((p) => p.cost === varCost).map((p) => p.type).sort();
+  const opts = threeCoModeOptions(ctx);
+  for (const o of opts) {
+    const pair = [...KKJAK_MODES[o.value].pair].sort();
+    if (vars.length === pair.length && vars.every((t, i) => t === pair[i])) return o.value;
+  }
+  return opts[0].value;
 }
 
 /**
@@ -86,7 +141,7 @@ export function theoryBest(ctx: CalcContext): TheoryResult {
       if (!best || perf > best.perf) {
         const subAllocation: Partial<Record<StatKey, number>> = {};
         keys.forEach((k, idx) => { subAllocation[k] = alloc[idx]; });
-        best = { perf, subAllocation, mainPicks: picks, threeCoMode: threeCoModeOf(picks) };
+        best = { perf, subAllocation, mainPicks: picks, threeCoMode: threeCoModeOf(ctx, picks) };
       }
     }
   }
@@ -98,36 +153,9 @@ export function theoryRatio(ctx: CalcContext): number {
   return mine / theoryBest(ctx).perf;
 }
 
-export type ThreeCoMode = 'soksok' | 'sokgong' | 'gonggong';
-
-/** 크크작 분모 컨텍스트: 크리5+크피5(밑4번째), 메인은 4코 크피·1코 공%·3코 모드별 */
+/** 크크작 분모 컨텍스트: 크리5+크피5(밑4번째) + (전환형) 평균 공효, 메인은 모드별 구성 */
 function kkjakCtx(ctx: CalcContext, mode: ThreeCoMode): CalcContext {
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
-  const crit = substatFourthFromBottom('critical_rate') * 5;       // %
-  const cd = substatFourthFromBottom('critical_damage') * 5;       // %
-  const substats: CalcContext['substats'] = [
-    [{ type: 'critical_rate', value: crit }],
-    [{ type: 'critical_damage', value: cd }],
-    [], [], [],
-  ];
-  // 분모 메인: 4코→크피, 3코→모드별, 1코→공%
-  const mainPrimary: MainPrimaryPick[] = layout.map((cost) => {
-    if (cost === 4) return { cost, type: 'critical_damage' as StatKey };
-    if (cost === 1) return { cost, type: 'attack_percent' as StatKey };
-    // 3코
-    if (mode === 'soksok') return { cost, type: 'element_damage_bonus' as StatKey };
-    if (mode === 'gonggong') return { cost, type: 'attack_percent' as StatKey };
-    // sokgong: 첫 3코는 속피, 둘째는 공% (호출 순서로 분배)
-    return { cost, type: 'element_damage_bonus' as StatKey };
-  });
-  // sokgong 보정: 3코가 둘이면 둘째를 공%로
-  if (mode === 'sokgong') {
-    let seen = 0;
-    for (const p of mainPrimary) {
-      if (p.cost === 3) { seen++; if (seen === 2) p.type = 'attack_percent'; }
-    }
-  }
-  return { ...ctx, mainPrimary, substats };
+  return { ...ctx, mainPrimary: kkjakModePicks(ctx, mode), substats: kkjakSub(ctx) };
 }
 
 export function kkjakPerf(ctx: CalcContext, mode: ThreeCoMode): number {
@@ -140,6 +168,18 @@ export function kkjakRatio(ctx: CalcContext, mode: ThreeCoMode): number {
 
 export function optimalThreeCoMode(ctx: CalcContext): ThreeCoMode {
   return theoryBest(ctx).threeCoMode;
+}
+
+interface ModeGroupArgs { ctx: CalcContext; label: string }
+/** 가변 슬롯(43311=3코, 44111=4코) 모드 조합 비교 그룹 */
+function modeGroup({ ctx, label }: ModeGroupArgs): RecoGroup {
+  const combos: [string, MainPrimaryPick[]][] = threeCoModeOptions(ctx)
+    .map((o) => [o.label, kkjakModePicks(ctx, o.value)]);
+  return {
+    label,
+    theory: rows(combos.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
+    kkjak: rows(combos.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub(ctx))])),
+  };
 }
 
 export interface RecoRow { label: string; relative: number; best: boolean }
@@ -163,10 +203,14 @@ function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): numb
   return best;
 }
 
-function kkjakSub(): CalcContext['substats'] {
+function kkjakSub(ctx: CalcContext): CalcContext['substats'] {
   const crit = substatFourthFromBottom('critical_rate') * 5;
   const cd = substatFourthFromBottom('critical_damage') * 5;
-  return [[{ type: 'critical_rate', value: crit }], [{ type: 'critical_damage', value: cd }], [], [], []];
+  // ER 전환형은 크크작 시 따라오는 평균 공명효율(13.1%)을 분모에 반영
+  const erLine: CalcContext['substats'][number] = hasEnergyConversion(ctx.character.special_mechanism)
+    ? [{ type: 'energy_regen', value: KKJAK_ENERGY_REGEN }]
+    : [];
+  return [[{ type: 'critical_rate', value: crit }], [{ type: 'critical_damage', value: cd }], erLine, [], []];
 }
 
 function rows(entries: [string, number][]): RecoRow[] {
@@ -192,49 +236,13 @@ export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
     groups.push({
       label: '4코 메인',
       theory: rows(g1.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
-      kkjak: rows(g1.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub())])),
+      kkjak: rows(g1.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub(ctx))])),
     });
-    // 그룹2: 3코 조합 비교 (4코 크피·1코 공% 고정)
-    const threeCombos: [string, StatKey[]][] = [
-      ['속속', ['element_damage_bonus', 'element_damage_bonus']],
-      ['속공', ['element_damage_bonus', 'attack_percent']],
-      ['공공', ['attack_percent', 'attack_percent']],
-    ];
-    const g2: [string, MainPrimaryPick[]][] = threeCombos.map(([n, threes]) => {
-      let ti = 0;
-      const picks = layout.map((cost) => ({
-        cost,
-        type: cost === 4 ? 'critical_damage' as StatKey : cost === 1 ? 'attack_percent' as StatKey : threes[ti++],
-      }));
-      return [n, picks];
-    });
-    groups.push({
-      label: '3코 조합',
-      theory: rows(g2.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
-      kkjak: rows(g2.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub())])),
-    });
+    // 그룹2: 3코 조합 비교 (ER 전환형은 공효 모드 포함)
+    groups.push(modeGroup({ ctx, label: '3코 조합' }));
   } else {
     // 44111: 4코 두 슬롯 조합 비교 (1코 공% 고정)
-    const fourCombos: [string, StatKey[]][] = [
-      ['크피+크피', ['critical_damage', 'critical_damage']],
-      ['크피+크리', ['critical_damage', 'critical_rate']],
-      ['크피+공%', ['critical_damage', 'attack_percent']],
-      ['크리+크리', ['critical_rate', 'critical_rate']],
-      ['크리+공%', ['critical_rate', 'attack_percent']],
-      ['공%+공%', ['attack_percent', 'attack_percent']],
-    ];
-    const g: [string, MainPrimaryPick[]][] = fourCombos.map(([n, fours]) => {
-      let fi = 0;
-      const picks = layout.map((cost) => ({
-        cost, type: cost === 4 ? fours[fi++] : 'attack_percent' as StatKey,
-      }));
-      return [n, picks];
-    });
-    groups.push({
-      label: '4코 조합',
-      theory: rows(g.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
-      kkjak: rows(g.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub())])),
-    });
+    groups.push(modeGroup({ ctx, label: '4코 조합' }));
   }
   return groups;
 }
@@ -256,11 +264,26 @@ export function compareSubstats(
 /** 크크작 기준 부옵(크리5+크피5)에서 통합 성능을 최대화하는 메인 옵션 조합(추천) */
 export function recommendedMainPicks(ctx: CalcContext): MainPrimaryPick[] {
   const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
-  const sub = kkjakSub();
+  const sub = kkjakSub(ctx);
   let best: { perf: number; picks: MainPrimaryPick[] } | null = null;
   for (const picks of mainCombos(layout)) {
     const perf = computePerf(buildPerfInput({ ...ctx, mainPrimary: picks, substats: sub }));
     if (!best || perf > best.perf) best = { perf, picks };
   }
   return best!.picks;
+}
+
+/**
+ * 크크작 분모 기준 최적(최고 통합 성능) 조합 모드 (43311=3코, 44111=4코).
+ * 추천 표의 조합 그룹과 동일하게 모드별 kkjakPerf로 비교 → 최고 모드.
+ */
+export function optimalThreeCoModeKkjak(ctx: CalcContext): ThreeCoMode {
+  const modes = threeCoModeOptions(ctx).map((o) => o.value);
+  let best = modes[0];
+  let bestPerf = -Infinity;
+  for (const m of modes) {
+    const p = kkjakPerf(ctx, m);
+    if (p > bestPerf) { bestPerf = p; best = m; }
+  }
+  return best;
 }

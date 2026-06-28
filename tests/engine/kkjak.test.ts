@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { kkjakRatio, kkjakPerf, optimalThreeCoMode } from '../../src/engine/theory';
+import { kkjakRatio, kkjakPerf, optimalThreeCoMode, threeCoModeOptions, optimalThreeCoModeKkjak } from '../../src/engine/theory';
 import { hiyukiBaseCtx } from './fixtures';
 
 describe('크크작 대비', () => {
@@ -30,4 +30,20 @@ it('43311 추천: 3코 그룹 최고가 속속', () => {
   const threeGroup = groups.find((g) => g.label.startsWith('3코'))!;
   const top = threeGroup.theory.find((r) => r.best)!;
   expect(top.label).toBe('속속');
+});
+
+describe('크크작 모드는 코스트 구성에 따라 다르다', () => {
+  it('43311은 3코 조합 모드, 44111은 4코 조합 모드', () => {
+    const co43 = threeCoModeOptions(hiyukiBaseCtx()).map((o) => o.label);
+    expect(co43).toEqual(['속속', '속공', '공공']);
+    const co44 = threeCoModeOptions({ ...hiyukiBaseCtx(), costLayout: '44111' }).map((o) => o.label);
+    expect(co44).toEqual(['크피+크피', '크피+크리', '크피+공%', '크리+크리', '크리+공%', '공%+공%']);
+  });
+
+  it('44111 기본 모드/추천 그룹은 4코 조합', () => {
+    const ctx = { ...hiyukiBaseCtx(), costLayout: '44111' as const };
+    expect(optimalThreeCoModeKkjak(ctx).startsWith('four_')).toBe(true);
+    const groups = mainRecommendation(ctx);
+    expect(groups.some((g) => g.label === '4코 조합')).toBe(true);
+  });
 });

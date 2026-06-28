@@ -6,7 +6,7 @@ import type { StatKey, CostLayout } from '../types/domain';
 
 export type AppState = CalcContext;
 
-const DEAL_KEYS: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage'];
+const DEAL_KEYS: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
 
 /** 코스트 구성별 기본 메인 옵션 (4코=크피, 그 외=공%) */
 export function defaultMainFor(layout: CostLayout): MainPrimaryPick[] {
@@ -37,6 +37,9 @@ export function combinedMainEchoes(echoSets: EchoSet[]): MainSlotEcho[] {
 /** 합쳐진 메인슬롯 에코 중 캐릭터 피해유형에 맞는 패시브를 가진 것(없으면 첫 번째) */
 export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlotEcho {
   const echoes = combinedMainEchoes(echoSets);
+  const rec = character.recommended_main_echo ?? [];
+  const recMatch = echoes.find((e) => rec.includes(e.id));
+  if (recMatch) return recMatch;
   const want = character.damage_bonus_type ? `${character.damage_bonus_type}_bonus` : null;
   if (want) {
     const match = echoes.find((e) => e.buffs.some((b) => b.type === want));
@@ -90,7 +93,9 @@ export function defaultStateForCharacter(character: Character): AppState {
     substats: loadSampleSubstats(character),
     conditionalToggles,
     manualBuffs: [],
-    requiredEnergyRegen: 30,
+    requiredEnergyRegen: character.default_required_energy_regen,
+    ascensionLevel: 0,
+    refinementLevel: 1,
   };
 }
 
@@ -108,6 +113,8 @@ interface SavedState {
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
   requiredEnergyRegen?: number;
+  ascensionLevel?: number;
+  refinementLevel?: number;
 }
 
 function serializeState(state: AppState): SavedState {
@@ -121,6 +128,8 @@ function serializeState(state: AppState): SavedState {
     conditionalToggles: state.conditionalToggles,
     manualBuffs: state.manualBuffs,
     requiredEnergyRegen: state.requiredEnergyRegen,
+    ascensionLevel: state.ascensionLevel,
+    refinementLevel: state.refinementLevel,
   };
 }
 
@@ -128,6 +137,17 @@ function serializeState(state: AppState): SavedState {
 export function saveCharacterState(state: AppState): void {
   if (!hasStorage) return;
   localStorage.setItem(SAVE_KEY(state.character.id), JSON.stringify(serializeState(state)));
+}
+
+/** 저장된 데이터가 존재하는지 */
+export function hasSavedState(characterId: string): boolean {
+  return hasStorage && localStorage.getItem(SAVE_KEY(characterId)) != null;
+}
+
+/** 저장된 데이터 삭제 */
+export function deleteCharacterState(characterId: string): void {
+  if (!hasStorage) return;
+  localStorage.removeItem(SAVE_KEY(characterId));
 }
 
 /** 현재 상태가 저장된 내용과 동일한지 (저장값 없으면 false) */
@@ -165,6 +185,8 @@ export function loadCharacterState(character: Character): AppState | null {
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],
       requiredEnergyRegen: s.requiredEnergyRegen,
+      ascensionLevel: s.ascensionLevel ?? 0,
+      refinementLevel: Math.max(1, Math.min(5, s.refinementLevel ?? 1)),
     };
   } catch {
     return null;

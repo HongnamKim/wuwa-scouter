@@ -1,5 +1,6 @@
 import type { Buff, Character, Weapon, EchoSet } from '../types/data';
-import { STAT_KEYS, ELEMENTS, BUFF_TARGETS } from '../types/domain';
+import { STAT_KEYS, ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
+import { MECHANISM_KEYS } from './mechanisms';
 import charactersRaw from '../data/characters.json';
 import weaponsRaw from '../data/weapons.json';
 import echoSetsRaw from '../data/echo-sets.json';
@@ -22,15 +23,25 @@ function validateBuffs(buffs: any[]): Buff[] {
   return buffs.map(validateBuff);
 }
 
+function validateWeaponType(t: any, owner: string): void {
+  if (!WEAPON_TYPES.includes(t)) throw new Error(`unknown weapon type: ${t} (${owner})`);
+}
+
 export function loadCharacters(): Character[] {
-  return (charactersRaw as any[]).map((c) => ({
-    ...c,
-    skill_node: validateBuffs(c.skill_node),
-  })) as Character[];
+  return (charactersRaw as any[]).map((c) => {
+    validateWeaponType(c.weapon_type, c.id);
+    if (c.special_mechanism != null && !MECHANISM_KEYS.includes(c.special_mechanism)) {
+      throw new Error(`unknown special mechanism: ${c.special_mechanism} (${c.id})`);
+    }
+    return { ...c, skill_node: validateBuffs(c.skill_node) };
+  }) as Character[];
 }
 
 export function loadWeapons(): Weapon[] {
-  return (weaponsRaw as any[]).map((w) => ({ ...w, buffs: validateBuffs(w.buffs) })) as Weapon[];
+  return (weaponsRaw as any[]).map((w) => {
+    validateWeaponType(w.weapon_type, w.id);
+    return { ...w, buffs: validateBuffs(w.buffs) };
+  }) as Weapon[];
 }
 
 export function loadEchoSets(): EchoSet[] {

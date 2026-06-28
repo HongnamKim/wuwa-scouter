@@ -17,14 +17,13 @@ function Cell({ rows }: { rows: RecoRow[] }) {
 
 export function MainReco({ state }: { state: AppState }) {
   const groups = mainRecommendation(state);
-  // 44111은 4코 조합이 6개라 상위 3개만 표시
-  const limit = state.costLayout === '44111' ? 3 : Infinity;
-  const top = (rows: RecoRow[]) => rows.slice(0, limit);
+  // 후보가 많은 그룹(44111 4코 조합, ER 전환형 3코 조합 등)은 상위 3건만 표시
+  const top = (rows: RecoRow[]) => rows.slice(0, 3);
   return (
     <table className="reco-grid">
       <thead><tr><th></th>{groups.map((g) => <th key={g.label}>{g.label}</th>)}</tr></thead>
       <tbody>
-        <tr><th>이론 최고</th>{groups.map((g) => <td key={g.label}><Cell rows={top(g.theory)} /></td>)}</tr>
+        <tr><th>최고점</th>{groups.map((g) => <td key={g.label}><Cell rows={top(g.theory)} /></td>)}</tr>
         <tr><th>크크작</th>{groups.map((g) => <td key={g.label}><Cell rows={top(g.kkjak)} /></td>)}</tr>
       </tbody>
     </table>

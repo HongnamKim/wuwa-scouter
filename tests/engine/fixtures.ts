@@ -17,8 +17,12 @@ export function hiyukiBaseCtx(): CalcContext {
       [{ type: 'critical_rate', value: 35.7 }], [{ type: 'critical_damage', value: 60 }],
       [{ type: 'attack_percent', value: 29.3 }], [{ type: 'resonance_liberation_bonus', value: 33.8 }], [],
     ],
-    conditionalToggles: { set_5pc_element: true, set_5pc_critical: true, weapon_glacio_amplify: false, weapon_def_ignore: false },
+    conditionalToggles: {
+      set_5pc_element: true, set_5pc_critical: true, weapon_glacio_amplify: false, weapon_def_ignore: false,
+      hiyuki_snowrust_1: false, hiyuki_snowrust_2: false, // 손계산 앵커: 자체 스택 버프 제외
+    },
     manualBuffs: [],
     requiredEnergyRegen: 30,
+    ascensionLevel: 0,
   };
 }

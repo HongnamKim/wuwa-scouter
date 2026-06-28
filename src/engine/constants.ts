@@ -56,3 +56,8 @@ export const COST_LAYOUTS: Record<CostLayout, Cost[]> = {
   '43311': [4, 3, 3, 1, 1],
   '44111': [4, 4, 1, 1, 1],
 };
+
+// 딜 비교(특히 무기 비교)용 적 가정. 방어력 무시·속성 저항 무시를 상대 배수로 반영.
+// 값이 0이면 배수 1(영향 없음)이라 기존 점수와 동일.
+export const ENEMY_DEF_RATIO = 1;          // 적 방어력 / 공격자 상수 (동레벨 90 가정)
+export const BASE_ENEMY_RESISTANCE = 0.10; // 적 기본 속성 저항 10%

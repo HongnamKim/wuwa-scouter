@@ -4,12 +4,12 @@ import { aggregateBuffs } from '../../src/engine/buffs';
 import type { CalcContext } from '../../src/engine/context';
 
 /**
- * Simulates a weapon swap to millennium_eddy where conditionalToggles has NOT
- * been re-seeded — weapon_atk_stack is absent (undefined).
+ * Simulates a weapon swap to emerald_of_genesis where conditionalToggles has NOT
+ * been re-seeded — weapon_skill_atk is absent (undefined).
  */
 function swapCtx(overrideToggles: Record<string, boolean> = {}): CalcContext {
   const character = loadCharacters().find((c) => c.id === 'hiyuki')!;
-  const weapon = loadWeapons().find((w) => w.id === 'millennium_eddy')!;
+  const weapon = loadWeapons().find((w) => w.id === 'emerald_of_genesis')!;
   const echoSet = loadEchoSets()[0];
   const substats = [
     [{ type: 'critical_rate', value: 35.7 }],
@@ -38,15 +38,15 @@ function swapCtx(overrideToggles: Record<string, boolean> = {}): CalcContext {
 }
 
 describe('conditional buff default-ON after weapon swap', () => {
-  it('absent weapon_atk_stack toggle yields attack_percent 0.24 (skill 0.12 + weapon 0.12)', () => {
+  it('absent weapon_skill_atk toggle yields attack_percent 0.24 (skill 0.12 + weapon 0.12)', () => {
     // conditionalToggles is empty — simulates a swap that did not re-seed toggles
     const ctx = swapCtx({});
     const totals = aggregateBuffs(ctx);
     expect(totals.attack_percent).toBeCloseTo(0.24, 10);
   });
 
-  it('explicit weapon_atk_stack: false yields attack_percent 0.12 (skill only)', () => {
-    const ctx = swapCtx({ weapon_atk_stack: false });
+  it('explicit weapon_skill_atk: false yields attack_percent 0.12 (skill only)', () => {
+    const ctx = swapCtx({ weapon_skill_atk: false });
     const totals = aggregateBuffs(ctx);
     expect(totals.attack_percent).toBeCloseTo(0.12, 10);
   });

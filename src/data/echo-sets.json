@@ -1,6 +1,6 @@
 [
   {
-    "id": "kido",
+    "id": "wishes_of_quiet_snowfall",
     "name": "소리 없이 내려앉은 기도의 눈",
     "buffs": [
       { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "응결" },
@@ -26,7 +26,7 @@
     ]
   },
   {
-    "id": "aemeath_echo_set",
+    "id": "trailblazing_star",
     "name": "긴 여정을 떠나는 별",
     "buffs": [
       { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "용융" },
@@ -39,6 +39,25 @@
         "name": "시길룸",
         "buffs": [
           { "type": "resonance_liberation_bonus", "value": 0.25, "always": true, "target": "self","note": "메인슬롯 패시브" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sound_of_true_name",
+    "name": "함의의 소리를 따라",
+    "buffs": [
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "기류" },
+      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_echo_crit", "label": "에코 어빌리티 피해 시 크리티컬 +20% (5세트 효과)" },
+      { "type": "element_damage_bonus", "value": 0.15, "set_pieces": 5, "always": false, "element": "기류", "id": "set_5pc_echo_aero", "label": "에코 어빌리티 피해 시 기류피해 +15% (5세트 효과)" }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "nameless_explorer",
+        "name": "이름없는 탐색자",
+        "buffs": [
+          { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "기류", "target": "self", "note": "메인슬롯 패시브 (기류피해 +12%)" },
+          { "type": "echo_skill_bonus", "value": 0.20, "always": true, "target": "self", "note": "메인슬롯 패시브 (에코피해 +20%)" }
         ]
       }
     ]

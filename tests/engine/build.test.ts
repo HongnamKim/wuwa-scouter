@@ -34,6 +34,7 @@ function hiyukiCtx(): CalcContext {
     conditionalToggles: {
       set_5pc_element: true, set_5pc_critical: true,
       weapon_glacio_amplify: false, weapon_def_ignore: false,
+      hiyuki_snowrust_1: false, hiyuki_snowrust_2: false, // 자체 스택 버프 제외(손계산 앵커)
     },
     manualBuffs: [],
   };
@@ -61,10 +62,11 @@ describe('buildPerfInput', () => {
     expect(computePerf(buildPerfInput(on)) / computePerf(buildPerfInput(off))).toBeCloseTo(1.28, 3);
   });
 
-  it('방어력 무시 토글은 통합 성능 불변', () => {
+  it('방어력 무시 +10% → 통합 성능 ×1.0526 (무기 비교 반영, 동레벨 가정)', () => {
     const off = hiyukiCtx();
     const on = hiyukiCtx();
-    on.conditionalToggles.weapon_def_ignore = true;
-    expect(computePerf(buildPerfInput(on))).toBeCloseTo(computePerf(buildPerfInput(off)), 6);
+    on.conditionalToggles.weapon_def_ignore = true; // frostbound 방무 10%
+    // defFactor = 2/(2-0.10) = 1.05263
+    expect(computePerf(buildPerfInput(on)) / computePerf(buildPerfInput(off))).toBeCloseTo(1.0526, 3);
   });
 });

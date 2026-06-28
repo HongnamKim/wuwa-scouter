@@ -2,30 +2,226 @@
   {
     "id": "frostbound_flame",
     "name": "서린 불꽃",
+    "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "note": "무기 패시브" },
-      { "type": "element_damage_amplify", "value": 0.28, "always": false, "element": "응결", "id": "weapon_glacio_amplify", "label": "응결피해 +28% 부스트" },
-      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "label": "방어력 무시 +10%" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브" },
+      { "type": "element_damage_amplify", "value": 0.28, "always": false, "element": "응결", "id": "weapon_glacio_amplify", "refinement_values": [0.28, 0.35, 0.42, 0.49, 0.56], "label": "서리효과 부여 시 응결피해 +{v} 부스트" },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "서리효과 부여 시 방어력 무시 +{v}" }
     ]
   },
   {
-    "id": "millennium_eddy",
+    "id": "emerald_of_genesis",
     "name": "천년의 회류",
+    "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "energy_regen", "value": 0.128, "always": true, "note": "무기 패시브" },
-      { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_atk_stack", "label": "공격력 +12%" }
+      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)" },
+      { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "공명스킬 발동 시 공격력 +{v} (2스택)" }
     ]
   },
   {
     "id": "eternal_morningstar",
     "name": "영원한 샛별",
+    "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.12, "always": true, "note": "무기 패시브" },
-      { "type": "defense_ignore", "value": 0.32, "always": false, "id": "weapon_def_ignore", "label": "방어력 무시 +32%" },
-      { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "label": "용융 저항 무시 +10%" }
+      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브" },
+      { "type": "defense_ignore", "value": 0.32, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 방어력 무시 +{v}" },
+      { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "refinement_values": [0.10, 0.15, 0.20, 0.25, 0.30], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 용융 저항 무시 +{v}" }
+    ]
+  },
+  {
+    "id": "freeze_frame",
+    "name": "프리즈 프레임",
+    "weapon_type": "rectifier",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "element_damage_bonus", "value": 0.30, "always": false, "element": "응결", "id": "weapon_glacio_chafe", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "서리효과 부여 시 응결피해 +{v}" },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "서리효과 부여 시 팀 공격력 +{v}" }
+    ]
+  },
+  {
+    "id": "stringmaster",
+    "name": "꼭두각시의 손",
+    "weapon_type": "rectifier",
+    "base_stats": { "attack": 500, "critical_rate": 0.36 },
+    "buffs": [
+      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성피해)" },
+      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명스킬 적중 시 공격력 +{v} (2스택)" },
+      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_offfield_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "미출전 상태 시 공격력 +{v} (2스택)" }
+    ]
+  },
+  {
+    "id": "cosmic_ripples",
+    "name": "파도의 기록",
+    "weapon_type": "rectifier",
+    "base_stats": { "attack": 500, "attack_percent": 0.54 },
+    "buffs": [
+      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)" },
+      { "type": "basic_attack_bonus", "value": 0.16, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "일반공격 적중 시 일반공격피해 +{v} (5스택)" }
+    ]
+  },
+  {
+    "id": "augment",
+    "name": "청음",
+    "weapon_type": "rectifier",
+    "base_stats": { "attack": 412, "critical_rate": 0.202 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.15, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.15, 0.2325, 0.315, 0.3975, 0.48], "label": "공명해방 발동 시 공격력 +{v}" }
+    ]
+  },
+  {
+    "id": "variation",
+    "name": "판타지 변주",
+    "weapon_type": "rectifier",
+    "base_stats": { "attack": 338, "energy_regen": 0.5184 },
+    "buffs": []
+  },
+  {
+    "id": "solsworn_ciphers",
+    "name": "솔스원의 해석",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 588, "critical_damage": 0.486 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "echo_skill_amplify", "value": 0.32, "always": false, "id": "weapon_echo_amplify", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "변주 스킬·에코 어빌리티 발동 시 에코 어빌리티피해 +{v} 부스트" },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "element": "기류", "id": "weapon_aero_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "에코 어빌리티 피해 시 기류 방어력 무시 +{v}" }
+    ]
+  },
+  {
+    "id": "daybreakers_spine",
+    "name": "한낮의 의지",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 588, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "element": "회절", "id": "weapon_spectro_bonus", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "일반공격 적중 후 회절피해 +{v}" },
+      { "type": "basic_attack_amplify", "value": 0.20, "always": false, "id": "weapon_basic_amplify", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "「조화 밀집·이탈」 추가 후 일반공격피해 +{v} 부스트" },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_basic_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "「조화 밀집·이탈」 추가 후 일반공격 방어력 무시 +{v}" }
+    ]
+  },
+  {
+    "id": "pulsation_bracer",
+    "name": "격동의 조력",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 588, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.24, 0.268, 0.30, 0.328, 0.36], "label": "「조화 밀집·간섭」 목표 가격 후 일반공격피해 +{v}" }
+    ]
+  },
+  {
+    "id": "blazing_justice",
+    "name": "불빛의 심판",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 587, "critical_damage": 0.486 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "일반공격 발동 시 방어력 무시 +{v}" }
+    ]
+  },
+  {
+    "id": "stonard",
+    "name": "황금 권갑",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 412, "critical_rate": 0.202 },
+    "buffs": [
+      { "type": "resonance_liberation_bonus", "value": 0.18, "always": false, "id": "weapon_skill_lib_bonus", "refinement_values": [0.18, 0.27, 0.36, 0.45, 0.54], "label": "공명 스킬 발동 시 공명해방피해 +{v}" }
+    ]
+  },
+  {
+    "id": "aether_strike",
+    "name": "거침없는 비상",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 412, "critical_damage": 0.405 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.072, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.072, 0.111, 0.151, 0.19, 0.23], "label": "공명해방 발동 시 공격력 +{v}" },
+      { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_lib_bonus", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명해방 발동 시 공명해방피해 +{v}" }
+    ]
+  },
+  {
+    "id": "celestial_spiral",
+    "name": "천상의 나선",
+    "weapon_type": "gauntlets",
+    "base_stats": { "attack": 463, "attack_percent": 0.182 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v}" }
+    ]
+  },
+  {
+    "id": "laser_shearer",
+    "name": "레이저 변형",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 587, "energy_regen": 0.388 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "resonance_skill_bonus", "value": 0.24, "always": false, "id": "weapon_skill_bonus", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 가격 후 공명스킬피해 +{v}" }
+    ]
+  },
+  {
+    "id": "blazing_brilliance",
+    "name": "솟아오르는 화염",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 587, "critical_damage": 0.486 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "resonance_skill_bonus", "value": 0.56, "always": false, "id": "weapon_feather_stack", "refinement_values": [0.56, 0.70, 0.84, 0.98, 1.12], "label": "빛나는 깃털 14스택 시 공명스킬피해 +{v}" }
+    ]
+  },
+  {
+    "id": "red_spring",
+    "name": "날카로운 봄",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "basic_attack_bonus", "value": 0.30, "always": false, "id": "weapon_basic_stack", "refinement_values": [0.30, 0.375, 0.45, 0.534, 0.60], "label": "일반공격 적중 시 일반공격피해 +{v} (3스택)" },
+      { "type": "basic_attack_bonus", "value": 0.40, "always": false, "id": "weapon_concerto_basic", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "협주 에너지 소모 시 일반공격피해 +{v}" }
+    ]
+  },
+  {
+    "id": "unflickering_valor",
+    "name": "흔들리지 않는 용기",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 412, "energy_regen": 0.77 },
+    "buffs": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "note": "무기 패시브 (크리티컬)" },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_lib_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명해방 발동 후 일반공격피해 +{v}" },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "일반공격 적중 시 일반공격피해 +{v}" }
+    ]
+  },
+  {
+    "id": "defiers_thron",
+    "name": "숙명에 맞서는 관",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 412, "hp_percent": 0.722 },
+    "buffs": [
+      { "type": "hp_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (HP)" },
+      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "변주/일반공격 발동 후 방어력 무시 +{v}" },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "id": "weapon_aero_erosion_amp", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "풍식 효과 보유 목표에게 피해 +{v} 부스트" }
+    ]
+  },
+  {
+    "id": "emerald_sentence",
+    "name": "푸른 의지",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 587, "critical_rate": 0.243 },
+    "buffs": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
+      { "type": "heavy_attack_bonus", "value": 0.60, "always": false, "id": "weapon_pajuk_stack", "refinement_values": [0.60, 0.75, 0.90, 1.05, 1.20], "label": "「파죽」 2스택 시 강공격피해 +{v}" },
+      { "type": "echo_skill_bonus", "value": 0.20, "always": false, "target": "party", "id": "weapon_party_echo", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주 스킬 발동 시 파티 에코 어빌리티피해 +{v}" }
+    ]
+  },
+  {
+    "id": "bloodpacts_pledge",
+    "name": "혈맹의 약속",
+    "weapon_type": "sword",
+    "base_stats": { "attack": 587, "energy_regen": 0.388 },
+    "buffs": [
+      { "type": "resonance_skill_bonus", "value": 0.10, "always": false, "id": "weapon_heal_skill", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "치료 효과 발동 시 공명스킬피해 +{v}" },
+      { "type": "element_damage_amplify", "value": 0.10, "always": false, "element": "기류", "target": "party", "id": "weapon_aero_party_amp", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "방랑자·기류 공명스킬 발동 시 파티 기류피해 +{v} 부스트" }
     ]
   }
 ]

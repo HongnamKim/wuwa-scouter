@@ -22,6 +22,21 @@ h3 { font-size: 0.95rem; margin: 16px 0 4px; }
 .save-btn { background: #2563eb; color: #fff; border: none; padding: 8px 22px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 1px 4px rgba(37,99,235,0.4); }
 .save-btn:hover:not(:disabled) { background: #1d4ed8; }
 .save-btn:disabled { background: #c4c4c4; color: #f0f0f0; cursor: default; box-shadow: none; }
+.compare-btn { background: #fff; color: #2563eb; border: 1px solid #2563eb; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+.compare-btn:hover { background: #eef2ff; }
+.delete-btn { background: #fff; color: #dc2626; border: 1px solid #dc2626; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+.delete-btn:hover:not(:disabled) { background: #fef2f2; }
+.delete-btn:disabled { background: #f4f4f4; color: #bbb; border-color: #ddd; cursor: default; }
+.modal-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); }
+.modal { background: #fff; border-radius: 10px; padding: 22px 24px; min-width: 300px; max-width: 90vw; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.modal-msg { margin: 0 0 18px; font-size: 1rem; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.modal-confirm { background: #2563eb; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.modal-confirm:hover { background: #1d4ed8; }
+.modal-confirm.danger { background: #dc2626; }
+.modal-confirm.danger:hover { background: #b91c1c; }
+.modal-cancel { background: #fff; color: #444; border: 1px solid #bbb; padding: 8px 18px; border-radius: 6px; cursor: pointer; }
+.modal-cancel:hover { background: #f3f4f6; }
 .help { position: relative; display: inline-block; }
 .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; margin-left: 4px; border: 1px solid #888; border-radius: 50%; font-size: 0.7rem; color: #888; cursor: help; }
 .help-tip { display: none; position: absolute; left: 0; top: 140%; z-index: 10; width: 260px; padding: 8px 10px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; font-size: 0.78rem; font-weight: normal; line-height: 1.45; white-space: normal; text-align: left; }
@@ -40,22 +55,35 @@ th { background: #f5f5f5; }
 .char-config { display: flex; gap: 24px; align-items: flex-start; margin: 12px 0; flex-wrap: wrap; }
 .char-left { display: flex; flex-direction: column; gap: 8px; }
 .char-image { max-width: 280px; max-height: 360px; object-fit: contain; }
+.weapon-type-tag { font-size: 0.85rem; color: #555; }
 .char-right { display: flex; flex-direction: column; gap: 0; min-width: 240px; }
 .setting { padding: 8px 0; }
 .setting + .setting { border-top: 1px solid #ddd; }
 .setting-label { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; }
 .setting-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.echo-set-item { display: inline-flex; gap: 2px; align-items: center; }
+.echo-set-list { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.echo-set-item { display: flex; gap: 4px; align-items: center; }
+.echo-set-add { width: 28px; padding: 4px 0; font-weight: bold; cursor: pointer; }
 
 /* 커스텀 드롭다운 */
-.dropdown { position: relative; display: inline-block; width: 220px; }
+.dropdown { position: relative; display: inline-block; min-width: 120px; }
+.char-right .dropdown { width: 220px; } /* 세팅 패널은 폭 고정(라벨 길이에 무관) */
+.dropdown.dd-narrow { min-width: 96px; }
+.dropdown.dd-grow { flex: 1; min-width: 0; }
 .dropdown-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 10px; background: #fff; color: #222; border: 1px solid #bbb; border-radius: 6px; cursor: pointer; font-size: 0.9rem; text-align: left; }
 .dropdown-trigger:hover { border-color: #2563eb; }
-.dropdown-arrow { color: #888; font-size: 0.7rem; flex: 0 0 auto; }
+.dropdown-trigger:disabled { background: #f1f1f3; color: #888; cursor: default; }
+.dropdown-trigger:disabled:hover { border-color: #bbb; }
+/* 읽기 전용: 드롭다운과 동일 디자인이되 삼각형 없음/비상호작용 */
+.dropdown-trigger.dropdown-readonly { cursor: default; }
+.dropdown-trigger.dropdown-readonly:hover { border-color: #bbb; }
+.dropdown-arrow { color: #555; font-size: 1.05rem; line-height: 1; flex: 0 0 auto; }
 .dropdown-menu { position: absolute; left: 0; top: 105%; z-index: 20; min-width: 100%; width: max-content; max-width: 340px; max-height: 320px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #bbb; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
 .dropdown-option { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 4px; cursor: pointer; }
 .dropdown-option:hover { background: #eef2ff; }
 .dropdown-option.selected { background: #2563eb; color: #fff; }
+.dropdown-option.disabled { color: #bbb; cursor: not-allowed; }
+.dropdown-option.disabled:hover { background: transparent; }
 .dropdown-item { display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0; }
 .dropdown-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dropdown-img { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; flex: 0 0 auto; }
@@ -69,4 +97,19 @@ th { background: #f5f5f5; }
 .echo-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: bold; }
 .sub-row { display: flex; gap: 8px; margin: 6px 0; align-items: center; }
 .cmp-result { font-weight: bold; margin: 8px 0; }
+/* 기본(좁은 화면): 세로 스택 + 아래 화살표 */
+.swap-cols { display: flex; flex-direction: column; gap: 8px; align-items: stretch; margin: 8px 0; max-width: 720px; }
+.swap-echo { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; }
+.swap-echo-title { font-weight: bold; margin-bottom: 6px; }
+.swap-arrow { align-self: center; font-size: 1.6rem; color: #555; line-height: 1; }
+.swap-arrow .arrow-h { display: none; }
+/* 넓은 화면: 가로 배치 + 오른쪽 화살표 */
+@media (min-width: 600px) {
+  .swap-cols { flex-direction: row; align-items: stretch; }
+  .swap-echo { flex: 1; }
+  .swap-arrow .arrow-h { display: inline; }
+  .swap-arrow .arrow-v { display: none; }
+}
+.swap-results { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+.swap-results .swap-res-lbl { display: inline-block; min-width: 96px; color: #555; font-size: 0.9rem; }
 @media (max-width: 720px) { .two-col { flex-direction: column; } }
