@@ -42,6 +42,15 @@ export interface Character {
   skill_node: Buff[];
 }
 
+/** 자유 2세트 효과 풀 항목 (1+2+2, 3+2 빌드에서 슬롯별로 선택) */
+export interface TwoPieceEffect {
+  id: string;
+  label: string;                    // 표시명. element_from_character면 캐릭터 원소로 치환
+  type: StatKey;
+  value: number;                    // 소수 (0.10 = 10%)
+  element_from_character?: boolean; // true면 캐릭터 element로 적용/표시(원소피해)
+}
+
 export interface Weapon {
   id: string;
   name: string;

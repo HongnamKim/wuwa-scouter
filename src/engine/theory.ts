@@ -4,6 +4,8 @@ import { buildPerfInput, sumEffectiveSubstats } from './build';
 import { computePerf } from './perf';
 import { COST_LAYOUTS, MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
 import { hasEnergyConversion } from './mechanisms';
+import { loadTwoPieceEffects } from './loadData';
+import { freeTwoPieceSlots } from './echoSlots';
 
 // 크크작 시 평균적으로 따라오는 공명효율(%). 30만건 시뮬레이션 평균(약 1.37줄 ≈ 13.1%).
 // ER 전환형 캐릭터의 크크작 분모에만 반영한다.
@@ -223,10 +225,13 @@ function rows(entries: [string, number][]): RecoRow[] {
 
 /** 43311: 4코 메인 그룹 + 3코 조합 그룹. 44111: 4코 조합 그룹. */
 export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
+  // 메인(3코/4코) 추천의 변수는 메인 옵션뿐. 별도로 추천되는 2세트 효과는 입력에서 제외(고정 []).
+  // → 보조 2세트 효과 선택을 바꿔도 메인 조합 추천은 불변.
+  const c: CalcContext = { ...ctx, twoPiecePicks: [] };
+  const layout: Cost[] = COST_LAYOUTS[c.costLayout];
   const groups: RecoGroup[] = [];
 
-  if (ctx.costLayout === '43311') {
+  if (c.costLayout === '43311') {
     // 그룹1: 4코 메인 비교 (3코 속속·1코 공% 고정)
     const g1: [string, MainPrimaryPick[]][] = (['critical_damage', 'critical_rate', 'attack_percent'] as StatKey[])
       .map((t4) => [
@@ -235,16 +240,86 @@ export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
       ]);
     groups.push({
       label: '4코 메인',
-      theory: rows(g1.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
-      kkjak: rows(g1.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub(ctx))])),
+      theory: rows(g1.map(([n, p]) => [n, bestSubAllocationPerf(c, p)])),
+      kkjak: rows(g1.map(([n, p]) => [n, perfWithMain(c, p, kkjakSub(c))])),
     });
     // 그룹2: 3코 조합 비교 (ER 전환형은 공효 모드 포함)
-    groups.push(modeGroup({ ctx, label: '3코 조합' }));
+    groups.push(modeGroup({ ctx: c, label: '3코 조합' }));
   } else {
     // 44111: 4코 두 슬롯 조합 비교 (1코 공% 고정)
-    groups.push(modeGroup({ ctx, label: '4코 조합' }));
+    groups.push(modeGroup({ ctx: c, label: '4코 조합' }));
   }
   return groups;
+}
+
+// ===== 자유 2세트 효과 (1+2+2, 3+2) 최적 조합 =====
+
+/** 선택한 화음 세트에서 파생된 자유 슬롯 수만큼 풀에서 중복 허용 멀티셋(조합) 전수 생성. id 배열 목록 */
+function twoPieceCombos(ctx: CalcContext): string[][] {
+  const n = freeTwoPieceSlots(ctx.echoSets);
+  if (!n || n <= 0) return [];
+  const pool = loadTwoPieceEffects();
+  const out: string[][] = [];
+  const rec = (start: number, acc: string[]) => {
+    if (acc.length === n) { out.push([...acc]); return; }
+    for (let i = start; i < pool.length; i++) rec(i, [...acc, pool[i].id]);
+  };
+  rec(0, []);
+  return out;
+}
+
+/** 조합의 표시 라벨 (원소피해는 캐릭터 원소명으로 치환). 예: "응결+공격" */
+function twoPieceComboLabel(ctx: CalcContext, combo: string[]): string {
+  const pool = loadTwoPieceEffects();
+  return combo
+    .map((id) => {
+      const e = pool.find((x) => x.id === id)!;
+      return e.element_from_character ? ctx.character.element : e.label;
+    })
+    .join('+');
+}
+
+/** 통합 성능을 최대화하는 자유 2세트 효과 조합(풀 id 배열). 자유 슬롯 0이면 빈 배열.
+ * 변수는 2세트 효과뿐 — 나머지(사용자가 선택한 버프/돌파/무기 등)는 현재 ctx 그대로 사용. */
+export function optimalTwoPiecePicks(ctx: CalcContext): string[] {
+  const combos = twoPieceCombos(ctx);
+  if (!combos.length) return [];
+  let best = combos[0];
+  let bestPerf = -Infinity;
+  for (const c of combos) {
+    const p = computePerf(buildPerfInput({ ...ctx, twoPiecePicks: c }));
+    if (p > bestPerf) { bestPerf = p; best = c; }
+  }
+  return best;
+}
+
+/** 자유 2세트 효과 조합별 상대 성능 추천 행 (현재 빌드 기준, 최고 ★). 자유 슬롯 0이면 빈 배열 */
+export function twoPieceRecommendation(ctx: CalcContext): RecoRow[] {
+  const combos = twoPieceCombos(ctx);
+  if (!combos.length) return [];
+  const entries: [string, number][] = combos.map((c) =>
+    [twoPieceComboLabel(ctx, c), computePerf(buildPerfInput({ ...ctx, twoPiecePicks: c }))]);
+  return rows(entries);
+}
+
+/**
+ * 자유 2세트 효과 조합별 추천을 최고점/크크작 기준으로 분리.
+ * 최고점 = 각 조합에서 이론 최고 빌드, 크크작 = 각 조합에서 크크작 기준 빌드(최적 모드). 슬롯 0이면 null.
+ */
+export function twoPieceRecommendationGroups(ctx: CalcContext): { theory: RecoRow[]; kkjak: RecoRow[] } | null {
+  const combos = twoPieceCombos(ctx);
+  if (!combos.length) return null;
+  // 변수는 2세트 효과뿐: 조합별로 twoPiecePicks만 바꿔 평가(나머지는 현재 ctx 고정).
+  // 2세트 선택 자체는 입력이 아니므로(조합별 override) 현재 선택과 무관. 크크작은 조합별 자체 최적 모드.
+  const theory: [string, number][] = combos.map((c) => {
+    const cctx = { ...ctx, twoPiecePicks: c };
+    return [twoPieceComboLabel(ctx, c), theoryBest(cctx).perf];
+  });
+  const kkjak: [string, number][] = combos.map((c) => {
+    const cctx = { ...ctx, twoPiecePicks: c };
+    return [twoPieceComboLabel(ctx, c), kkjakPerf(cctx, optimalThreeCoModeKkjak(cctx))];
+  });
+  return { theory: rows(theory), kkjak: rows(kkjak) };
 }
 
 export function compareSubstats(

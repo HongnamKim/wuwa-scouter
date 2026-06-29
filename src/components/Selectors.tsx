@@ -1,13 +1,13 @@
 import type { AppState } from '../state/store';
 import { pickMainEcho, combinedMainEchoes, defaultMainFor } from '../state/store';
-import { loadCharacters, loadWeapons, loadEchoSets, getWeapon, getEchoSet } from '../engine/loadData';
+import { loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
+import { freeTwoPieceSlots } from '../engine/echoSlots';
+import { optimalTwoPiecePicks } from '../engine/theory';
 import type { CostLayout, WeaponType } from '../types/domain';
 import type { EchoSet } from '../types/data';
 import { Dropdown, DropdownOption } from './Dropdown';
 
-const MAX_SETS = 3;
-
-const WEAPON_TYPE_LABEL: Record<WeaponType, string> = {
+export const WEAPON_TYPE_LABEL: Record<WeaponType, string> = {
   broad_blade: '대검',
   sword: '직검',
   pistols: '권총',
@@ -18,22 +18,23 @@ const WEAPON_TYPE_LABEL: Record<WeaponType, string> = {
 interface Props {
   state: AppState;
   setState: (s: AppState) => void;
-  onRequestCharacterChange: (id: string) => void;
 }
 
-export function Selectors({ state, setState, onRequestCharacterChange }: Props) {
-  const characters = loadCharacters();
+export function Selectors({ state, setState }: Props) {
   const weapons = loadWeapons();
   const allSets = loadEchoSets();
   const char = state.character;
 
-  // 에코 세트 변경 시, 현재 메인 에코가 합쳐진 목록에 없으면 자동 재선택
+  // 에코 세트 변경 시: 자유 슬롯 모드(파생 슬롯>0)면 단일 주 세트로 정리,
+  // 메인 에코 재선택, 자유 2세트 효과를 새 슬롯 수에 맞춰 최적 조합으로 재설정
   const applyEchoSets = (echoSets: EchoSet[]) => {
-    const combined = combinedMainEchoes(echoSets);
+    const sets = freeTwoPieceSlots(echoSets) > 0 ? [echoSets[0]] : echoSets;
+    const combined = combinedMainEchoes(sets);
     const mainEcho = combined.some((e) => e.id === state.mainEcho.id)
       ? state.mainEcho
-      : pickMainEcho(echoSets, char);
-    setState({ ...state, echoSets, mainEcho });
+      : pickMainEcho(sets, char);
+    const next = { ...state, echoSets: sets, mainEcho };
+    setState({ ...next, twoPiecePicks: optimalTwoPiecePicks(next) });
   };
 
   const weaponOptions: DropdownOption[] = char.recommended_weapons.map((id) => {
@@ -50,16 +51,23 @@ export function Selectors({ state, setState, onRequestCharacterChange }: Props) 
   const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets), char.recommended_main_echo)
     .map((m) => ({ value: m.id, label: (char.recommended_main_echo.includes(m.id) ? '★ ' : '') + m.name, image: `/echoes/${m.id}.png` }));
   const costOptions: DropdownOption[] = [{ value: '43311', label: '43311' }, { value: '44111', label: '44111' }];
+  // 자유 2세트 효과 풀 (원소피해는 캐릭터 원소명으로 표시)
+  const twoPieceOptions: DropdownOption[] = loadTwoPieceEffects().map((e) => ({
+    value: e.id,
+    label: (e.element_from_character ? `${char.element}피해` : e.label) + ` +${Math.round(e.value * 100)}%`,
+  }));
+  // 자유 2세트 슬롯 수는 선택한 화음 세트의 최대 set_pieces에서 동적으로 파생
+  const twoPieceSlots = freeTwoPieceSlots(state.echoSets);
+  const twoPiecePicks = state.twoPiecePicks ?? [];
+  const setTwoPiece = (i: number, id: string) => {
+    const picks = Array.from({ length: twoPieceSlots }, (_, k) => twoPiecePicks[k] ?? twoPieceOptions[0].value);
+    picks[i] = id;
+    setState({ ...state, twoPiecePicks: picks });
+  };
 
   return (
     <div className="char-config">
       <div className="char-left">
-        <label>캐릭터:
-          <Dropdown value={char.id}
-            options={characters.map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.png` }))}
-            onChange={onRequestCharacterChange} />
-        </label>
-        <div className="weapon-type-tag">무기 타입: {WEAPON_TYPE_LABEL[char.weapon_type]}</div>
         <img className="char-image" src={`/characters/${char.id}.png`} alt={char.name}
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
       </div>
@@ -99,22 +107,24 @@ export function Selectors({ state, setState, onRequestCharacterChange }: Props) 
             {state.echoSets.map((s, i) => (
               <div key={i} className="echo-set-item">
                 <Dropdown value={s.id}
-                  options={setOptions.map((o) => ({ ...o, disabled: state.echoSets.some((x, j) => j !== i && x.id === o.value) }))}
+                  options={setOptions}
                   onChange={(id) => applyEchoSets(state.echoSets.map((x, idx) => idx === i ? getEchoSet(id, allSets) : x))} />
-                {state.echoSets.length > 1 && (
-                  <button onClick={() => applyEchoSets(state.echoSets.filter((_, idx) => idx !== i))}>×</button>
-                )}
               </div>
             ))}
-            {state.echoSets.length < MAX_SETS
-              && allSets.some((opt) => !state.echoSets.some((s) => s.id === opt.id)) && (
-              <button className="echo-set-add" onClick={() => {
-                const add = allSets.find((opt) => !state.echoSets.some((s) => s.id === opt.id))!;
-                applyEchoSets([...state.echoSets, add]);
-              }}>+</button>
-            )}
           </div>
         </div>
+
+        {twoPieceSlots > 0 && (
+          <div className="setting">
+            <div className="setting-label">보조 2세트 효과 <span className="muted">(×{twoPieceSlots})</span></div>
+            <div className="two-piece-list">
+              {Array.from({ length: twoPieceSlots }).map((_, i) => (
+                <Dropdown key={i} value={twoPiecePicks[i] ?? twoPieceOptions[0].value}
+                  options={twoPieceOptions} onChange={(id) => setTwoPiece(i, id)} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="setting">
           <div className="setting-label">메인 에코</div>

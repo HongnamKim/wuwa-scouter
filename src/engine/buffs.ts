@@ -1,6 +1,7 @@
 import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import type { CalcContext } from './context';
+import { loadTwoPieceEffects } from './loadData';
 
 export interface BuffTotals {
   critical_rate: number;
@@ -59,11 +60,20 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   // 무기 재련(공진 1~5): 버프량은 weapons.json의 refinement_values[공진-1] 데이터에서 조회 (없으면 기본 value)
   const ref = ctx.refinementLevel ?? 1;
   const weaponBuffs: Buff[] = ctx.weapon.buffs.map((b) => ({ ...b, value: b.refinement_values?.[ref - 1] ?? b.value }));
+  // 자유 2세트 효과(원소피해/공격력 등): 선택 id를 버프로 환산. 같은 id 2회 선택 시 2배(예: 회절+회절)
+  const pool = loadTwoPieceEffects();
+  const twoPieceBuffs: Buff[] = (ctx.twoPiecePicks ?? [])
+    .map((id): Buff | null => {
+      const e = pool.find((x) => x.id === id);
+      return e ? { type: e.type, value: e.value, always: true, element: e.element_from_character ? ctx.character.element : undefined } : null;
+    })
+    .filter((b): b is Buff => !!b);
   const dataBuffs: Buff[] = [
     ...ctx.character.skill_node,
     ...ctx.mainEcho.buffs,
     ...weaponBuffs,
     ...uniqueSets.flatMap((s) => s.buffs),
+    ...twoPieceBuffs,
   ];
   const manualBuffs: Buff[] = ctx.manualBuffs
     .filter((m) => m.type && m.value != null && m.enabled !== false)

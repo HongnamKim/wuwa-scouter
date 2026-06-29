@@ -13,20 +13,24 @@ const BUFF_TYPES: { key: StatKey; label: string }[] = [
 interface Props { state: AppState; setState: (s: AppState) => void; }
 
 export function BuffPanel({ state, setState }: Props) {
-  // 조건부 토글 목록(상시 제외)을 출처별로 그룹핑 (중복 세트는 한 번만)
+  // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
+  // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
-  const condGroups: { source: string; buffs: Buff[] }[] = [
-    { source: '고유 스킬', buffs: state.character.skill_node },
-    { source: '무기', buffs: state.weapon.buffs },
-    ...uniqueSets.map((s) => ({ source: s.name, buffs: s.buffs })),
-    { source: '메인 에코', buffs: state.mainEcho.buffs },
+  type Item = { b: Buff; passive: boolean };
+  const condGroups: { source: string; items: Item[] }[] = [
+    { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false },
+    { source: '무기', buffs: state.weapon.buffs, withPassive: true },
+    ...uniqueSets.map((s) => ({ source: s.name, buffs: s.buffs, withPassive: true })),
+    { source: '메인 에코', buffs: state.mainEcho.buffs, withPassive: true },
   ]
     .map((g) => ({
       source: g.source,
-      // 조건부(상시 제외)만 노출. 돌파 미달 버프도 보여주되 아래에서 비활성화 처리
-      buffs: g.buffs.filter((b) => !b.always && b.id),
+      // 조건부(id 보유) + (세트/메인에코면) 상시 패시브. 돌파 미달 버프도 보여주되 아래에서 비활성
+      items: g.buffs
+        .filter((b) => (g.withPassive ? (!!b.id || !!b.always) : (!b.always && !!b.id)))
+        .map((b): Item => ({ b, passive: !!b.always })),
     }))
-    .filter((g) => g.buffs.length > 0);
+    .filter((g) => g.items.length > 0);
 
   // 돌파 조건 미달 → 잠금(체크 불가)
   const isLocked = (b: Buff) => b.min_ascension != null && (state.ascensionLevel ?? 0) < b.min_ascension;
@@ -40,8 +44,32 @@ export function BuffPanel({ state, setState }: Props) {
     return b.label.replace('{v}', text);
   };
 
+  // 라벨이 없는 패시브는 유형+수치로 표기(원소피해는 원소명으로)
+  const STAT_LABEL: Partial<Record<StatKey, string>> = {
+    critical_rate: '크리티컬', critical_damage: '크리티컬 피해', attack_percent: '공격력',
+    hp_percent: 'HP', defense_percent: '방어력',
+    element_damage_bonus: '속성피해', element_damage_amplify: '속성피해', all_damage_amplify: '전체 피해',
+    basic_attack_bonus: '일반공격 피해', heavy_attack_bonus: '강공격 피해', basic_attack_amplify: '일반공격 피해', heavy_attack_amplify: '강공격 피해',
+    resonance_skill_bonus: '공명스킬 피해', resonance_liberation_bonus: '공명해방 피해',
+    resonance_skill_amplify: '공명스킬 피해', resonance_liberation_amplify: '공명해방 피해',
+    echo_skill_bonus: '에코 피해', echo_skill_amplify: '에코 피해', energy_regen: '공명 효율',
+    defense_ignore: '방어력 무시', element_resistance_ignore: '속성 저항 무시',
+    flat_attack: '공격력(깡공)', flat_hp: 'HP(깡체력)', flat_defense: '방어력(깡방)',
+  };
+  const describe = (b: Buff) => {
+    if (b.label) return labelText(b);
+    // 무기 패시브는 공진(refinement_values)에 따라 값이 변함
+    const raw = b.refinement_values ? (b.refinement_values[ref - 1] ?? b.value) : b.value;
+    const v = b.type.startsWith('flat') ? String(raw) : `${+(raw * 100).toFixed(1)}%`;
+    const name = ((b.type === 'element_damage_bonus' || b.type === 'element_damage_amplify') && b.element)
+      ? `${b.element}피해` : (STAT_LABEL[b.type] ?? b.type);
+    // 피해 보너스 = 증가, 피해 증폭 = 부스트 (명확히 구분)
+    const suffix = b.type.endsWith('_amplify') ? ' 부스트' : (b.type.endsWith('_bonus') ? ' 증가' : '');
+    return `${name} +${v}${suffix}`;
+  };
+
   // 전체 토글: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off
-  const condIds = condGroups.flatMap((g) => g.buffs.filter((b) => !isLocked(b)).map((b) => b.id!));
+  const condIds = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b.id!));
   const toggleCount = condIds.length + state.manualBuffs.length;
   const allOn = toggleCount > 0
     && condIds.every((id) => state.conditionalToggles[id] !== false)
@@ -68,13 +96,14 @@ export function BuffPanel({ state, setState }: Props) {
       {condGroups.map((g) => (
         <div key={g.source}>
           <div className="muted" style={{ margin: '6px 0 2px', fontWeight: 'bold' }}>{g.source}</div>
-          {g.buffs.map((b) => {
-            const locked = isLocked(b);
+          {g.items.map(({ b, passive }, idx) => {
+            const locked = !passive && isLocked(b);
+            const checked = passive ? true : (!locked && (state.conditionalToggles[b.id!] ?? true));
             return (
-            <label key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 4, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: locked ? 'not-allowed' : undefined }}>
-              <input type="checkbox" disabled={locked} checked={!locked && (state.conditionalToggles[b.id!] ?? true)}
-                onChange={(e) => setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } })} />
-              <span>{labelText(b)}{locked ? ` (돌파 ${b.min_ascension} 필요)` : ''}</span>
+            <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
+              <input type="checkbox" disabled={passive || locked} checked={checked}
+                onChange={(e) => { if (passive) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
+              <span>{describe(b)}{locked ? ` (돌파 ${b.min_ascension} 필요)` : passive ? ' (상시)' : ''}</span>
             </label>
             );
           })}

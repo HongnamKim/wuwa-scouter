@@ -1,9 +1,10 @@
-import type { Buff, Character, Weapon, EchoSet } from '../types/data';
+import type { Buff, Character, Weapon, EchoSet, TwoPieceEffect } from '../types/data';
 import { STAT_KEYS, ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
 import { MECHANISM_KEYS } from './mechanisms';
 import charactersRaw from '../data/characters.json';
 import weaponsRaw from '../data/weapons.json';
 import echoSetsRaw from '../data/echo-sets.json';
+import twoPieceRaw from '../data/two-piece-effects.json';
 
 export function validateBuff(b: any): Buff {
   if (!STAT_KEYS.includes(b.type)) throw new Error(`unknown buff type: ${b.type}`);
@@ -50,6 +51,20 @@ export function loadEchoSets(): EchoSet[] {
     buffs: validateBuffs(s.buffs),
     main_slot_echoes: (s.main_slot_echoes ?? []).map((e: any) => ({ ...e, buffs: validateBuffs(e.buffs) })),
   })) as EchoSet[];
+}
+
+// 자유 2세트 효과 풀 (메모이즈: aggregateBuffs 핫패스에서 반복 호출됨)
+let _twoPiece: TwoPieceEffect[] | null = null;
+export function loadTwoPieceEffects(): TwoPieceEffect[] {
+  if (_twoPiece) return _twoPiece;
+  _twoPiece = (twoPieceRaw as any[]).map((e) => {
+    if (!STAT_KEYS.includes(e.type)) throw new Error(`unknown two-piece type: ${e.type}`);
+    if (typeof e.id !== 'string' || typeof e.value !== 'number') {
+      throw new Error(`invalid two-piece effect: ${JSON.stringify(e)}`);
+    }
+    return e as TwoPieceEffect;
+  });
+  return _twoPiece;
 }
 
 export function getWeapon(id: string, weapons: Weapon[]): Weapon {

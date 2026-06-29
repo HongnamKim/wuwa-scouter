@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
-import { emptySubstats } from '../state/store';
-import { recommendedMainPicks } from '../engine/theory';
 import { SUBSTAT_STAGES } from '../engine/constants';
 import { sumEffectiveSubstats } from '../engine/build';
 import { Dropdown } from './Dropdown';
@@ -16,6 +14,16 @@ const SUB_LABEL: Partial<Record<StatKey, string>> = {
   resonance_skill_bonus: '공명스킬 피해%', resonance_liberation_bonus: '공명해방 피해%',
 };
 const OPTION_KEYS = Object.keys(SUB_LABEL) as StatKey[];
+
+// 유효옵 합 표의 짧은 헤더
+const SHORT_LABEL: Partial<Record<StatKey, string>> = {
+  critical_rate: '크리%', critical_damage: '크피%', attack_percent: '공%',
+  hp_percent: 'HP%', defense_percent: '방%',
+  element_damage_bonus: '속성%', energy_regen: '공효%',
+  basic_attack_bonus: '일반%', heavy_attack_bonus: '강공%',
+  resonance_skill_bonus: '스킬%', resonance_liberation_bonus: '해방%',
+  flat_attack: '깡공', flat_hp: '깡체', flat_defense: '깡방',
+};
 
 interface Props { state: AppState; setState: (s: AppState) => void; }
 
@@ -33,10 +41,14 @@ export function SubstatInput({ state, setState }: Props) {
   const sum = sumEffectiveSubstats(state);
 
   // 옵션 순서: 캐릭터 유효옵을 상단(★), 그 외는 뒤에
+  // 순서: 유효옵 → 공명 효율(딜 무관이나 사이클상 중요) → 나머지.
+  // 공명 효율이 유효옵에 포함되면 유효옵 순서를 그대로 따른다.
   const eff = state.character.effective_substats;
+  const midKeys: StatKey[] = eff.includes('energy_regen') ? [] : ['energy_regen'];
   const orderedKeys: StatKey[] = [
     ...eff.filter((k) => SUB_LABEL[k]),
-    ...OPTION_KEYS.filter((k) => !eff.includes(k)),
+    ...midKeys.filter((k) => SUB_LABEL[k]),
+    ...OPTION_KEYS.filter((k) => !eff.includes(k) && k !== 'energy_regen'),
   ];
   const optionList = [
     { value: '', label: '옵션 선택' },
@@ -69,22 +81,12 @@ export function SubstatInput({ state, setState }: Props) {
         );
       })}
       <table style={{ marginTop: 12 }}>
-        <thead><tr><th>유효옵 합</th><th>크리%</th><th>크피%</th><th>공%</th><th>해방%</th><th>깡공</th></tr></thead>
+        <thead><tr><th>유효옵 합</th>{eff.map((k) => <th key={k}>{SHORT_LABEL[k] ?? SUB_LABEL[k] ?? k}</th>)}</tr></thead>
         <tbody><tr>
           <td></td>
-          <td>{(sum.critical_rate ?? 0).toFixed(1)}</td>
-          <td>{(sum.critical_damage ?? 0).toFixed(1)}</td>
-          <td>{(sum.attack_percent ?? 0).toFixed(1)}</td>
-          <td>{(sum.resonance_liberation_bonus ?? 0).toFixed(1)}</td>
-          <td>{(sum.flat_attack ?? 0).toFixed(0)}</td>
+          {eff.map((k) => <td key={k}>{(sum[k] ?? 0).toFixed(k.startsWith('flat') ? 0 : 1)}</td>)}
         </tr></tbody>
       </table>
-      <button
-        style={{ marginTop: 8 }}
-        onClick={() => setState({ ...state, mainPrimary: recommendedMainPicks(state), substats: emptySubstats() })}
-      >
-        입력 초기화
-      </button>
     </div>
   );
 }

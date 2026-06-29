@@ -24,6 +24,7 @@ export interface CalcContext {
   echoSets: EchoSet[]; // 동시에 여러 세트 착용 가능(최대 3)
   costLayout: CostLayout;
   mainPrimary: MainPrimaryPick[]; // 슬롯 순서대로
+  twoPiecePicks?: string[];       // 자유 2세트 효과 선택(풀 id). 길이 = 선택 세트에서 파생된 자유 슬롯 수. 0이면 빈 배열/미지정
   substats: SubstatLine[][];      // 5 에코 × 5 줄
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];

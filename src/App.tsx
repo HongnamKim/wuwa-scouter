@@ -9,6 +9,7 @@ import {
   buildStateForCharacter, defaultStateForCharacter, loadCharacterState,
 } from './state/store';
 import { loadCharacters } from './engine/loadData';
+import { freeTwoPieceSlots } from './engine/echoSlots';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
@@ -18,6 +19,7 @@ import { CharacterSpec } from './components/CharacterSpec';
 import { BuffPanel } from './components/BuffPanel';
 import { Scores } from './components/Scores';
 import { MainReco } from './components/MainReco';
+import { TwoPieceReco } from './components/TwoPieceReco';
 import { WeaponCompare } from './components/WeaponCompare';
 import { SubstatSwapCompare } from './components/SubstatSwapCompare';
 import { Dropdown } from './components/Dropdown';
@@ -80,12 +82,25 @@ function AnalysisScreen({ character }: { character: Character }) {
 
   return (
     <>
+      <div className="char-select-row">
+        <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
+          <Dropdown value={character.id}
+            options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.png` }))}
+            onChange={(cid) => navigate(`/analysis/${cid}`)} />
+        </label>
+      </div>
+
       <div className="top-row">
-        <Selectors state={state} setState={setState}
-          onRequestCharacterChange={(cid) => navigate(`/analysis/${cid}`)} />
+        <Selectors state={state} setState={setState} />
         <div className="top-reco">
           <h2>메인 조합 추천</h2>
           <MainReco state={state} />
+          {freeTwoPieceSlots(state.echoSets) > 0 && (
+            <>
+              <h3 style={{ marginTop: 12 }}>보조 2세트 효과 추천</h3>
+              <TwoPieceReco state={state} />
+            </>
+          )}
         </div>
       </div>
 
@@ -98,6 +113,10 @@ function AnalysisScreen({ character }: { character: Character }) {
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="save-btn" disabled={!dirty} onClick={() => { saveCharacterState(state); rerender(); }}>
             {dirty ? '저장하기' : '저장됨'}
+          </button>
+          <button className="reset-btn" disabled={!dirty}
+            onClick={() => setState(buildStateForCharacter(character))}>
+            초기화
           </button>
           <button className="delete-btn" disabled={!hasSavedState(character.id)} onClick={() => setDeleting(true)}>삭제</button>
         </div>
@@ -115,6 +134,8 @@ function AnalysisScreen({ character }: { character: Character }) {
           <SubstatInput state={state} setState={setState} />
         </div>
       </div>
+      {/* 맨 아래 부옵 드롭다운이 한 화면에 펼쳐질 수 있도록 넉넉한 하단 여백 */}
+      <div aria-hidden style={{ height: '35vh' }} />
 
       {blocker.state === 'blocked' && (
         <ConfirmModal

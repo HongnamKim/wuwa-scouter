@@ -1,7 +1,9 @@
 import type { Character, EchoSet, MainSlotEcho } from '../types/data';
 import type { CalcContext, SubstatLine, MainPrimaryPick, ManualBuff } from '../engine/context';
-import { loadCharacters, loadWeapons, loadEchoSets, getWeapon, getEchoSet } from '../engine/loadData';
+import { loadCharacters, loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
 import { SUBSTAT_STAGES, COST_LAYOUTS, MAIN_PRIMARY } from '../engine/constants';
+import { optimalTwoPiecePicks } from '../engine/theory';
+import { freeTwoPieceSlots } from '../engine/echoSlots';
 import type { StatKey, CostLayout } from '../types/domain';
 
 export type AppState = CalcContext;
@@ -83,13 +85,14 @@ export function defaultStateForCharacter(character: Character): AppState {
   [...character.skill_node, ...mainEcho.buffs, ...weapon.buffs, ...echoSets.flatMap((s) => s.buffs)]
     .forEach((b) => { if (!b.always && b.id) conditionalToggles[b.id] = true; });
 
-  return {
+  const state: AppState = {
     character,
     weapon,
     mainEcho,
     echoSets,
     costLayout: '43311',
     mainPrimary: defaultMainFor('43311'),
+    twoPiecePicks: [],
     substats: loadSampleSubstats(character),
     conditionalToggles,
     manualBuffs: [],
@@ -97,6 +100,8 @@ export function defaultStateForCharacter(character: Character): AppState {
     ascensionLevel: 0,
     refinementLevel: 1,
   };
+  // 자유 2세트 효과 기본값 = 최적 조합
+  return { ...state, twoPiecePicks: optimalTwoPiecePicks(state) };
 }
 
 // ===== 캐릭터별 저장/불러오기 (localStorage; 백엔드 도입 시 교체) =====
@@ -109,6 +114,7 @@ interface SavedState {
   mainEchoId: string;
   costLayout: CostLayout;
   mainPrimary: MainPrimaryPick[];
+  twoPiecePicks?: string[];
   substats: SubstatLine[][];
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
@@ -124,6 +130,7 @@ function serializeState(state: AppState): SavedState {
     mainEchoId: state.mainEcho.id,
     costLayout: state.costLayout,
     mainPrimary: state.mainPrimary,
+    twoPiecePicks: state.twoPiecePicks ?? [],
     substats: state.substats,
     conditionalToggles: state.conditionalToggles,
     manualBuffs: state.manualBuffs,
@@ -174,13 +181,14 @@ export function loadCharacterState(character: Character): AppState | null {
     const safeSets = echoSets.length ? echoSets : [getEchoSet(character.recommended_echo_sets[0], sets)];
     const combined = combinedMainEchoes(safeSets);
     const mainEcho = combined.find((m) => m.id === s.mainEchoId) ?? pickMainEcho(safeSets, character);
-    return {
+    const state: AppState = {
       character,
       weapon,
       mainEcho,
       echoSets: safeSets,
       costLayout: s.costLayout ?? '43311',
       mainPrimary: s.mainPrimary ?? defaultMainFor(s.costLayout ?? '43311'),
+      twoPiecePicks: [],
       substats: s.substats ?? emptySubstats(),
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],
@@ -188,6 +196,13 @@ export function loadCharacterState(character: Character): AppState | null {
       ascensionLevel: s.ascensionLevel ?? 0,
       refinementLevel: Math.max(1, Math.min(5, s.refinementLevel ?? 1)),
     };
+    // 자유 2세트 효과: 저장값이 유효하면 사용, 아니면(구버전/누락) 최적 조합으로 보정
+    const pool = loadTwoPieceEffects();
+    const saved = s.twoPiecePicks;
+    const slots = freeTwoPieceSlots(safeSets);
+    const valid = Array.isArray(saved) && saved.length === slots
+      && saved.every((id) => pool.some((p) => p.id === id));
+    return { ...state, twoPiecePicks: valid ? saved! : optimalTwoPiecePicks(state) };
   } catch {
     return null;
   }

@@ -1,0 +1,4 @@
+[
+  { "id": "element_dmg", "label": "원소피해", "type": "element_damage_bonus", "value": 0.10, "element_from_character": true },
+  { "id": "attack", "label": "공격력", "type": "attack_percent", "value": 0.10 }
+]

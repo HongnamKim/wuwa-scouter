@@ -17,12 +17,13 @@ function ctxFor(id: string, ascension: number, toggles: Record<string, boolean>)
 
 describe('스택형 자체 버프 (데이터 + 돌파 조건)', () => {
   it('히유키 눈의 침식: 1스택 +40%, 6돌 2스택 +80%, 6돌 미만은 2스택 게이트', () => {
-    const on = { hiyuki_snowrust_1: true, hiyuki_snowrust_2: true };
+    // 6돌 독심/납도 크피(+500%)는 이 테스트 범위 밖이라 토글로 제외
+    const on = { hiyuki_snowrust_1: true, hiyuki_snowrust_2: true, hiyuki_chain6_critdmg: false };
     expect(aggregateBuffs(ctxFor('hiyuki', 0, on)).critical_damage).toBeCloseTo(0.40, 10); // 2스택 게이트(6돌 미만)
     expect(aggregateBuffs(ctxFor('hiyuki', 3, on)).critical_damage).toBeCloseTo(0.40, 10);
     expect(aggregateBuffs(ctxFor('hiyuki', 6, on)).critical_damage).toBeCloseTo(0.80, 10); // 6돌 2스택 해금
-    expect(aggregateBuffs(ctxFor('hiyuki', 6, { hiyuki_snowrust_1: true, hiyuki_snowrust_2: false })).critical_damage).toBeCloseTo(0.40, 10);
-    expect(aggregateBuffs(ctxFor('hiyuki', 6, { hiyuki_snowrust_1: false, hiyuki_snowrust_2: false })).critical_damage).toBeCloseTo(0, 10);
+    expect(aggregateBuffs(ctxFor('hiyuki', 6, { hiyuki_snowrust_1: true, hiyuki_snowrust_2: false, hiyuki_chain6_critdmg: false })).critical_damage).toBeCloseTo(0.40, 10);
+    expect(aggregateBuffs(ctxFor('hiyuki', 6, { hiyuki_snowrust_1: false, hiyuki_snowrust_2: false, hiyuki_chain6_critdmg: false })).critical_damage).toBeCloseTo(0, 10);
   });
 
   it('에이메스 별과 별 사이: 스택당 +30% (게이트 없음)', () => {

@@ -10,7 +10,7 @@
     "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
     "damage_bonus_type": "resonance_liberation",
     "energy_regen_mode": "premise",
-    "default_required_energy_regen": 25,
+    "default_required_energy_regen": 125,
     "special_mechanism": null,
     "recommended_echo_sets": ["wishes_of_quiet_snowfall"],
     "recommended_main_echo": ["void_god_echo"],
@@ -19,8 +19,11 @@
     "skill_node": [
       { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
       { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_1", "min_ascension": 0, "label": "눈의 침식 1스택 · 크피 +40% (자력)" },
-      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_2", "min_ascension": 6, "label": "눈의 침식 2스택 · 크피 +40% (6돌)" }
+      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_1", "min_ascension": 0, "label": "눈의 침식 1스택 · 크피 +40%" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "hiyuki_chain4_team", "min_ascension": 4, "label": "공명 스킬/서리의 징벌 발동 시 파티 전체 피해 +20% 증가 (4돌)" },
+      { "type": "critical_damage", "value": 0.40, "always": false, "id": "hiyuki_snowrust_2", "min_ascension": 6, "label": "눈의 침식 2스택 · 크피 +40% (6돌)" },
+      { "type": "critical_damage", "value": 5.00, "always": false, "id": "hiyuki_chain6_critdmg", "min_ascension": 6, "label": "독심/납도 크리티컬 피해 +500% (6돌)" },
+      { "type": "element_damage_amplify", "value": 0.20, "element": "응결", "always": false, "target": "next_character", "note": "반주: 파티(자신 제외) 서리효과 목표 응결피해 +20% 부스트" }
     ]
   },
   {
@@ -34,7 +37,7 @@
     "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
     "damage_bonus_type": "resonance_liberation",
     "energy_regen_mode": "premise",
-    "default_required_energy_regen": 25,
+    "default_required_energy_regen": 125,
     "special_mechanism": null,
     "recommended_echo_sets": ["trailblazing_star"],
     "recommended_main_echo": ["sigillum"],
@@ -44,7 +47,10 @@
       { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
       { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
       { "type": "critical_damage", "value": 0.30, "always": false, "id": "aemeath_chain_1", "min_ascension": 0, "label": "별과 별 사이 1스택 · 크피 +30% (자력)" },
-      { "type": "critical_damage", "value": 0.30, "always": false, "id": "aemeath_chain_2", "min_ascension": 0, "label": "별과 별 사이 2스택 · 크피 +30% (3돌 또는 파티원)" }
+      { "type": "critical_damage", "value": 0.30, "always": false, "id": "aemeath_chain_2", "min_ascension": 0, "label": "별과 별 사이 2스택 · 크피 +30% (3돌 또는 파티원)" },
+      { "type": "resonance_liberation_amplify", "value": 0.25, "always": false, "id": "aemeath_chain3_lib_amp", "min_ascension": 3, "label": "별과 별 사이(대체) · 공명해방(종결) 피해 +25% 부스트 (3돌)" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "aemeath_chain4_team", "min_ascension": 4, "label": "변주/공명스킬 발동 시 파티 전체 속성 피해 +20% 증가 (4돌)" },
+      { "type": "resonance_liberation_bonus", "value": 0.40, "always": false, "id": "aemeath_chain6_lib", "min_ascension": 6, "label": "공명 해방 피해 +40% 증가 (6돌)" }
     ]
   },
   {
@@ -58,7 +64,7 @@
     "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "basic_attack_bonus", "flat_attack"],
     "damage_bonus_type": "basic_attack",
     "energy_regen_mode": "deal_conversion",
-    "default_required_energy_regen": 0,
+    "default_required_energy_regen": 100,
     "special_mechanism": null,
     "recommended_echo_sets": ["wishes_of_quiet_snowfall"],
     "recommended_main_echo": ["glommoth"],
@@ -91,6 +97,136 @@
       { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
       { "type": "element_damage_bonus", "value": 0.48, "always": false, "element": "기류", "id": "skill_blessing_aero", "min_ascension": 0, "label": "함의의 축복: 기류피해 48% (6스택)" },
       { "type": "echo_skill_bonus", "value": 0.48, "always": false, "id": "skill_blessing_echo", "min_ascension": 0, "label": "함의의 축복: 에코피해 48% (6스택)" }
+    ]
+  },
+  {
+    "id": "lynae",
+    "name": "린네",
+    "version": 3.0,
+    "element": "회절",
+    "weapon_type": "pistols",
+    "scale_stat": "attack",
+    "base_attack": 375,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "basic_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "basic_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 130,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["pack_of_neonlight_leap", "rite_of_gilded_revelation"],
+    "recommended_main_echo": ["hyvatia", "twin_nova_nebulous_cannon"],
+    "recommended_weapons": ["spectrum_blaster", "static_mist", "phasic_homogenizer", "solar_flame", "cadenza"],
+    "signature_weapon": "spectrum_blaster",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "element_damage_bonus", "value": 0.25, "element": "회절", "always": false, "id": "lynae_intro_spectro", "min_ascension": 0, "label": "인트로 스킬 · 회절피해 +25% (자력)" },
+      { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "id": "lynae_lib_alldmg", "min_ascension": 0, "label": "공명 해방 · 전체 피해 +24% (파티 전체)" },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "id": "lynae_seq2_amp", "min_ascension": 2, "label": "전체 피해 증폭 +25% (공명 체인 2)" },
+      { "type": "attack_percent", "value": 0.20, "always": false, "id": "lynae_seq4_atk", "min_ascension": 4, "label": "공격력 +20% (공명 체인 4)" }
+    ]
+  },
+  {
+    "id": "lucy",
+    "name": "루시",
+    "version": 3.4,
+    "element": "회절",
+    "weapon_type": "pistols",
+    "scale_stat": "attack",
+    "base_attack": 425,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "heavy_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "heavy_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 130,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["shadow_of_shattered_dreams"],
+    "recommended_main_echo": ["nightmare_adam_smasher"],
+    "recommended_weapons": ["spectral_trigger", "phasic_homogenizer"],
+    "signature_weapon": "spectral_trigger",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "element_damage_bonus", "value": 0.65, "element": "회절", "always": false, "id": "lucy_forte_spectro", "min_ascension": 0, "label": "회절피해 +65% (강화E 사용 후, 8초)" },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "id": "lucy_backdoor_amp", "min_ascension": 0, "label": "네트워크 백도어 · 전체 피해 증폭 +25% (표식 처치 시)" },
+      { "type": "attack_percent", "value": 0.20, "always": false, "id": "lucy_s1_atk", "min_ascension": 1, "label": "변주 등장 시 공격력 +20% (공명 체인 1)" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "lucy_s4_team", "min_ascension": 4, "label": "해킹·이탈 시 전속성피해 +20% (공명 체인 4)" },
+      { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "id": "lucy_s6_heavy", "min_ascension": 6, "label": "해킹·이탈 혹은 해킹·간섭 대상 강공격피해 +40% 부스트 (공명 체인 6)" }
+    ]
+  },
+  {
+    "id": "rebecca",
+    "name": "레베카",
+    "version": 3.4,
+    "element": "전도",
+    "weapon_type": "pistols",
+    "scale_stat": "attack",
+    "base_attack": 400,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "basic_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "basic_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 130,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["shadow_of_shattered_dreams", "moonlit_clouds"],
+    "recommended_main_echo": ["nightmare_adam_smasher", "impermanence_heron"],
+    "recommended_weapons": ["skull_thrasher", "static_mist"],
+    "signature_weapon": "skull_thrasher",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "critical_damage", "value": 0.30, "always": false, "id": "rebecca_huntress", "min_ascension": 0, "label": "「헌트리스」 모드 · 크피 +30% (자력)" },
+      { "type": "defense_ignore", "value": 0.15, "always": false, "id": "rebecca_guts", "min_ascension": 0, "label": "「거츠」 모드 · 방어력 무시 15% (헌트리스와 택1)" },
+      { "type": "attack_percent", "value": 0.20, "always": false, "id": "rebecca_atk_stack", "min_ascension": 0, "label": "강화 강공격 발동 시 공격력 +20% (2스택)" },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "rebecca_liberation_team_atk", "min_ascension": 0, "label": "공명 해방 · 파티 타임! 발동 시 파티 공격력 +20%" }
+    ]
+  },
+  {
+    "id": "denia",
+    "name": "데니아",
+    "version": 3.3,
+    "element": "용융",
+    "weapon_type": "rectifier",
+    "scale_stat": "attack",
+    "base_attack": 425,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_liberation",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 125,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["chromatic_foam", "reel_of_spliced_memories"],
+    "recommended_main_echo": ["reminiscence_denia", "voidwing_moth"],
+    "recommended_weapons": ["forged_dwarf_star", "stringmaster", "augment"],
+    "signature_weapon": "forged_dwarf_star",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "element_damage_bonus", "value": 0.30, "element": "용융", "always": false, "target": "party", "id": "denia_mode_fusion", "min_ascension": 0, "label": "공명 모드·불꽃: 파티 용융피해 +30% 증가" },
+      { "type": "element_damage_bonus", "value": 0.50, "element": "용융", "always": false, "target": "party", "id": "denia_chain2_fusion", "min_ascension": 2, "label": "파티 용융피해 +50% 증가 (공명 체인 2)" },
+      { "type": "element_resistance_ignore", "value": 0.10, "element": "용융", "always": false, "id": "denia_chain2_resignore", "min_ascension": 2, "label": "용융 저항 무시 10% (공명 체인 2, 10스택)" }
+    ]
+  },
+  {
+    "id": "luuk",
+    "name": "루크",
+    "version": 3.1,
+    "element": "회절",
+    "weapon_type": "gauntlets",
+    "scale_stat": "attack",
+    "base_attack": 462,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "basic_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "basic_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 130,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["rite_of_gilded_revelation", "pack_of_neonlight_leap"],
+    "recommended_main_echo": ["twin_nova_nebulous_cannon", "hyvatia"],
+    "recommended_weapons": ["daybreakers_spine", "pulsation_bracer", "blazing_justice"],
+    "signature_weapon": "daybreakers_spine",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.12, "always": true, "min_ascension": 0, "note": "스킬 노드" },
+      { "type": "attack_percent", "value": 0.25, "always": false, "id": "luuk_uncaused_atk", "min_ascension": 0, "label": "「조화 밀집·이탈」 부여/「조화도 파괴」 후 공격력 +25% (자력, 20초)" },
+      { "type": "all_damage_amplify", "value": 0.30, "always": false, "id": "luuk_uncaused_amp", "min_ascension": 0, "label": "「조화 밀집·간섭」 목표 피해 시 전체 피해 +30% 부스트 (자력, 최대)" },
+      { "type": "all_damage_amplify", "value": 0.30, "always": false, "id": "luuk_s2_amp", "min_ascension": 2, "label": "전체 피해 부스트 상한 +30% (공명 체인 2, 합 60%)" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "luuk_s4_team", "min_ascension": 4, "label": "「조화도 파괴」 피해 후 파티 전체 피해 +20% 증가 (공명 체인 4)" }
     ]
   }
 ]
