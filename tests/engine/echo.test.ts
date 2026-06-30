@@ -7,7 +7,8 @@ import type { DamageBonusType } from '../../src/types/domain';
 // 솔스원의 해석(권갑)을 장착한, 피해유형을 바꾼 가상 컨텍스트
 function ctxWith(damageBonusType: DamageBonusType): CalcContext {
   const base = loadCharacters().find((c) => c.id === 'lucilla')!;
-  const character = { ...base, damage_bonus_type: damageBonusType };
+  // 합성 단일유형 캐릭터: 모드 제거 후 damage_bonus_type만 지정
+  const character = { ...base, modes: undefined, damage_bonus_type: damageBonusType };
   const weapon = loadWeapons().find((w) => w.id === 'solsworn_ciphers')!;
   const echoSet = loadEchoSets().find((s) => s.id === 'wishes_of_quiet_snowfall')!;
   return {

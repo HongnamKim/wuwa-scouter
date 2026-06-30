@@ -3,6 +3,7 @@ import type { CalcContext } from './context';
 import type { PerfInput } from './perf';
 import { aggregateBuffs } from './buffs';
 import { mechanismDamageTypeBonus } from './mechanisms';
+import { damageBonusTypeOf, effectiveSubstatsOf } from './mode';
 import {
   BASE_CRIT, BASE_CRIT_DAMAGE, COST_LAYOUTS, MAIN_PRIMARY, MAIN_SECONDARY,
   ENEMY_DEF_RATIO, BASE_ENEMY_RESISTANCE,
@@ -38,7 +39,7 @@ export function computeEnergyRegen(ctx: CalcContext): number {
 /** 유효옵 부옵 합 (% → 그대로 % 단위 숫자) */
 export function sumEffectiveSubstats(ctx: CalcContext): Partial<Record<StatKey, number>> {
   const sum: Partial<Record<StatKey, number>> = {};
-  const eff = new Set(ctx.character.effective_substats);
+  const eff = new Set(effectiveSubstatsOf(ctx));
   for (const echo of ctx.substats) {
     for (const line of echo) {
       if (line.type && line.value != null && eff.has(line.type)) {
@@ -75,9 +76,8 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
   const buffs = aggregateBuffs(ctx);
   const sub = sumEffectiveSubstats(ctx);
   const main = sumMainPrimary(ctx);
-  const dmgTypeBonusKey = ctx.character.damage_bonus_type
-    ? (`${ctx.character.damage_bonus_type}_bonus` as StatKey)
-    : null;
+  const dmgType = damageBonusTypeOf(ctx);
+  const dmgTypeBonusKey = dmgType ? (`${dmgType}_bonus` as StatKey) : null;
 
   const baseAttack = ctx.character.base_attack + ctx.weapon.base_stats.attack;
 
@@ -105,9 +105,11 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
   // 특별 메커니즘(예: 시그리카 공효→에코 전환)으로 얻는 추가 피해유형 보너스
   const mechKey = ctx.character.special_mechanism;
   const mechanismBonus = mechKey ? mechanismDamageTypeBonus(mechKey, computeEnergyRegen(ctx)) : 0;
+  // 피해유형 보너스 배수 버프(곱연산, 예: 레베카 6돌 일반공격 피해보너스 +40% → ×1.4)
+  const dmgTypeFactor = 1 + buffs.damage_type_bonus_factor;
   const increaseBonus =
     buffs.element_bonus + (main.element_damage_bonus ?? 0) +
-    buffs.damage_type_bonus + subDmgTypeBonus + mechanismBonus;
+    (buffs.damage_type_bonus + subDmgTypeBonus) * dmgTypeFactor + mechanismBonus;
 
   // 방무·저무를 딜에 반영 (무기 비교용). 둘 다 0이면 배수 1.
   const defResFactor = defenseResistanceFactor(buffs.defense_ignore, buffs.element_resistance_ignore);

@@ -27,4 +27,12 @@ describe('loadData', () => {
   it('rejects unknown element', () => {
     expect(() => validateBuff({ type: 'element_damage_bonus', value: 0.1, always: true, element: '화염' })).toThrow();
   });
+
+  it('무결성: 모든 스킬노드 버프가 min_ascension(숫자)을 가진다', () => {
+    for (const c of loadCharacters()) {
+      for (const b of c.skill_node) {
+        expect(typeof b.min_ascension, `${c.id} / ${b.label ?? b.note ?? b.type}`).toBe('number');
+      }
+    }
+  });
 });

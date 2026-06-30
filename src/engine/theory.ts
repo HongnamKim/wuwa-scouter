@@ -6,6 +6,7 @@ import { COST_LAYOUTS, MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } 
 import { hasEnergyConversion } from './mechanisms';
 import { loadTwoPieceEffects } from './loadData';
 import { freeTwoPieceSlots } from './echoSlots';
+import { effectiveSubstatsOf } from './mode';
 
 // 크크작 시 평균적으로 따라오는 공명효율(%). 30만건 시뮬레이션 평균(약 1.37줄 ≈ 13.1%).
 // ER 전환형 캐릭터의 크크작 분모에만 반영한다.
@@ -124,9 +125,9 @@ export function energyRegenLines(ctx: CalcContext): number {
 
 export function theoryBest(ctx: CalcContext): TheoryResult {
   const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
-  const keys = ctx.character.effective_substats;
-  // 전제형: 필요 공효 도달 최소 줄 수만큼 딜 슬롯 차감
-  const totalLines = 25 - energyRegenLines(ctx);
+  const keys = effectiveSubstatsOf(ctx);
+  // 전제형: 필요 공효 도달 최소 줄 수만큼 딜 슬롯 차감. 유효옵 수×5(각 옵 최대 5줄)로 상한.
+  const totalLines = Math.min(25 - energyRegenLines(ctx), keys.length * 5);
 
   let best: TheoryResult | null = null;
   const combos = [...mainCombos(layout)];
@@ -193,8 +194,8 @@ function perfWithMain(ctx: CalcContext, picks: MainPrimaryPick[], sub: CalcConte
 }
 
 function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): number {
-  const keys = ctx.character.effective_substats;
-  const total = 25 - energyRegenLines(ctx);
+  const keys = effectiveSubstatsOf(ctx);
+  const total = Math.min(25 - energyRegenLines(ctx), keys.length * 5);
   let best = 0;
   for (const alloc of subAllocations(keys, total)) {
     const sub: CalcContext['substats'] = keys.map((k, idx) =>
@@ -330,7 +331,7 @@ export function compareSubstats(
   // 현재 유효옵 합을 한 에코에 몰아넣은 동등 컨텍스트 + override 적용
   const base = sumEffectiveSubstats(ctx);
   const merged: Partial<Record<StatKey, number>> = { ...base, ...override };
-  const substats: CalcContext['substats'] = ctx.character.effective_substats.map((k) =>
+  const substats: CalcContext['substats'] = effectiveSubstatsOf(ctx).map((k) =>
     merged[k] != null ? [{ type: k, value: merged[k]! }] : []);
   const compared = computePerf(buildPerfInput({ ...ctx, substats }));
   return { current, compared, diffPercent: (compared / current - 1) * 100 };

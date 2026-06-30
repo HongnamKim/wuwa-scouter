@@ -26,8 +26,13 @@ describe('스택형 자체 버프 (데이터 + 돌파 조건)', () => {
     expect(aggregateBuffs(ctxFor('hiyuki', 6, { hiyuki_snowrust_1: false, hiyuki_snowrust_2: false, hiyuki_chain6_critdmg: false })).critical_damage).toBeCloseTo(0, 10);
   });
 
-  it('에이메스 별과 별 사이: 스택당 +30% (게이트 없음)', () => {
-    expect(aggregateBuffs(ctxFor('aemeath', 0, { aemeath_chain_1: true, aemeath_chain_2: false })).critical_damage).toBeCloseTo(0.30, 10);
-    expect(aggregateBuffs(ctxFor('aemeath', 0, { aemeath_chain_1: true, aemeath_chain_2: true })).critical_damage).toBeCloseTo(0.60, 10);
+  it('에이메스 별과 별 사이: 모드별 스택 (조화파동 20%×3, 불꽃 30%×2 → 각 최대 60%)', () => {
+    // 조화 파동(기본 모드): 3스택 × 20%
+    expect(aggregateBuffs(ctxFor('aemeath', 0, { aemeath_star_wave_2: false, aemeath_star_wave_3: false })).critical_damage).toBeCloseTo(0.20, 10);
+    expect(aggregateBuffs(ctxFor('aemeath', 0, {})).critical_damage).toBeCloseTo(0.60, 10);
+    // 불꽃 모드: 2스택 × 30% (다른 모드 버프는 비활성)
+    const flame = (toggles: Record<string, boolean>) => aggregateBuffs({ ...ctxFor('aemeath', 0, toggles), selectedMode: 'flame' }).critical_damage;
+    expect(flame({ aemeath_star_flame_2: false })).toBeCloseTo(0.30, 10);
+    expect(flame({})).toBeCloseTo(0.60, 10);
   });
 });

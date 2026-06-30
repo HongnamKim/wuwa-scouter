@@ -1,7 +1,7 @@
 import type { Character, EchoSet, MainSlotEcho } from '../types/data';
 import type { CalcContext, SubstatLine, MainPrimaryPick, ManualBuff } from '../engine/context';
 import { loadCharacters, loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
-import { SUBSTAT_STAGES, COST_LAYOUTS, MAIN_PRIMARY } from '../engine/constants';
+import { COST_LAYOUTS, MAIN_PRIMARY } from '../engine/constants';
 import { optimalTwoPiecePicks } from '../engine/theory';
 import { freeTwoPieceSlots } from '../engine/echoSlots';
 import type { StatKey, CostLayout } from '../types/domain';
@@ -50,28 +50,6 @@ export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlo
   return echoes[0];
 }
 
-/** 가장 가까운 단계값으로 스냅 */
-function snap(type: StatKey, value: number): number {
-  const stages = SUBSTAT_STAGES[type];
-  if (!stages) return value;
-  return stages.reduce((a, b) => (Math.abs(b - value) < Math.abs(a - value) ? b : a));
-}
-
-/** 프로토타입 loadSample 이식 (히유키 실제 에코 5개, 무효옵 포함) */
-export function loadSampleSubstats(character: Character): SubstatLine[][] {
-  if (character.id !== 'hiyuki') {
-    return emptySubstats();
-  }
-  const raw: [StatKey, number][][] = [
-    [['critical_rate', 6.9], ['critical_damage', 12.6], ['attack_percent', 7.9], ['resonance_liberation_bonus', 7.9], ['basic_attack_bonus', 10.9]],
-    [['critical_damage', 15], ['energy_regen', 8.0], ['flat_defense', 60], ['flat_hp', 394], ['critical_rate', 7.5]],
-    [['critical_damage', 18.6], ['attack_percent', 6.4], ['resonance_skill_bonus', 11.6], ['resonance_liberation_bonus', 6.4], ['critical_rate', 6.9]],
-    [['attack_percent', 7.2], ['flat_defense', 60], ['critical_damage', 13.8], ['resonance_liberation_bonus', 10.9], ['critical_rate', 6.9]],
-    [['resonance_liberation_bonus', 8.6], ['heavy_attack_bonus', 10.1], ['energy_regen', 6.4], ['critical_rate', 7.5], ['attack_percent', 7.9]],
-  ];
-  return raw.map((echo) => echo.map(([type, v]) => ({ type, value: snap(type, v) })));
-}
-
 /** 캐릭터의 기본 세팅 상태(저장값 없을 때) */
 export function defaultStateForCharacter(character: Character): AppState {
   const weapons = loadWeapons();
@@ -93,7 +71,8 @@ export function defaultStateForCharacter(character: Character): AppState {
     costLayout: '43311',
     mainPrimary: defaultMainFor('43311'),
     twoPiecePicks: [],
-    substats: loadSampleSubstats(character),
+    selectedMode: character.modes?.[0]?.id,
+    substats: emptySubstats(),
     conditionalToggles,
     manualBuffs: [],
     requiredEnergyRegen: character.default_required_energy_regen,
@@ -115,6 +94,7 @@ interface SavedState {
   costLayout: CostLayout;
   mainPrimary: MainPrimaryPick[];
   twoPiecePicks?: string[];
+  selectedMode?: string;
   substats: SubstatLine[][];
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
@@ -131,6 +111,7 @@ function serializeState(state: AppState): SavedState {
     costLayout: state.costLayout,
     mainPrimary: state.mainPrimary,
     twoPiecePicks: state.twoPiecePicks ?? [],
+    selectedMode: state.selectedMode,
     substats: state.substats,
     conditionalToggles: state.conditionalToggles,
     manualBuffs: state.manualBuffs,
@@ -189,6 +170,7 @@ export function loadCharacterState(character: Character): AppState | null {
       costLayout: s.costLayout ?? '43311',
       mainPrimary: s.mainPrimary ?? defaultMainFor(s.costLayout ?? '43311'),
       twoPiecePicks: [],
+      selectedMode: character.modes?.some((m) => m.id === s.selectedMode) ? s.selectedMode : character.modes?.[0]?.id,
       substats: s.substats ?? emptySubstats(),
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { AppState } from '../state/store';
 import { SUBSTAT_STAGES } from '../engine/constants';
 import { sumEffectiveSubstats } from '../engine/build';
+import { effectiveSubstatsOf } from '../engine/mode';
 import { Dropdown } from './Dropdown';
 import type { StatKey } from '../types/domain';
 
@@ -43,7 +44,7 @@ export function SubstatInput({ state, setState }: Props) {
   // 옵션 순서: 캐릭터 유효옵을 상단(★), 그 외는 뒤에
   // 순서: 유효옵 → 공명 효율(딜 무관이나 사이클상 중요) → 나머지.
   // 공명 효율이 유효옵에 포함되면 유효옵 순서를 그대로 따른다.
-  const eff = state.character.effective_substats;
+  const eff = effectiveSubstatsOf(state);
   const midKeys: StatKey[] = eff.includes('energy_regen') ? [] : ['energy_regen'];
   const orderedKeys: StatKey[] = [
     ...eff.filter((k) => SUB_LABEL[k]),

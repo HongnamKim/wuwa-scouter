@@ -11,7 +11,7 @@ describe('types', () => {
 
   it('Character shape compiles', () => {
     const c: Character = {
-      id: 'x', name: 'x', version: 1, element: '응결', weapon_type: 'sword', scale_stat: 'attack', base_attack: 1,
+      id: 'x', name: 'x', version: 1, element: '응결', weapon_type: 'sword', scale_stat: 'attack', matrix_cost: 1, base_attack: 1,
       effective_substats: ['critical_rate'], damage_bonus_type: null,
       energy_regen_mode: 'premise', default_required_energy_regen: 25, special_mechanism: null, recommended_echo_sets: [], recommended_main_echo: [], recommended_weapons: [],
       signature_weapon: null,

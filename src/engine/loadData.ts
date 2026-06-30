@@ -34,6 +34,12 @@ export function loadCharacters(): Character[] {
     if (c.special_mechanism != null && !MECHANISM_KEYS.includes(c.special_mechanism)) {
       throw new Error(`unknown special mechanism: ${c.special_mechanism} (${c.id})`);
     }
+    // 무결성: 스킬노드 버프는 돌파 요구치 0이라도 min_ascension을 반드시 명시한다
+    (c.skill_node as any[]).forEach((b) => {
+      if (typeof b.min_ascension !== 'number') {
+        throw new Error(`skill_node buff missing min_ascension: ${c.id} / ${b.label ?? b.note ?? b.type}`);
+      }
+    });
     return { ...c, skill_node: validateBuffs(c.skill_node) };
   }) as Character[];
 }

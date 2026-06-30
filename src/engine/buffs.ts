@@ -2,6 +2,7 @@ import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import type { CalcContext } from './context';
 import { loadTwoPieceEffects } from './loadData';
+import { damageBonusTypeOf, activeModeId } from './mode';
 
 export interface BuffTotals {
   critical_rate: number;
@@ -10,6 +11,7 @@ export interface BuffTotals {
   element_bonus: number;      // element_damage_bonus (일치)
   damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus
   amplify: number;            // 부스트 곱연산 합
+  damage_type_bonus_factor: number; // 피해유형 보너스 합계에 더해지는 배수분(0.4 → ×1.4). 곱연산
   energy_regen: number;       // 공명효율(딜 무영향, 표시용)
   defense_ignore: number;     // 방어력 무시 합 (무기 비교용 딜 반영)
   element_resistance_ignore: number; // 속성 저항 무시 합 (element 일치분)
@@ -26,6 +28,8 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
   // 단일 공명자 분석: 내게 적용되는 버프만(self/party). next_character 등은 제외
   if (b.target && b.target !== 'self' && b.target !== 'party') return false;
   if (b.element && b.element !== ctx.character.element) return false;
+  // 모드 전환 캐릭터: 버프에 mode 지정 시 해당 모드 선택일 때만 활성
+  if (b.mode && b.mode !== activeModeId(ctx)) return false;
   // 돌파(공명 체인) 조건: 미달이면 비활성 (예: 히유키 6돌 2스택)
   if (b.min_ascension != null && (ctx.ascensionLevel ?? 0) < b.min_ascension) return false;
   if (b.always) return true;
@@ -34,21 +38,19 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
 }
 
 function damageTypeBonusKey(ctx: CalcContext): StatKey | null {
-  return ctx.character.damage_bonus_type
-    ? (`${ctx.character.damage_bonus_type}_bonus` as StatKey)
-    : null;
+  const t = damageBonusTypeOf(ctx);
+  return t ? (`${t}_bonus` as StatKey) : null;
 }
 
 function damageTypeAmplifyKey(ctx: CalcContext): StatKey | null {
-  return ctx.character.damage_bonus_type
-    ? (`${ctx.character.damage_bonus_type}_amplify` as StatKey)
-    : null;
+  const t = damageBonusTypeOf(ctx);
+  return t ? (`${t}_amplify` as StatKey) : null;
 }
 
 export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   const t: BuffTotals = {
     critical_rate: 0, critical_damage: 0, attack_percent: 0,
-    element_bonus: 0, damage_type_bonus: 0, amplify: 0, energy_regen: 0,
+    element_bonus: 0, damage_type_bonus: 0, amplify: 0, damage_type_bonus_factor: 0, energy_regen: 0,
     defense_ignore: 0, element_resistance_ignore: 0,
   };
   const dmgTypeBonus = damageTypeBonusKey(ctx);
@@ -99,11 +101,12 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
         b.type === 'element_damage_amplify' ||
         b.type === 'all_damage_amplify' ||
         (dmgTypeAmp && b.type === dmgTypeAmp) ||
-        ctx.character.damage_bonus_type === null
+        damageBonusTypeOf(ctx) === null
       ) {
         t.amplify += b.value;
       }
     }
+    else if (b.type === 'damage_type_bonus_factor') t.damage_type_bonus_factor += b.value; // 피해유형 보너스 ×(1+합)
     else if (b.type === 'energy_regen') t.energy_regen += b.value; // 딜 무영향, 표시용 집계
     else if (b.type === 'defense_ignore') t.defense_ignore += b.value;
     else if (b.type === 'element_resistance_ignore') t.element_resistance_ignore += b.value; // isActive에서 element 일치 필터됨

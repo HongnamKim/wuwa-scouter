@@ -70,6 +70,15 @@ export function Selectors({ state, setState }: Props) {
       <div className="char-left">
         <img className="char-image" src={`/characters/${char.id}.png`} alt={char.name}
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
+        {char.modes && char.modes.length > 0 && (
+          <div className="mode-toggle">
+            {char.modes.map((m) => (
+              <button key={m.id} type="button"
+                className={'mode-btn' + ((state.selectedMode ?? char.modes![0].id) === m.id ? ' active' : '')}
+                onClick={() => setState({ ...state, selectedMode: m.id })}>{m.name}</button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="char-right">

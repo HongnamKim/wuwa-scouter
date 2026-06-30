@@ -51,6 +51,14 @@ export type StatKey =
   | 'resonance_skill_amplify'
   | 'resonance_liberation_amplify'
   | 'echo_skill_amplify'
+  // 이상효과(서리/불꽃/풍식 등) 받는 피해 부스트. element로 어느 이상효과인지 지정.
+  // 근사 트랙 점수엔 미반영(이상효과는 별도 스케일) — 파티 제공 버프 기록/향후 파티 기능용
+  | 'anomaly_damage_amplify'
+  // 조화도 파괴 증폭(pt 단위, 조화 밀집 모드 지원 스탯). 근사 점수 미반영 — 파티 조합 매칭용 기록
+  | 'harmony_break_amplify'
+  // 피해유형 보너스(증가) 합계에 곱하는 배수형 버프. value 0.40 → 캐릭터 피해유형 보너스 ×1.4
+  // (예: 레베카 6돌 "모든 출처 일반공격 피해 보너스 +40% 상승")
+  | 'damage_type_bonus_factor'
   // 저항/방어 항 (근사 트랙 무영향)
   | 'defense_ignore'
   | 'element_resistance_ignore'; // 속성 저항 무시 (element 필드로 어느 속성인지 지정)
@@ -62,6 +70,8 @@ export const STAT_KEYS: readonly StatKey[] = [
   'resonance_skill_bonus', 'resonance_liberation_bonus', 'echo_skill_bonus',
   'element_damage_amplify', 'all_damage_amplify', 'basic_attack_amplify',
   'heavy_attack_amplify', 'resonance_skill_amplify', 'resonance_liberation_amplify', 'echo_skill_amplify',
+  'anomaly_damage_amplify', 'harmony_break_amplify',
+  'damage_type_bonus_factor',
   'defense_ignore', 'element_resistance_ignore',
 ];
 

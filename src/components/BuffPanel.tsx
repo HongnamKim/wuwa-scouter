@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import type { AppState } from '../state/store';
 import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
+
+const SIMPLE_KEY = 'wuwa-scouter:buff-simple';
 
 const BUFF_TYPES: { key: StatKey; label: string }[] = [
   { key: 'critical_rate', label: '크리티컬%' }, { key: 'critical_damage', label: '크리티컬 피해%' },
@@ -13,6 +16,12 @@ const BUFF_TYPES: { key: StatKey; label: string }[] = [
 interface Props { state: AppState; setState: (s: AppState) => void; }
 
 export function BuffPanel({ state, setState }: Props) {
+  // 라벨 표기: 간략(유형+수치) ⇄ 풀(label). 선택은 localStorage에 저장.
+  const [simple, setSimple] = useState<boolean>(() => {
+    try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
+  });
+  const toggleSimple = (v: boolean) => { setSimple(v); try { localStorage.setItem(SIMPLE_KEY, v ? '1' : '0'); } catch { /* noop */ } };
+
   // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
   // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
@@ -26,8 +35,13 @@ export function BuffPanel({ state, setState }: Props) {
     .map((g) => ({
       source: g.source,
       // 조건부(id 보유) + (세트/메인에코면) 상시 패시브. 돌파 미달 버프도 보여주되 아래에서 비활성
+      // 모드 전환 캐릭터: 다른 모드 전용 버프는 숨김
       items: g.buffs
         .filter((b) => (g.withPassive ? (!!b.id || !!b.always) : (!b.always && !!b.id)))
+        // next_character(다음 등장 캐릭터 전용)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
+        // party(파티 전체, 본인 포함)와 self는 본인도 받으므로 표시.
+        .filter((b) => !b.target || b.target === 'self' || b.target === 'party')
+        .filter((b) => !b.mode || b.mode === (state.selectedMode ?? state.character.modes?.[0]?.id))
         .map((b): Item => ({ b, passive: !!b.always })),
     }))
     .filter((g) => g.items.length > 0);
@@ -35,14 +49,13 @@ export function BuffPanel({ state, setState }: Props) {
   // 돌파 조건 미달 → 잠금(체크 불가)
   const isLocked = (b: Buff) => b.min_ascension != null && (state.ascensionLevel ?? 0) < b.min_ascension;
 
-  // 라벨의 {v}를 현재 수치로 치환. 무기 버프는 공진(refinement_values)에 따라 값이 변함.
+  // {v}를 현재 수치로 치환. 무기 버프는 공진(refinement_values)에 따라 값이 변함.
   const ref = state.refinementLevel ?? 1;
-  const labelText = (b: Buff) => {
-    if (!b.label) return '';
+  const valueText = (b: Buff) => {
     const v = b.refinement_values ? (b.refinement_values[ref - 1] ?? b.value) : b.value;
-    const text = b.type.startsWith('flat') ? String(v) : `${+(v * 100).toFixed(1)}%`;
-    return b.label.replace('{v}', text);
+    return b.type.startsWith('flat') ? String(v) : `${+(v * 100).toFixed(1)}%`;
   };
+  const tmpl = (text: string, b: Buff) => text.replace('{v}', valueText(b));
 
   // 라벨이 없는 패시브는 유형+수치로 표기(원소피해는 원소명으로)
   const STAT_LABEL: Partial<Record<StatKey, string>> = {
@@ -53,20 +66,35 @@ export function BuffPanel({ state, setState }: Props) {
     resonance_skill_bonus: '공명스킬 피해', resonance_liberation_bonus: '공명해방 피해',
     resonance_skill_amplify: '공명스킬 피해', resonance_liberation_amplify: '공명해방 피해',
     echo_skill_bonus: '에코 피해', echo_skill_amplify: '에코 피해', energy_regen: '공명 효율',
+    anomaly_damage_amplify: '이상효과 피해', harmony_break_amplify: '조화도 파괴 증폭',
     defense_ignore: '방어력 무시', element_resistance_ignore: '속성 저항 무시',
     flat_attack: '공격력(깡공)', flat_hp: 'HP(깡체력)', flat_defense: '방어력(깡방)',
   };
-  const describe = (b: Buff) => {
-    if (b.label) return labelText(b);
-    // 무기 패시브는 공진(refinement_values)에 따라 값이 변함
-    const raw = b.refinement_values ? (b.refinement_values[ref - 1] ?? b.value) : b.value;
-    const v = b.type.startsWith('flat') ? String(raw) : `${+(raw * 100).toFixed(1)}%`;
+  // 무기 자체 스탯(기초 공격 + 부가 스탯 1종) 한 줄 표기. 예: "공격 587 · 크리티컬 24.3%"
+  const weaponStatLine = () => {
+    const bs = state.weapon.base_stats;
+    const parts = [`공격 ${bs.attack}`];
+    (Object.keys(bs) as StatKey[]).forEach((k) => {
+      if (k === ('attack' as StatKey)) return;
+      const v = bs[k] as number;
+      const name = STAT_LABEL[k] ?? k;
+      parts.push(`${name} ${k.startsWith('flat') ? v : `${+(v * 100).toFixed(1)}%`}`);
+    });
+    return parts.join(' · ');
+  };
+
+  // label이 아예 없는 버프(무기/세트 깡스탯 패시브 등)는 유형+수치로 표기(원소피해는 원소명으로)
+  const autoText = (b: Buff) => {
     const name = ((b.type === 'element_damage_bonus' || b.type === 'element_damage_amplify') && b.element)
       ? `${b.element}피해` : (STAT_LABEL[b.type] ?? b.type);
     // 피해 보너스 = 증가, 피해 증폭 = 부스트 (명확히 구분)
     const suffix = b.type.endsWith('_amplify') ? ' 부스트' : (b.type.endsWith('_bonus') ? ' 증가' : '');
-    return `${name} +${v}${suffix}`;
+    return `${name} +${valueText(b)}${suffix}`;
   };
+  // 풀: label(수치 치환), 없으면 auto
+  const fullText = (b: Buff) => (b.label ? tmpl(b.label, b) : autoText(b));
+  // 간략: JSON의 short(수치 치환). 미지정 시 풀로 폴백 — 코드로 간략문을 만들지 않음
+  const shortText = (b: Buff) => (b.short ? tmpl(b.short, b) : fullText(b));
 
   // 전체 토글: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off
   const condIds = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b.id!));
@@ -86,16 +114,24 @@ export function BuffPanel({ state, setState }: Props) {
 
   return (
     <div>
-      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         추가 버프
-        <label style={{ fontSize: '0.8rem', fontWeight: 'normal', display: 'flex', gap: 4, alignItems: 'center' }}>
-          <input type="checkbox" checked={allOn} disabled={toggleCount === 0}
-            onChange={(e) => setAll(e.target.checked)} /> 전체
-        </label>
+        <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.8rem', fontWeight: 'normal' }}>
+          <label style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략
+          </label>
+          <label style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <input type="checkbox" checked={allOn} disabled={toggleCount === 0}
+              onChange={(e) => setAll(e.target.checked)} /> 전체
+          </label>
+        </span>
       </h3>
       {condGroups.map((g) => (
         <div key={g.source}>
           <div className="muted" style={{ margin: '6px 0 2px', fontWeight: 'bold' }}>{g.source}</div>
+          {g.source === '무기' && (
+            <div style={{ margin: '0 0 2px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>
+          )}
           {g.items.map(({ b, passive }, idx) => {
             const locked = !passive && isLocked(b);
             const checked = passive ? true : (!locked && (state.conditionalToggles[b.id!] ?? true));
@@ -103,7 +139,7 @@ export function BuffPanel({ state, setState }: Props) {
             <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
               <input type="checkbox" disabled={passive || locked} checked={checked}
                 onChange={(e) => { if (passive) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
-              <span>{describe(b)}{locked ? ` (돌파 ${b.min_ascension} 필요)` : passive ? ' (상시)' : ''}</span>
+              <span>{simple ? shortText(b) : fullText(b)}{passive ? ' (상시)' : ''}</span>
             </label>
             );
           })}

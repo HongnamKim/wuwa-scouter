@@ -4,6 +4,7 @@ import type { StatKey } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput } from '../engine/build';
 import { theoryBest, kkjakPerf, optimalThreeCoModeKkjak, threeCoModeOptions, energyRegenLines, ThreeCoMode } from '../engine/theory';
+import { effectiveSubstatsOf } from '../engine/mode';
 import { Dropdown } from './Dropdown';
 
 const STAT_LABEL: Partial<Record<StatKey, string>> = {
@@ -28,7 +29,7 @@ export function Scores({ state }: { state: AppState }) {
 
   const erLines = energyRegenLines(state);
   const mainDesc = best.mainPicks.map((p) => `${p.cost}코 ${lab(p.type)}`).join(' / ');
-  const subDesc = state.character.effective_substats
+  const subDesc = effectiveSubstatsOf(state)
     .map((k) => `${lab(k)} ${best.subAllocation[k] ?? 0}줄`).join(', ');
 
   const BIG = { fontSize: '2.4rem', fontWeight: 'bold', lineHeight: 1.1 } as const;

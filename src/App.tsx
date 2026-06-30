@@ -105,7 +105,13 @@ function AnalysisScreen({ character }: { character: Character }) {
       </div>
 
       <h2>점수</h2>
-      <Scores key={state.character.id + state.costLayout} state={state} />
+      <Scores key={state.character.id + state.costLayout + (state.selectedMode ?? '')} state={state} />
+      <p className="muted" style={{ fontSize: '0.8rem', margin: '6px 0 0' }}>
+        ※ 이상효과(서리·불꽃·풍식 등) 딜은 별도 스케일로 점수에 포함되지 않습니다.
+      </p>
+      <p className="muted" style={{ fontSize: '0.8rem', margin: '2px 0 0' }}>
+        ※ 돌파(공명 체인)로 인한 개별 스킬의 피해 배율(계수) 변화는 점수에 포함되지 않습니다.
+      </p>
 
       <h2>내 캐릭터 스펙</h2>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>

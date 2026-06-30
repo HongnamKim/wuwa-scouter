@@ -6,6 +6,7 @@ import { COST_LAYOUTS, MAIN_PRIMARY, SUBSTAT_STAGES } from '../engine/constants'
 import { buildPerfInput } from '../engine/build';
 import { computePerf } from '../engine/perf';
 import { theoryBest, kkjakPerf, optimalThreeCoModeKkjak } from '../engine/theory';
+import { effectiveSubstatsOf } from '../engine/mode';
 import { Dropdown, DropdownOption } from './Dropdown';
 
 const MAIN_DEAL_KEYS: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
@@ -86,7 +87,7 @@ export function SubstatSwapCompare({ base }: { base: AppState }) {
   const compared = computePerf(buildPerfInput({ ...base, mainPrimary: swappedMain, substats: swappedSubs }));
   const diff = (compared / current - 1) * 100;
 
-  const eff = base.character.effective_substats;
+  const eff = effectiveSubstatsOf(base);
   const orderedKeys: StatKey[] = [...eff.filter((k) => SUB_LABEL[k]), ...SUB_OPTION_KEYS.filter((k) => !eff.includes(k))];
   const optionList: DropdownOption[] = [
     { value: '', label: '옵션 선택' },
