@@ -11,7 +11,10 @@ export interface DisplaySpec {
   criticalDamage: number;
   elementBonus: number;       // 증가피해보너스 중 속성분만
   damageTypeBonus: number;    // 증가피해보너스 중 캐릭 유형분
-  amplify: number;
+  amplify: number;            // 부스트 총합(계산용)
+  amplifyElement: number;     // 속성 피해 부스트분(표시)
+  amplifyDamageType: number;  // 유형 피해 부스트분(표시)
+  amplifyAll: number;         // 전체 피해 부스트분(표시)
   energyRegen: number;        // 공명효율(소수, 기본 1.0 = 100%)
 }
 
@@ -39,6 +42,9 @@ export function computeDisplaySpec(ctx: CalcContext): DisplaySpec {
     elementBonus: buffs.element_bonus + (main.element_damage_bonus ?? 0),
     damageTypeBonus: (buffs.damage_type_bonus + subDmgTypeBonus) * dmgTypeFactor + mechBonus,
     amplify: i.amplify,
+    amplifyElement: buffs.amplify_element,
+    amplifyDamageType: buffs.amplify_damage_type,
+    amplifyAll: buffs.amplify_all,
     energyRegen,
   };
 }

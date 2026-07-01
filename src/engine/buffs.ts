@@ -10,7 +10,10 @@ export interface BuffTotals {
   attack_percent: number;
   element_bonus: number;      // element_damage_bonus (일치)
   damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus
-  amplify: number;            // 부스트 곱연산 합
+  amplify: number;            // 부스트 곱연산 합 (계산용 총합)
+  amplify_element: number;    // 표시용: 속성 피해 부스트분
+  amplify_damage_type: number;// 표시용: 캐릭터 피해유형 부스트분
+  amplify_all: number;        // 표시용: 전체 피해 부스트분
   damage_type_bonus_factor: number; // 피해유형 보너스 합계에 더해지는 배수분(0.4 → ×1.4). 곱연산
   energy_regen: number;       // 공명효율(딜 무영향, 표시용)
   defense_ignore: number;     // 방어력 무시 합 (무기 비교용 딜 반영)
@@ -25,6 +28,8 @@ const AMPLIFY_KEYS: StatKey[] = [
 
 /** 이 버프가 현재 활성인지 (대상 / 상시 / 조건부 토글 / element 일치) */
 function isActive(b: Buff, ctx: CalcContext): boolean {
+  // record_only(특정 스킬 계수/한정): 계산 완전 제외(기록용). absolute_score_only는 계산 포함(비율에선 자동 약분).
+  if (b.record_only) return false;
   // 단일 공명자 분석: 내게 적용되는 버프만(self/party). next_character 등은 제외
   if (b.target && b.target !== 'self' && b.target !== 'party') return false;
   if (b.element && b.element !== ctx.character.element) return false;
@@ -50,7 +55,7 @@ function damageTypeAmplifyKey(ctx: CalcContext): StatKey | null {
 export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   const t: BuffTotals = {
     critical_rate: 0, critical_damage: 0, attack_percent: 0,
-    element_bonus: 0, damage_type_bonus: 0, amplify: 0, damage_type_bonus_factor: 0, energy_regen: 0,
+    element_bonus: 0, damage_type_bonus: 0, amplify: 0, amplify_element: 0, amplify_damage_type: 0, amplify_all: 0, damage_type_bonus_factor: 0, energy_regen: 0,
     defense_ignore: 0, element_resistance_ignore: 0,
   };
   const dmgTypeBonus = damageTypeBonusKey(ctx);
@@ -95,16 +100,11 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     else if (b.type === 'element_damage_bonus') t.element_bonus += b.value;
     else if (dmgTypeBonus && b.type === dmgTypeBonus) t.damage_type_bonus += b.value;
     else if (AMPLIFY_KEYS.includes(b.type)) {
-      // 부스트: element_damage_amplify(일치)·all_damage_amplify·쏠림유형 amplify만.
-      // damage_bonus_type=null(골고루)이면 모든 amplify 합산(가방식).
-      if (
-        b.type === 'element_damage_amplify' ||
-        b.type === 'all_damage_amplify' ||
-        (dmgTypeAmp && b.type === dmgTypeAmp) ||
-        damageBonusTypeOf(ctx) === null
-      ) {
-        t.amplify += b.value;
-      }
+      // 부스트: 속성/전체/캐릭터 피해유형 amplify만 계산 총합에 반영. 표시용으로 속성·유형·전체 분리 집계.
+      if (b.type === 'element_damage_amplify') { t.amplify += b.value; t.amplify_element += b.value; }
+      else if (b.type === 'all_damage_amplify') { t.amplify += b.value; t.amplify_all += b.value; }
+      else if (dmgTypeAmp && b.type === dmgTypeAmp) { t.amplify += b.value; t.amplify_damage_type += b.value; }
+      else if (damageBonusTypeOf(ctx) === null) { t.amplify += b.value; t.amplify_all += b.value; } // 골고루형: 전체로 표시
     }
     else if (b.type === 'damage_type_bonus_factor') t.damage_type_bonus_factor += b.value; // 피해유형 보너스 ×(1+합)
     else if (b.type === 'energy_regen') t.energy_regen += b.value; // 딜 무영향, 표시용 집계

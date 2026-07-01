@@ -6,6 +6,10 @@ import { Dropdown } from './Dropdown';
 
 const SIMPLE_KEY = 'wuwa-scouter:buff-simple';
 
+// 점수에 집계되지 않는(이상효과·조화도 파괴 등) 버프 타입.
+// 데이터엔 기록하되 추가 버프 패널엔 표시하지 않는다(점수 영향 버프만 노출).
+const SCORE_HIDDEN_TYPES: StatKey[] = ['anomaly_damage_amplify', 'anomaly_damage_additional', 'harmony_break_amplify'];
+
 const BUFF_TYPES: { key: StatKey; label: string }[] = [
   { key: 'critical_rate', label: '크리티컬%' }, { key: 'critical_damage', label: '크리티컬 피해%' },
   { key: 'element_damage_bonus', label: '속성피해% 증가' }, { key: 'element_damage_amplify', label: '속성피해% 부스트' },
@@ -26,14 +30,15 @@ export function BuffPanel({ state, setState }: Props) {
   // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
   type Item = { b: Buff; passive: boolean };
-  const condGroups: { source: string; items: Item[] }[] = [
-    { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false },
-    { source: '무기', buffs: state.weapon.buffs, withPassive: true },
-    ...uniqueSets.map((s) => ({ source: s.name, buffs: s.buffs, withPassive: true })),
-    { source: '메인 에코', buffs: state.mainEcho.buffs, withPassive: true },
+  const condGroups: { source: string; weaponStats: boolean; items: Item[] }[] = [
+    { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false, weaponStats: false },
+    { source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, withPassive: true, weaponStats: true },
+    ...uniqueSets.map((s) => ({ source: `화음 세트: ${s.name}`, buffs: s.buffs, withPassive: true, weaponStats: false })),
+    { source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, withPassive: true, weaponStats: false },
   ]
     .map((g) => ({
       source: g.source,
+      weaponStats: g.weaponStats,
       // 조건부(id 보유) + (세트/메인에코면) 상시 패시브. 돌파 미달 버프도 보여주되 아래에서 비활성
       // 모드 전환 캐릭터: 다른 모드 전용 버프는 숨김
       items: g.buffs
@@ -41,6 +46,10 @@ export function BuffPanel({ state, setState }: Props) {
         // next_character(다음 등장 캐릭터 전용)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
         // party(파티 전체, 본인 포함)와 self는 본인도 받으므로 표시.
         .filter((b) => !b.target || b.target === 'self' || b.target === 'party')
+        // 이상효과·조화도 파괴 등 전용 타입은 패널 비표시(데이터 기록 전용)
+        .filter((b) => !SCORE_HIDDEN_TYPES.includes(b.type))
+        // record_only(특정 스킬 계수/한정, 계산 제외)는 순수 기록용 → 패널 비표시
+        .filter((b) => !b.record_only)
         .filter((b) => !b.mode || b.mode === (state.selectedMode ?? state.character.modes?.[0]?.id))
         .map((b): Item => ({ b, passive: !!b.always })),
     }))
@@ -66,7 +75,7 @@ export function BuffPanel({ state, setState }: Props) {
     resonance_skill_bonus: '공명스킬 피해', resonance_liberation_bonus: '공명해방 피해',
     resonance_skill_amplify: '공명스킬 피해', resonance_liberation_amplify: '공명해방 피해',
     echo_skill_bonus: '에코 피해', echo_skill_amplify: '에코 피해', energy_regen: '공명 효율',
-    anomaly_damage_amplify: '이상효과 피해', harmony_break_amplify: '조화도 파괴 증폭',
+    anomaly_damage_amplify: '이상효과 피해', anomaly_damage_additional: '이상효과 추가타', harmony_break_amplify: '조화도 파괴 증폭',
     defense_ignore: '방어력 무시', element_resistance_ignore: '속성 저항 무시',
     flat_attack: '공격력(깡공)', flat_hp: 'HP(깡체력)', flat_defense: '방어력(깡방)',
   };
@@ -129,7 +138,7 @@ export function BuffPanel({ state, setState }: Props) {
       {condGroups.map((g) => (
         <div key={g.source}>
           <div className="muted" style={{ margin: '6px 0 2px', fontWeight: 'bold' }}>{g.source}</div>
-          {g.source === '무기' && (
+          {g.weaponStats && (
             <div style={{ margin: '0 0 2px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>
           )}
           {g.items.map(({ b, passive }, idx) => {

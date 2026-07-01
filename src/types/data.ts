@@ -15,6 +15,8 @@ export interface Buff {
   min_ascension?: number; // 돌파(공명 체인) 조건. 지정 시 ascensionLevel >= 값일 때만 활성/노출 (예: 히유키 6돌 2스택)
   refinement_values?: number[]; // 무기 버프 전용. 재련(공진) 1~5별 수치 5개. 지정 시 refinement_values[공진-1]로 value 대체
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
+  record_only?: boolean; // 특정 스킬 계수/특정 스킬 한정 효과 — 계산 완전 제외 + 패널 숨김(순수 기록용). 예: 에이메스 종결 부스트, 루크 공중공격 보너스
+  absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
   note?: string;
 }
 
