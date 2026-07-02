@@ -1,11 +1,11 @@
-import type { StatKey, Cost } from '../types/domain';
+import type { StatKey } from '../types/domain';
 import type { CalcContext } from './context';
 import type { PerfInput } from './perf';
 import { aggregateBuffs } from './buffs';
 import { mechanismDamageTypeBonus } from './mechanisms';
 import { damageBonusTypeOf, effectiveSubstatsOf } from './mode';
 import {
-  BASE_CRIT, BASE_CRIT_DAMAGE, COST_LAYOUTS, MAIN_PRIMARY, MAIN_SECONDARY,
+  BASE_CRIT, BASE_CRIT_DAMAGE, MAIN_PRIMARY, MAIN_SECONDARY,
   ENEMY_DEF_RATIO, BASE_ENEMY_RESISTANCE,
 } from './constants';
 
@@ -28,8 +28,7 @@ export function defenseResistanceFactor(defenseIgnore: number, resistanceIgnore:
 export function computeEnergyRegen(ctx: CalcContext): number {
   const buffs = aggregateBuffs(ctx);
   const main = sumMainPrimary(ctx);
-  const subER = ctx.substats
-    .flat()
+  const subER = ctx.slots.flatMap((s) => s.substats)
     .filter((l) => l.type === 'energy_regen' && l.value != null)
     .reduce((s, l) => s + (l.value as number), 0);
   return 1 + (ctx.weapon.base_stats.energy_regen ?? 0) + subER / 100
@@ -40,8 +39,8 @@ export function computeEnergyRegen(ctx: CalcContext): number {
 export function sumEffectiveSubstats(ctx: CalcContext): Partial<Record<StatKey, number>> {
   const sum: Partial<Record<StatKey, number>> = {};
   const eff = new Set(effectiveSubstatsOf(ctx));
-  for (const echo of ctx.substats) {
-    for (const line of echo) {
+  for (const slot of ctx.slots) {
+    for (const line of slot.substats) {
       if (line.type && line.value != null && eff.has(line.type)) {
         sum[line.type] = (sum[line.type] ?? 0) + line.value;
       }
@@ -53,9 +52,10 @@ export function sumEffectiveSubstats(ctx: CalcContext): Partial<Record<StatKey, 
 /** 메인 primary를 stat별 합으로 (% → 소수) */
 export function sumMainPrimary(ctx: CalcContext): Partial<Record<StatKey, number>> {
   const sum: Partial<Record<StatKey, number>> = {};
-  ctx.mainPrimary.forEach((pick) => {
-    const pct = MAIN_PRIMARY[pick.cost][pick.type];
-    if (pct != null) sum[pick.type] = (sum[pick.type] ?? 0) + pct / 100;
+  ctx.slots.forEach((slot) => {
+    if (slot.cost == null || !slot.main) return; // 코스트/메인 미배정 슬롯은 기여 없음
+    const pct = MAIN_PRIMARY[slot.cost][slot.main];
+    if (pct != null) sum[slot.main] = (sum[slot.main] ?? 0) + pct / 100;
   });
   return sum;
 }
@@ -65,9 +65,9 @@ export function secondaryFlat(ctx: CalcContext): number {
   const scaleFlat: StatKey =
     ctx.character.scale_stat === 'attack' ? 'flat_attack'
     : ctx.character.scale_stat === 'hp' ? 'flat_hp' : 'flat_defense';
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
-  return layout.reduce((acc, cost) => {
-    const sec = MAIN_SECONDARY[cost];
+  return ctx.slots.reduce((acc, slot) => {
+    if (slot.cost == null) return acc;
+    const sec = MAIN_SECONDARY[slot.cost];
     return acc + (sec.stat === scaleFlat ? sec.value : 0);
   }, 0);
 }
@@ -79,13 +79,26 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
   const dmgType = damageBonusTypeOf(ctx);
   const dmgTypeBonusKey = dmgType ? (`${dmgType}_bonus` as StatKey) : null;
 
-  const baseAttack = ctx.character.base_attack + ctx.weapon.base_stats.attack;
+  // 스케일 스탯(공격/체력/방어) 기준으로 기초·%·깡을 계산. scale_stat이 attack이면 기존과 완전히 동일한 값.
+  // PerfInput 필드명은 baseAttack/attackPercent/flatAttack이지만 실제로는 "스케일 스탯"을 담는다.
+  const scale = ctx.character.scale_stat;
+  const charBase = scale === 'attack' ? ctx.character.base_attack
+    : scale === 'hp' ? (ctx.character.base_hp ?? 0)
+    : (ctx.character.base_defense ?? 0);
+  // 무기 기초 스탯은 공격만 존재 → 공격 스케일러만 무기 기초를 더한다(체력/방어 스케일러는 0).
+  const weaponBase = scale === 'attack' ? ctx.weapon.base_stats.attack : 0;
+  const percentKey = `${scale}_percent` as StatKey; // attack_percent | hp_percent | defense_percent
+  const flatKey = `flat_${scale}` as StatKey;        // flat_attack | flat_hp | flat_defense
+  const scalePercentBuff = scale === 'attack' ? buffs.attack_percent
+    : scale === 'hp' ? buffs.hp_percent : buffs.defense_percent;
+
+  const baseAttack = charBase + weaponBase;
 
   const attackPercent =
-    (ctx.weapon.base_stats.attack_percent ?? 0) +
-    buffs.attack_percent + (sub.attack_percent ?? 0) / 100 + (main.attack_percent ?? 0);
+    (ctx.weapon.base_stats[percentKey] ?? 0) +
+    scalePercentBuff + (sub[percentKey] ?? 0) / 100 + (main[percentKey] ?? 0);
 
-  const flatAttack = (sub.flat_attack ?? 0) + secondaryFlat(ctx);
+  const flatAttack = (sub[flatKey] ?? 0) + secondaryFlat(ctx);
 
   const criticalRate =
     BASE_CRIT +

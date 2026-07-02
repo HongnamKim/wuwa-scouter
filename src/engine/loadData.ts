@@ -17,6 +17,13 @@ export function validateBuff(b: any): Buff {
   if (typeof b.value !== 'number' || typeof b.always !== 'boolean') {
     throw new Error(`invalid buff: ${JSON.stringify(b)}`);
   }
+  // 무결성: 모든 데이터 버프는 두 점수 플래그를 명시(true/false)하고, 동시 true는 금지(상호 배타)
+  if (typeof b.record_only !== 'boolean' || typeof b.absolute_score_only !== 'boolean') {
+    throw new Error(`buff missing record_only/absolute_score_only: ${b.label ?? b.note ?? b.type}`);
+  }
+  if (b.record_only && b.absolute_score_only) {
+    throw new Error(`buff cannot be both record_only and absolute_score_only: ${b.label ?? b.note ?? b.type}`);
+  }
   return b as Buff;
 }
 

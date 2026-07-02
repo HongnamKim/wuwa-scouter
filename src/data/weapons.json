@@ -5,9 +5,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브" },
-      { "type": "element_damage_amplify", "value": 0.28, "always": false, "element": "응결", "id": "weapon_glacio_amplify", "refinement_values": [0.28, 0.35, 0.42, 0.49, 0.56], "label": "서리효과 부여 시 응결피해 +{v} 부스트" },
-      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "서리효과 부여 시 방어력 무시 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_amplify", "value": 0.28, "always": false, "element": "응결", "id": "weapon_glacio_amplify", "refinement_values": [0.28, 0.35, 0.42, 0.49, 0.56], "label": "서리효과 부여 시 응결피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "서리효과 부여 시 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -16,8 +16,8 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)" },
-      { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "공명스킬 발동 시 공격력 +{v} (2스택)" }
+      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "공명스킬 발동 시 공격력 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -26,9 +26,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브" },
-      { "type": "defense_ignore", "value": 0.32, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 방어력 무시 +{v}" },
-      { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "refinement_values": [0.10, 0.15, 0.20, 0.25, 0.30], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 용융 저항 무시 +{v}" }
+      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브", "record_only": false, "absolute_score_only": false },
+      { "type": "defense_ignore", "value": 0.32, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "refinement_values": [0.10, 0.15, 0.20, 0.25, 0.30], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 용융 저항 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -37,9 +37,9 @@
     "weapon_type": "rectifier",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "element_damage_bonus", "value": 0.30, "always": false, "element": "응결", "id": "weapon_glacio_chafe", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "서리효과 부여 시 응결피해 +{v}" },
-      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "서리효과 부여 시 팀 공격력 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.30, "always": false, "element": "응결", "id": "weapon_glacio_chafe", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "서리효과 부여 시 응결피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "서리효과 부여 시 팀 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -48,9 +48,9 @@
     "weapon_type": "rectifier",
     "base_stats": { "attack": 500, "critical_rate": 0.36 },
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성피해)" },
-      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명스킬 적중 시 공격력 +{v} (2스택)" },
-      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_offfield_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "미출전 상태 시 공격력 +{v} (2스택)" }
+      { "type": "element_damage_bonus", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성피해)", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명스킬 적중 시 공격력 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_offfield_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "미출전 상태 시 공격력 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -59,8 +59,8 @@
     "weapon_type": "rectifier",
     "base_stats": { "attack": 500, "attack_percent": 0.54 },
     "buffs": [
-      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)" },
-      { "type": "basic_attack_bonus", "value": 0.16, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "일반공격 적중 시 일반공격피해 +{v} (5스택)" }
+      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공효)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.16, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "일반공격 적중 시 일반공격피해 +{v} (5스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -69,7 +69,7 @@
     "weapon_type": "rectifier",
     "base_stats": { "attack": 412, "critical_rate": 0.202 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.15, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.15, 0.2325, 0.315, 0.3975, 0.48], "label": "공명해방 발동 시 공격력 +{v}" }
+      { "type": "attack_percent", "value": 0.15, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.15, 0.2325, 0.315, 0.3975, 0.48], "label": "공명해방 발동 시 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -85,9 +85,9 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 588, "critical_damage": 0.486 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "echo_skill_amplify", "value": 0.32, "always": false, "id": "weapon_echo_amplify", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "변주 스킬·에코 어빌리티 발동 시 에코 어빌리티피해 +{v} 부스트" },
-      { "type": "defense_ignore", "value": 0.10, "always": false, "element": "기류", "id": "weapon_aero_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "에코 어빌리티 피해 시 기류 방어력 무시 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "echo_skill_amplify", "value": 0.32, "always": false, "id": "weapon_echo_amplify", "refinement_values": [0.32, 0.40, 0.48, 0.56, 0.64], "label": "변주 스킬·에코 어빌리티 발동 시 에코 어빌리티피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "element": "기류", "id": "weapon_aero_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "에코 어빌리티 피해 시 기류 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -96,10 +96,10 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 588, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "element_damage_bonus", "value": 0.20, "always": false, "element": "회절", "id": "weapon_spectro_bonus", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "일반공격 적중 후 회절피해 +{v}" },
-      { "type": "basic_attack_amplify", "value": 0.20, "always": false, "id": "weapon_basic_amplify", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "「조화 밀집·이탈」 추가 후 일반공격피해 +{v} 부스트" },
-      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_basic_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "「조화 밀집·이탈」 추가 후 일반공격 방어력 무시 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "element": "회절", "id": "weapon_spectro_bonus", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "일반공격 적중 후 회절피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_amplify", "value": 0.20, "always": false, "id": "weapon_basic_amplify", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "「조화 밀집·이탈」 추가 후 일반공격피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_basic_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "「조화 밀집·이탈」 추가 후 일반공격 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -108,8 +108,8 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 588, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.24, 0.268, 0.30, 0.328, 0.36], "label": "「조화 밀집·간섭」 목표 가격 후 일반공격피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.24, 0.268, 0.30, 0.328, 0.36], "label": "「조화 밀집·간섭」 목표 가격 후 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -118,8 +118,8 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 587, "critical_damage": 0.486 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "일반공격 발동 시 방어력 무시 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "일반공격 발동 시 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -128,7 +128,7 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 412, "critical_rate": 0.202 },
     "buffs": [
-      { "type": "resonance_liberation_bonus", "value": 0.18, "always": false, "id": "weapon_skill_lib_bonus", "refinement_values": [0.18, 0.27, 0.36, 0.45, 0.54], "label": "공명 스킬 발동 시 공명해방피해 +{v}" }
+      { "type": "resonance_liberation_bonus", "value": 0.18, "always": false, "id": "weapon_skill_lib_bonus", "refinement_values": [0.18, 0.27, 0.36, 0.45, 0.54], "label": "공명 스킬 발동 시 공명해방피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -137,8 +137,8 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 412, "critical_damage": 0.405 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.072, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.072, 0.111, 0.151, 0.19, 0.23], "label": "공명해방 발동 시 공격력 +{v}" },
-      { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_lib_bonus", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명해방 발동 시 공명해방피해 +{v}" }
+      { "type": "attack_percent", "value": 0.072, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.072, 0.111, 0.151, 0.19, 0.23], "label": "공명해방 발동 시 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_lib_bonus", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명해방 발동 시 공명해방피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -147,7 +147,7 @@
     "weapon_type": "gauntlets",
     "base_stats": { "attack": 463, "attack_percent": 0.182 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v}" }
+      { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -156,8 +156,8 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "energy_regen": 0.388 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "resonance_skill_bonus", "value": 0.24, "always": false, "id": "weapon_skill_bonus", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 가격 후 공명스킬피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "resonance_skill_bonus", "value": 0.24, "always": false, "id": "weapon_skill_bonus", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 가격 후 공명스킬피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -166,8 +166,8 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_damage": 0.486 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "resonance_skill_bonus", "value": 0.56, "always": false, "id": "weapon_feather_stack", "refinement_values": [0.56, 0.70, 0.84, 0.98, 1.12], "label": "빛나는 깃털 14스택 시 공명스킬피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "resonance_skill_bonus", "value": 0.56, "always": false, "id": "weapon_feather_stack", "refinement_values": [0.56, 0.70, 0.84, 0.98, 1.12], "label": "빛나는 깃털 14스택 시 공명스킬피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -176,9 +176,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "basic_attack_bonus", "value": 0.30, "always": false, "id": "weapon_basic_stack", "refinement_values": [0.30, 0.375, 0.45, 0.534, 0.60], "label": "일반공격 적중 시 일반공격피해 +{v} (3스택)" },
-      { "type": "basic_attack_bonus", "value": 0.40, "always": false, "id": "weapon_concerto_basic", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "협주 에너지 소모 시 일반공격피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.30, "always": false, "id": "weapon_basic_stack", "refinement_values": [0.30, 0.375, 0.45, 0.534, 0.60], "label": "일반공격 적중 시 일반공격피해 +{v} (3스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.40, "always": false, "id": "weapon_concerto_basic", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "협주 에너지 소모 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -187,9 +187,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 412, "energy_regen": 0.77 },
     "buffs": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "note": "무기 패시브 (크리티컬)" },
-      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_lib_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명해방 발동 후 일반공격피해 +{v}" },
-      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "일반공격 적중 시 일반공격피해 +{v}" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "note": "무기 패시브 (크리티컬)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_lib_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "공명해방 발동 후 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "일반공격 적중 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -198,9 +198,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 412, "hp_percent": 0.722 },
     "buffs": [
-      { "type": "hp_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (HP)" },
-      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "변주/일반공격 발동 후 방어력 무시 +{v}" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "id": "weapon_aero_erosion_amp", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "풍식 효과 보유 목표에게 피해 +{v} 부스트" }
+      { "type": "hp_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (HP)", "record_only": false, "absolute_score_only": false },
+      { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "변주/일반공격 발동 후 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "id": "weapon_aero_erosion_amp", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "풍식 효과 보유 목표에게 피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -209,9 +209,9 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "heavy_attack_bonus", "value": 0.60, "always": false, "id": "weapon_pajuk_stack", "refinement_values": [0.60, 0.75, 0.90, 1.05, 1.20], "label": "「파죽」 2스택 시 강공격피해 +{v}" },
-      { "type": "echo_skill_bonus", "value": 0.20, "always": false, "target": "party", "id": "weapon_party_echo", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주 스킬 발동 시 파티 에코 어빌리티피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "heavy_attack_bonus", "value": 0.60, "always": false, "id": "weapon_pajuk_stack", "refinement_values": [0.60, 0.75, 0.90, 1.05, 1.20], "label": "「파죽」 2스택 시 강공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.20, "always": false, "target": "party", "id": "weapon_party_echo", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주 스킬 발동 시 파티 에코 어빌리티피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -220,8 +220,8 @@
     "weapon_type": "sword",
     "base_stats": { "attack": 587, "energy_regen": 0.388 },
     "buffs": [
-      { "type": "resonance_skill_bonus", "value": 0.10, "always": false, "id": "weapon_heal_skill", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "치료 효과 발동 시 공명스킬피해 +{v}" },
-      { "type": "element_damage_amplify", "value": 0.10, "always": false, "element": "기류", "target": "party", "id": "weapon_aero_party_amp", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "방랑자·기류 공명스킬 발동 시 파티 기류피해 +{v} 부스트" }
+      { "type": "resonance_skill_bonus", "value": 0.10, "always": false, "id": "weapon_heal_skill", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "치료 효과 발동 시 공명스킬피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_amplify", "value": 0.10, "always": false, "element": "기류", "target": "party", "id": "weapon_aero_party_amp", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "방랑자·기류 공명스킬 발동 시 파티 기류피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -230,9 +230,9 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "basic_attack_bonus", "value": 0.36, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "label": "변주/일반공격 명중 시 일반공격피해 +{v}" },
-      { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_alldmg", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "조화 파동/밀집·이탈 부여 시 파티 전체 피해 +{v} (3스택)" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.36, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "label": "변주/일반공격 명중 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_alldmg", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "조화 파동/밀집·이탈 부여 시 파티 전체 피해 +{v} (3스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -241,8 +241,8 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
-      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공명 효율)" },
-      { "type": "attack_percent", "value": 0.10, "always": false, "target": "next_character", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "note": "반주 스킬 후 교체(다음) 캐릭터 공격력 +10~20%" }
+      { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공명 효율)", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.10, "always": false, "target": "next_character", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "note": "반주 스킬 후 교체(다음) 캐릭터 공격력 +10~20%", "record_only": false, "absolute_score_only": false }
     ]
   },
   {
@@ -251,8 +251,8 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 587, "critical_damage": 0.486 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "element_damage_bonus", "value": 0.20, "always": false, "id": "weapon_break_alldmg", "refinement_values": [0.20, 0.225, 0.25, 0.275, 0.30], "label": "조화도 파괴 스킬 후 자신 전체 피해 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "id": "weapon_break_alldmg", "refinement_values": [0.20, 0.225, 0.25, 0.275, 0.30], "label": "조화도 파괴 스킬 후 자신 전체 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -261,8 +261,8 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 412, "critical_rate": 0.202 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.088, "always": false, "id": "weapon_hit_atk", "refinement_values": [0.088, 0.136, 0.188, 0.236, 0.288], "label": "일반/강공격 시 공격력 +{v} (4스택)" },
-      { "type": "heavy_attack_bonus", "value": 0.088, "always": false, "id": "weapon_hit_heavy", "refinement_values": [0.088, 0.136, 0.188, 0.236, 0.288], "label": "일반/강공격 시 강공격피해 +{v} (4스택)" }
+      { "type": "attack_percent", "value": 0.088, "always": false, "id": "weapon_hit_atk", "refinement_values": [0.088, 0.136, 0.188, 0.236, 0.288], "label": "일반/강공격 시 공격력 +{v} (4스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_bonus", "value": 0.088, "always": false, "id": "weapon_hit_heavy", "refinement_values": [0.088, 0.136, 0.188, 0.236, 0.288], "label": "일반/강공격 시 강공격피해 +{v} (4스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -278,10 +278,10 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 587, "critical_damage": 0.486 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "element_damage_bonus", "value": 0.40, "always": false, "element": "회절", "id": "weapon_spectro_stack", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "공명스킬 시 회절피해 +{v} (2스택)" },
-      { "type": "heavy_attack_amplify", "value": 0.30, "always": false, "id": "weapon_hack_heavy", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "해킹·이탈 시 강공격피해 +{v} 부스트" },
-      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_hack_defignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "해킹·이탈 시 강공격 방어력 무시 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.40, "always": false, "element": "회절", "id": "weapon_spectro_stack", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "공명스킬 시 회절피해 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_amplify", "value": 0.30, "always": false, "id": "weapon_hack_heavy", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "해킹·이탈 시 강공격피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_hack_defignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "해킹·이탈 시 강공격 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -290,10 +290,10 @@
     "weapon_type": "pistols",
     "base_stats": { "attack": 500, "critical_damage": 0.72 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_intro_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "변주 스킬 시 일반공격피해 +{v}" },
-      { "type": "basic_attack_bonus", "value": 0.12, "always": false, "id": "weapon_hack_basic", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "해킹·이탈 시 일반공격피해 +{v}" },
-      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_hack_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "해킹·이탈 시 파티 공격력 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_intro_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "변주 스킬 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.12, "always": false, "id": "weapon_hack_basic", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "해킹·이탈 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_hack_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "해킹·이탈 시 파티 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -302,9 +302,9 @@
     "weapon_type": "rectifier",
     "base_stats": { "attack": 587, "critical_rate": 0.36 },
     "buffs": [
-      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)" },
-      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "불꽃/조율 부여 시 공명해방 피해 +{v} 증가 (5초)" },
-      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "불꽃/조화밀집·이탈 부여 후 (해당 캐릭터) 공격력 +{v}" }
+      { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "불꽃/조율 부여 시 공명해방 피해 +{v} 증가 (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "불꽃/조화밀집·이탈 부여 후 (해당 캐릭터) 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   }
 ]

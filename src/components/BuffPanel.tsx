@@ -3,6 +3,7 @@ import type { AppState } from '../state/store';
 import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
+import { defaultBuffChecked } from '../engine/buffs';
 
 const SIMPLE_KEY = 'wuwa-scouter:buff-simple';
 
@@ -57,6 +58,8 @@ export function BuffPanel({ state, setState }: Props) {
 
   // 돌파 조건 미달 → 잠금(체크 불가)
   const isLocked = (b: Buff) => b.min_ascension != null && (state.ascensionLevel ?? 0) < b.min_ascension;
+  // 조건부 버프 현재 체크 상태: 저장값 우선, 미터치면 default_on/돌파 기준
+  const isChecked = (b: Buff) => state.conditionalToggles[b.id!] ?? defaultBuffChecked(b, state.ascensionLevel ?? 0);
 
   // {v}를 현재 수치로 치환. 무기 버프는 공진(refinement_values)에 따라 값이 변함.
   const ref = state.refinementLevel ?? 1;
@@ -106,10 +109,11 @@ export function BuffPanel({ state, setState }: Props) {
   const shortText = (b: Buff) => (b.short ? tmpl(b.short, b) : fullText(b));
 
   // 전체 토글: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off
-  const condIds = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b.id!));
+  const condItems = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b));
+  const condIds = condItems.map((b) => b.id!);
   const toggleCount = condIds.length + state.manualBuffs.length;
   const allOn = toggleCount > 0
-    && condIds.every((id) => state.conditionalToggles[id] !== false)
+    && condItems.every((b) => isChecked(b))
     && state.manualBuffs.every((m) => m.enabled !== false);
   const setAll = (value: boolean) => {
     const next = { ...state.conditionalToggles };
@@ -143,7 +147,7 @@ export function BuffPanel({ state, setState }: Props) {
           )}
           {g.items.map(({ b, passive }, idx) => {
             const locked = !passive && isLocked(b);
-            const checked = passive ? true : (!locked && (state.conditionalToggles[b.id!] ?? true));
+            const checked = passive ? true : (!locked && isChecked(b));
             return (
             <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
               <input type="checkbox" disabled={passive || locked} checked={checked}

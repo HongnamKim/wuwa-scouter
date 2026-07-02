@@ -8,6 +8,8 @@ export interface BuffTotals {
   critical_rate: number;
   critical_damage: number;
   attack_percent: number;
+  hp_percent: number;         // 스케일 스탯이 hp인 캐릭터용
+  defense_percent: number;    // 스케일 스탯이 defense인 캐릭터용
   element_bonus: number;      // element_damage_bonus (일치)
   damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus
   amplify: number;            // 부스트 곱연산 합 (계산용 총합)
@@ -26,6 +28,13 @@ const AMPLIFY_KEYS: StatKey[] = [
   'echo_skill_amplify',
 ];
 
+/** 조건부 버프의 체크박스 기본 상태. default_on_from_ascension이 우선, 없으면 default_on(미지정 시 true) */
+export function defaultBuffChecked(b: Buff, ascensionLevel: number): boolean {
+  if (b.default_on_from_ascension != null) return ascensionLevel >= b.default_on_from_ascension;
+  if (b.default_on != null) return b.default_on;
+  return true;
+}
+
 /** 이 버프가 현재 활성인지 (대상 / 상시 / 조건부 토글 / element 일치) */
 function isActive(b: Buff, ctx: CalcContext): boolean {
   // record_only(특정 스킬 계수/한정): 계산 완전 제외(기록용). absolute_score_only는 계산 포함(비율에선 자동 약분).
@@ -38,8 +47,10 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
   // 돌파(공명 체인) 조건: 미달이면 비활성 (예: 히유키 6돌 2스택)
   if (b.min_ascension != null && (ctx.ascensionLevel ?? 0) < b.min_ascension) return false;
   if (b.always) return true;
-  // 조건부: 개별 토글에 따름(미지정 시 기본 on)
-  return b.id ? ctx.conditionalToggles[b.id] !== false : true;
+  if (!b.id) return true;
+  // 조건부: 개별 토글에 따름. 미터치(undefined) 시 default_on/default_on_from_ascension 기준
+  const t = ctx.conditionalToggles[b.id];
+  return t !== undefined ? t : defaultBuffChecked(b, ctx.ascensionLevel ?? 0);
 }
 
 function damageTypeBonusKey(ctx: CalcContext): StatKey | null {
@@ -54,7 +65,7 @@ function damageTypeAmplifyKey(ctx: CalcContext): StatKey | null {
 
 export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   const t: BuffTotals = {
-    critical_rate: 0, critical_damage: 0, attack_percent: 0,
+    critical_rate: 0, critical_damage: 0, attack_percent: 0, hp_percent: 0, defense_percent: 0,
     element_bonus: 0, damage_type_bonus: 0, amplify: 0, amplify_element: 0, amplify_damage_type: 0, amplify_all: 0, damage_type_bonus_factor: 0, energy_regen: 0,
     defense_ignore: 0, element_resistance_ignore: 0,
   };
@@ -97,6 +108,8 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     if (b.type === 'critical_rate') t.critical_rate += b.value;
     else if (b.type === 'critical_damage') t.critical_damage += b.value;
     else if (b.type === 'attack_percent') t.attack_percent += b.value;
+    else if (b.type === 'hp_percent') t.hp_percent += b.value;
+    else if (b.type === 'defense_percent') t.defense_percent += b.value;
     else if (b.type === 'element_damage_bonus') t.element_bonus += b.value;
     else if (dmgTypeBonus && b.type === dmgTypeBonus) t.damage_type_bonus += b.value;
     else if (AMPLIFY_KEYS.includes(b.type)) {

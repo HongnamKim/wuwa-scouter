@@ -17,6 +17,8 @@ export interface Buff {
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
   record_only?: boolean; // 특정 스킬 계수/특정 스킬 한정 효과 — 계산 완전 제외 + 패널 숨김(순수 기록용). 예: 에이메스 종결 부스트, 루크 공중공격 보너스
   absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
+  default_on?: boolean; // 조건부 버프 체크박스 기본 상태(미지정 시 true). 모든 조건부 버프에 명시
+  default_on_from_ascension?: number; // 지정 시 해당 돌파 이상일 때만 기본 체크(미만이면 기본 해제, 잠금 아님). default_on보다 우선
   note?: string;
 }
 
@@ -43,6 +45,8 @@ export interface Character {
   scale_stat: ScaleStat;
   matrix_cost: number; // 매트릭스(파티 편성) 코스트. 현재 전원 1, 신규 기본 1 (향후 매트릭스 파티 구성 기능용)
   base_attack: number;
+  base_hp?: number;       // scale_stat이 hp인 캐릭터용 기초 스탯 (attack 스케일이면 불필요)
+  base_defense?: number;  // scale_stat이 defense인 캐릭터용 기초 스탯 (예: 모니에)
   effective_substats: StatKey[];
   damage_bonus_type: DamageBonusType | null;
   modes?: CharacterMode[]; // 모드 전환 캐릭터(루실라 등). 지정 시 선택 모드의 damage_bonus_type/effective_substats 사용

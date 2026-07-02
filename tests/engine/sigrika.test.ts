@@ -6,6 +6,7 @@ import { computePerf } from '../../src/engine/perf';
 import { mechanismDamageTypeBonus } from '../../src/engine/mechanisms';
 import { mainRecommendation, threeCoModeOptions, optimalThreeCoModeKkjak } from '../../src/engine/theory';
 import type { CalcContext } from '../../src/engine/context';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 // 시그리카 + 솔스원의 해석 + 함의의 소리를 따라. ER은 부옵 공효 값(%)으로 조절.
 function sigrikaCtx(erSubValue: number): CalcContext {
@@ -15,8 +16,7 @@ function sigrikaCtx(erSubValue: number): CalcContext {
   return {
     character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
     costLayout: '43311',
-    mainPrimary: [],
-    substats: [[{ type: 'energy_regen', value: erSubValue }], [], [], [], []],
+    slots: slotsFrom('43311', [], [[{ type: 'energy_regen', value: erSubValue }], [], [], [], []]),
     conditionalToggles: {},
     manualBuffs: [],
     requiredEnergyRegen: 150,
@@ -66,7 +66,7 @@ describe('비전환 캐릭터(히유키) 크크작 3코 추천은 공효 미포�
     const echoSet = loadEchoSets()[0];
     const ctx: CalcContext = {
       character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
-      costLayout: '43311', mainPrimary: [], substats: [[], [], [], [], []],
+      costLayout: '43311', slots: slotsFrom('43311', [], []),
       conditionalToggles: {}, manualBuffs: [], requiredEnergyRegen: 25,
     };
     const threeCo = mainRecommendation(ctx).find((g) => g.label === '3코 조합')!;

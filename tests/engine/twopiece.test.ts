@@ -4,7 +4,7 @@ import type { CalcContext } from '../../src/engine/context';
 import type { EchoSet } from '../../src/types/data';
 import { aggregateBuffs } from '../../src/engine/buffs';
 import { optimalTwoPiecePicks, twoPieceRecommendation, twoPieceRecommendationGroups, mainRecommendation } from '../../src/engine/theory';
-import { freeTwoPieceSlots } from '../../src/engine/echoSlots';
+import { freeTwoPieceSlots, slotsFrom } from '../../src/engine/echoSlots';
 
 /** 루시(회절/강공격) + 지정 세트 기준 컨텍스트. 기본=악몽 1pc(자유 슬롯 2) */
 function lucyCtx(twoPiecePicks: string[] = [], setId = 'shadow_of_shattered_dreams'): CalcContext {
@@ -14,12 +14,13 @@ function lucyCtx(twoPiecePicks: string[] = [], setId = 'shadow_of_shattered_drea
   return {
     character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
     costLayout: '43311',
-    mainPrimary: [
-      { cost: 4, type: 'critical_damage' }, { cost: 3, type: 'attack_percent' },
-      { cost: 3, type: 'attack_percent' }, { cost: 1, type: 'attack_percent' }, { cost: 1, type: 'attack_percent' },
-    ],
+    slots: slotsFrom('43311',
+      [
+        { cost: 4, type: 'critical_damage' }, { cost: 3, type: 'attack_percent' },
+        { cost: 3, type: 'attack_percent' }, { cost: 1, type: 'attack_percent' }, { cost: 1, type: 'attack_percent' },
+      ],
+      [[], [], [], [], []]),
     twoPiecePicks,
-    substats: [[], [], [], [], []],
     conditionalToggles: {},
     manualBuffs: [],
     requiredEnergyRegen: 0,

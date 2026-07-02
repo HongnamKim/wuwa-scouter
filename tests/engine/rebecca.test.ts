@@ -4,6 +4,7 @@ import { computeDisplaySpec } from '../../src/engine/spec';
 import { buildPerfInput } from '../../src/engine/build';
 import { computePerf } from '../../src/engine/perf';
 import type { CalcContext } from '../../src/engine/context';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 // 레베카 CHAIN.6 = 6돌에서 모든 출처 일반공격 피해 보너스 ×1.4.
 // 특별 메커니즘이 아니라 일반 곱연산 버프(damage_type_bonus_factor)로 처리한다.
@@ -18,8 +19,8 @@ function rebeccaCtx(ascension: number, basicBonusSub: number, chain6 = true): Ca
   toggles['rebecca_chain6_basic_amp'] = chain6;
   return {
     character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
-    costLayout: '43311', mainPrimary: [],
-    substats: [[{ type: 'basic_attack_bonus', value: basicBonusSub }], [], [], [], []],
+    costLayout: '43311',
+    slots: slotsFrom('43311', [], [[{ type: 'basic_attack_bonus', value: basicBonusSub }], [], [], [], []]),
     conditionalToggles: toggles, manualBuffs: [], ascensionLevel: ascension,
   };
 }

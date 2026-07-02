@@ -24,7 +24,7 @@ export function Scores({ state }: { state: AppState }) {
   const kk = kkjakPerf(state, mode);
 
   // 부옵을 하나도 입력하지 않았으면 점수 %는 비워둠
-  const hasSub = state.substats.some((echo) => echo.some((l) => l.type && l.value != null));
+  const hasSub = state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
   const pct = (num: number, den: number) => (hasSub ? `${(num / den * 100).toFixed(1)}%` : '-%');
 
   const erLines = energyRegenLines(state);

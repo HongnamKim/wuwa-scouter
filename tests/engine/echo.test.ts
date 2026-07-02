@@ -3,6 +3,7 @@ import { loadCharacters, loadWeapons, loadEchoSets } from '../../src/engine/load
 import { aggregateBuffs } from '../../src/engine/buffs';
 import type { CalcContext } from '../../src/engine/context';
 import type { DamageBonusType } from '../../src/types/domain';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 // 솔스원의 해석(권갑)을 장착한, 피해유형을 바꾼 가상 컨텍스트
 function ctxWith(damageBonusType: DamageBonusType): CalcContext {
@@ -14,8 +15,7 @@ function ctxWith(damageBonusType: DamageBonusType): CalcContext {
   return {
     character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
     costLayout: '43311',
-    mainPrimary: [],
-    substats: [[], [], [], [], []],
+    slots: slotsFrom('43311', [], []),
     conditionalToggles: {}, // 조건부 기본 ON
     manualBuffs: [],
     requiredEnergyRegen: 0,

@@ -28,10 +28,26 @@ describe('loadData', () => {
     expect(() => validateBuff({ type: 'element_damage_bonus', value: 0.1, always: true, element: '화염' })).toThrow();
   });
 
-  it('무결성: 모든 스킬노드 버프가 min_ascension(숫자)을 가진다', () => {
+  it('rejects buff missing record_only/absolute_score_only', () => {
+    expect(() => validateBuff({ type: 'critical_rate', value: 0.1, always: true, target: 'self', min_ascension: 0 })).toThrow();
+  });
+
+  it('rejects buff with both record_only and absolute_score_only true', () => {
+    expect(() => validateBuff({ type: 'critical_rate', value: 0.1, always: true, record_only: true, absolute_score_only: true })).toThrow();
+  });
+
+  it('accepts buff with both flags present and not both true', () => {
+    const b = validateBuff({ type: 'critical_rate', value: 0.1, always: true, record_only: false, absolute_score_only: false });
+    expect(b.type).toBe('critical_rate');
+  });
+
+  it('무결성: 모든 스킬노드 버프가 min_ascension(숫자) + target(self 포함)을 명시한다', () => {
+    const targets = ['self', 'party', 'next_character'];
     for (const c of loadCharacters()) {
       for (const b of c.skill_node) {
-        expect(typeof b.min_ascension, `${c.id} / ${b.label ?? b.note ?? b.type}`).toBe('number');
+        const where = `${c.id} / ${b.label ?? b.note ?? b.type}`;
+        expect(typeof b.min_ascension, where).toBe('number');
+        expect(targets, where).toContain(b.target);
       }
     }
   });

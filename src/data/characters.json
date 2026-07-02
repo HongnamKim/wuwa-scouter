@@ -18,17 +18,17 @@
     "recommended_weapons": ["frostbound_flame", "emerald_of_genesis"],
     "signature_weapon": "frostbound_flame",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "critical_damage", "value": 0.40, "always": false, "target": "self", "id": "hiyuki_snowrust_1", "min_ascension": 0, "label": "눈의 침식 1스택 · 크피 +40%", "short": "크피 +40% (눈 1스택)" },
-      { "type": "anomaly_damage_amplify", "value": 0.30, "element": "응결", "always": false, "target": "party", "id": "hiyuki_snow_anomaly_1", "min_ascension": 0, "label": "눈의 침식 1스택: 범위 목표가 받는 냉해(서리)효과 피해 +30% 부스트", "short": "파티 냉해효과 피해 +30% 부스트" },
-      { "type": "anomaly_damage_additional", "value": 1.02, "element": "응결", "always": false, "target": "self", "id": "hiyuki_snow_anomaly_2", "min_ascension": 0, "label": "눈의 침식 2스택: 서리효과 추가 시 냉해효과 피해 1회 추가 (이상효과 배율 102%)", "short": "냉해효과 추가타 (2스택, 배율 102%)" },
-      { "type": "anomaly_damage_amplify", "value": 0.30, "element": "응결", "always": false, "target": "party", "id": "hiyuki_snow_anomaly_3", "min_ascension": 0, "label": "눈의 침식 3스택: 범위 목표가 받는 냉해(서리)효과 피해 추가 +30% 부스트", "short": "파티 냉해효과 피해 +30% 부스트 (3스택)" },
-      { "type": "element_damage_amplify", "value": 0.20, "element": "응결", "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 파티(자신 제외) 서리효과 목표 응결피해 +20% 부스트", "short": "파티 응결피해 +20% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "party", "absolute_score_only": true, "id": "hiyuki_chain4_team", "min_ascension": 4, "label": "공명 스킬 발동 시 파티 전체 피해 +20% 부스트 (4돌)", "short": "파티 전체피해 +20% 부스트 (4돌)" },
-      { "type": "critical_damage", "value": 0.40, "always": false, "target": "self", "id": "hiyuki_snowrust_2", "min_ascension": 6, "label": "눈의 침식 2스택 · 크피 +40% (6돌)", "short": "크피 +40% (눈 2스택) (6돌)" },
-      { "type": "critical_damage", "value": 5.00, "always": false, "target": "self", "id": "hiyuki_chain6_critdmg", "min_ascension": 6, "label": "독심/납도 크리티컬 피해 +500% (6돌)", "short": "크피 +500% (독심/납도) (6돌)" },
-      { "type": "anomaly_damage_amplify", "value": 0.25, "element": "응결", "always": false, "target": "party", "id": "hiyuki_chain6_anomaly", "min_ascension": 6, "label": "눈의 침식 3스택: 범위 목표가 받는 냉해효과 최종 피해 +25% 증가 (6돌)", "short": "파티 냉해효과 최종피해 +25% (6돌)" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "critical_damage", "value": 0.40, "always": false, "target": "self", "id": "hiyuki_snowrust_1", "min_ascension": 0, "label": "눈의 침식 1스택 · 크피 +40%", "short": "크피 +40% (눈 1스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_amplify", "value": 0.30, "element": "응결", "always": false, "target": "party", "id": "hiyuki_snow_anomaly_1", "min_ascension": 0, "label": "눈의 침식 1스택: 범위 목표가 받는 냉해(서리)효과 피해 +30% 부스트", "short": "파티 냉해효과 피해 +30% 부스트", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_additional", "value": 1.02, "element": "응결", "always": false, "target": "self", "id": "hiyuki_snow_anomaly_2", "min_ascension": 0, "label": "눈의 침식 2스택: 서리효과 추가 시 냉해효과 피해 1회 추가 (이상효과 배율 102%)", "short": "냉해효과 추가타 (2스택, 배율 102%)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_amplify", "value": 0.30, "element": "응결", "always": false, "target": "party", "id": "hiyuki_snow_anomaly_3", "min_ascension": 0, "label": "눈의 침식 3스택: 범위 목표가 받는 냉해(서리)효과 피해 추가 +30% 부스트", "short": "파티 냉해효과 피해 +30% 부스트 (3스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_amplify", "value": 0.20, "element": "응결", "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 파티(자신 제외) 서리효과 목표 응결피해 +20% 부스트", "short": "파티 응결피해 +20% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "party", "id": "hiyuki_chain4_team", "min_ascension": 4, "label": "공명 스킬 발동 시 파티 전체 피해 +20% 부스트 (4돌)", "short": "파티 전체피해 +20% 부스트 (4돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "critical_damage", "value": 0.40, "always": false, "target": "self", "id": "hiyuki_snowrust_2", "min_ascension": 6, "label": "눈의 침식 2스택 · 크피 +40% (6돌)", "short": "크피 +40% (눈 2스택) (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 5.00, "always": false, "target": "self", "id": "hiyuki_chain6_critdmg", "min_ascension": 6, "label": "독심/납도 크리티컬 피해 +500% (6돌)", "short": "크피 +500% (독심/납도) (6돌)", "record_only": false, "absolute_score_only": false, "default_on": false },
+      { "type": "anomaly_damage_amplify", "value": 0.25, "element": "응결", "always": false, "target": "party", "id": "hiyuki_chain6_anomaly", "min_ascension": 6, "label": "눈의 침식 3스택: 범위 목표가 받는 냉해효과 최종 피해 +25% 증가 (6돌)", "short": "파티 냉해효과 최종피해 +25% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -54,18 +54,26 @@
     "recommended_weapons": ["eternal_morningstar", "emerald_of_genesis"],
     "signature_weapon": "eternal_morningstar",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_1", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 1스택 · 크피 +20% (자력)", "short": "크피 +20% (파동 1스택)" },
-      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_2", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 2스택 · 크피 +20% (3돌 자력 또는 파티원)", "short": "크피 +20% (파동 2스택)" },
-      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_3", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 3스택 · 크피 +20% (3돌 자력 또는 파티원)", "short": "크피 +20% (파동 3스택)" },
-      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "mode": "flame", "id": "aemeath_star_flame_1", "min_ascension": 0, "label": "별과 별 사이(불꽃) 1스택 · 크피 +30% (자력)", "short": "크피 +30% (불꽃 1스택)" },
-      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "mode": "flame", "id": "aemeath_star_flame_2", "min_ascension": 0, "label": "별과 별 사이(불꽃) 2스택 · 크피 +30% (3돌 자력 또는 파티원)", "short": "크피 +30% (불꽃 2스택)" },
-      { "type": "skill_motion_value_amplify", "value": 0.25, "always": false, "record_only": true, "target": "self", "id": "aemeath_star_lib_amp", "min_ascension": 0, "label": "별과 별 사이 최대 스택 시 종결 피해 +25% 부스트", "short": "종결 피해 +25% 부스트" },
-      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "aemeath_chain4_team", "min_ascension": 4, "label": "변주/공명스킬 발동 시 파티 전체 속성 피해 +20% 증가 (4돌)", "short": "파티 전속성피해 +20%" },
-      { "type": "resonance_liberation_amplify", "value": 0.40, "always": false, "target": "self", "absolute_score_only": true, "id": "aemeath_chain6_vuln", "min_ascension": 6, "label": "목표가 받는 에이메스 공명해방 피해 +40% 부스트 (취약, 공명 체인 6)", "short": "공명해방 받는 피해 +40% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "mode": "wave", "min_ascension": 0, "label": "반주(조화 파동): 다음 등장 캐릭터 전체 피해 +10%(조화 파동·이탈 시 20%) 부스트", "short": "다음 캐릭터 전체 피해 +20% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "mode": "flame", "min_ascension": 0, "label": "반주(불꽃): 다음 등장 캐릭터 전체 피해 +10%(불꽃 효과 시 20%) 부스트", "short": "다음 캐릭터 전체 피해 +20% 부스트" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_1", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 1스택 · 크피 +20% (자력)", "short": "크피 +20% (파동 1스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_2", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 2스택 · 크피 +20% (3돌 자력 또는 파티원)", "short": "크피 +20% (파동 2스택)", "record_only": false, "absolute_score_only": false, "default_on_from_ascension": 3 },
+      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "mode": "wave", "id": "aemeath_star_wave_3", "min_ascension": 0, "label": "별과 별 사이(조화 파동) 3스택 · 크피 +20% (3돌 자력 또는 파티원)", "short": "크피 +20% (파동 3스택)", "record_only": false, "absolute_score_only": false, "default_on_from_ascension": 3 },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "mode": "flame", "id": "aemeath_star_flame_1", "min_ascension": 0, "label": "별과 별 사이(불꽃) 1스택 · 크피 +30% (자력)", "short": "크피 +30% (불꽃 1스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "mode": "flame", "id": "aemeath_star_flame_2", "min_ascension": 0, "label": "별과 별 사이(불꽃) 2스택 · 크피 +30% (3돌 자력 또는 파티원)", "short": "크피 +30% (불꽃 2스택)", "record_only": false, "absolute_score_only": false, "default_on_from_ascension": 3 },
+      { "type": "skill_motion_value_amplify", "value": 0.25, "always": false, "target": "self", "id": "aemeath_star_lib_amp", "min_ascension": 0, "label": "별과 별 사이 최대 스택 시 종결 피해 +25% 부스트", "short": "종결 피해 +25% 부스트", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 2.00, "always": false, "target": "self", "id": "aemeath_perception_heavy", "min_ascension": 0, "label": "만물이 있기 전에: 즉시 대응 상태 시 강공격 차지2(에이메스/메카) 피해 +200% 부스트", "short": "즉시대응 강공격 차지2 +200% 부스트", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "강공격 차지2 피해는 공명해방으로 적용. 특정 스킬 배율이라 record_only" },
+      { "type": "critical_damage", "value": 3.00, "always": false, "target": "self", "id": "aemeath_chain1_heavy_critdmg", "min_ascension": 1, "label": "CHAIN.1: 즉시 대응 상태 시 강공격 차지2(에이메스/메카) 크리티컬 피해 +300% 증가", "short": "즉시대응 강공격 크피 +300% (1돌)", "record_only": false, "absolute_score_only": false, "default_on": false, "note": "에이메스 2단 차지 비중이 작아 기본 해제" },
+      { "type": "skill_motion_value_amplify", "value": 1.00, "always": false, "target": "self", "id": "aemeath_chain2_symphony", "min_ascension": 2, "label": "CHAIN.2: 빛나는 날개의 합주 · 강림/등장 피해 배율 +100% (2돌)", "short": "빛나는날개 배율 +100% (2돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 1.00, "always": false, "target": "self", "mode": "wave", "id": "aemeath_chain2_wave_stack", "min_ascension": 2, "label": "CHAIN.2(조화 파동): 빛나는 날개의 합주 추가 조화 파동 피해 배율 상승 (스택당 20%, 최대 5스택)", "short": "조화파동 추가피해 배율 +20%×5 (2돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "스택당 20%, 최대 5스택 → value 1.00" },
+      { "type": "skill_motion_value_amplify", "value": 1.00, "always": false, "target": "self", "id": "aemeath_chain3_finale", "min_ascension": 3, "label": "CHAIN.3: 경계를 부순 별빛 · 종결 피해 배율 +100% (3돌)", "short": "종결 배율 +100% (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.40, "always": false, "target": "self", "id": "aemeath_chain3_overload", "min_ascension": 3, "label": "CHAIN.3: 경계를 부순 별빛 · 과부하 피해 배율 +40% (3돌)", "short": "과부하 배율 +40% (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_rate", "value": 0.80, "always": false, "target": "self", "id": "aemeath_chain6_anomaly_critrate", "min_ascension": 6, "label": "CHAIN.6: 조화 파동/불꽃효과 피해 크리티컬 확률 80% 고정 (이상효과 한정, 6돌)", "short": "이상효과 크리 80% 고정 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "원래 이상효과엔 크리 없음→6돌 신규. 이상효과 딜 한정이라 record_only" },
+      { "type": "critical_damage", "value": 2.75, "always": false, "target": "self", "id": "aemeath_chain6_anomaly_critdmg", "min_ascension": 6, "label": "CHAIN.6: 조화 파동/불꽃효과 피해 크리티컬 피해 275% 고정 (이상효과 한정, 6돌)", "short": "이상효과 크피 275% 고정 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "이상효과 딜 한정이라 record_only" },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "aemeath_chain4_team", "min_ascension": 4, "label": "변주/공명스킬 발동 시 파티 전체 속성 피해 +20% 증가 (4돌)", "short": "파티 전속성피해 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "resonance_liberation_amplify", "value": 0.40, "always": false, "target": "self", "id": "aemeath_chain6_vuln", "min_ascension": 6, "label": "목표가 받는 에이메스 공명해방 피해 +40% 부스트 (취약, 공명 체인 6)", "short": "공명해방 받는 피해 +40% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "mode": "wave", "min_ascension": 0, "label": "반주(조화 파동): 다음 등장 캐릭터 전체 피해 +10%(조화 파동·이탈 시 20%) 부스트", "short": "다음 캐릭터 전체 피해 +20% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "mode": "flame", "min_ascension": 0, "label": "반주(불꽃): 다음 등장 캐릭터 전체 피해 +10%(불꽃 효과 시 20%) 부스트", "short": "다음 캐릭터 전체 피해 +20% 부스트", "record_only": false, "absolute_score_only": true }
     ]
   },
   {
@@ -91,19 +99,19 @@
     "recommended_weapons": ["freeze_frame", "stringmaster", "cosmic_ripples", "augment"],
     "signature_weapon": "freeze_frame",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "element_resistance_ignore", "value": 0.08, "element": "응결", "always": false, "target": "party", "mode": "frost", "absolute_score_only": true, "id": "lucilla_slowmo_res", "min_ascension": 0, "label": "슬로우 모션(서리): 목표의 응결 저항 -8%", "short": "목표의 응결저항 -8%" },
-      { "type": "echo_skill_bonus", "value": 0.25, "always": false, "target": "party", "mode": "echo", "id": "lucilla_slowmo_echo", "min_ascension": 0, "label": "슬로우 모션(에코): 파티 에코 어빌리티 피해 +25% 증가", "short": "파티 에코피해 +25%" },
-      { "type": "basic_attack_bonus", "value": 0.30, "always": false, "target": "self", "mode": "frost", "id": "lucilla_lib_basic", "min_ascension": 0, "label": "생생한 기억(공명 해방, 서리): 일반공격 피해 +30% 증가 (10초)", "short": "일반공격 피해 +30%" },
-      { "type": "echo_skill_bonus", "value": 0.30, "always": false, "target": "self", "mode": "echo", "id": "lucilla_lib_echo", "min_ascension": 0, "label": "생생한 기억(공명 해방, 에코): 에코 어빌리티 피해 +30% 증가 (10초)", "short": "에코피해 +30%" },
-      { "type": "critical_damage", "value": 0.40, "always": false, "target": "party", "mode": "echo", "id": "lucilla_zoom_critdmg", "min_ascension": 0, "label": "줌(에코): 에코 어빌리티 크리티컬 피해 +40% (4스택)", "short": "에코 크피 +40%" },
-      { "type": "anomaly_damage_amplify", "value": 0.60, "element": "응결", "always": false, "target": "party", "mode": "frost", "id": "lucilla_montage_frost", "min_ascension": 0, "label": "반주 몽타주(서리): 파티 범위 서리효과 피해 +60% 부스트", "short": "파티 서리효과 피해 +60% 부스트" },
-      { "type": "echo_skill_amplify", "value": 0.50, "always": false, "target": "next_character", "min_ascension": 0, "mode": "echo", "label": "반주 몽타주(에코): 다음 캐릭터 에코 어빌리티 피해 +50% 부스트", "short": "다음 캐릭터 에코피해 +50% 부스트" },
-      { "type": "critical_rate", "value": 0.20, "always": false, "target": "self", "id": "lucilla_chain1_crit", "min_ascension": 1, "label": "팔로우 스폿 발동(공명 스킬의 완벽한 초점 성공) 시 크리티컬 +20% (1돌)", "short": "공명 스킬 성공 시 크리티컬 +20%" },
-      { "type": "anomaly_damage_amplify", "value": 0.80, "element": "응결", "always": false, "target": "party", "mode": "frost", "id": "lucilla_chain2_frost", "min_ascension": 2, "label": "받는 서리효과 피해 +80% 부스트 (2돌, 서리)", "short": "파티 서리효과 피해 +80% 부스트" },
-      { "type": "echo_skill_bonus", "value": 0.40, "always": false, "target": "party", "mode": "echo", "id": "lucilla_chain2_echo", "min_ascension": 2, "label": "에코 어빌리티 피해 +40% 증가 (2돌, 에코)", "short": "에코피해 +40%" },
-      { "type": "attack_percent", "value": 0.30, "always": false, "target": "self", "id": "lucilla_chain4_atk", "min_ascension": 4, "label": "망각 발동 시 공격력 +30% (3스택, 4돌)", "short": "공격력 +30%" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "element_resistance_ignore", "value": 0.08, "element": "응결", "always": false, "target": "party", "mode": "frost", "id": "lucilla_slowmo_res", "min_ascension": 0, "label": "슬로우 모션(서리): 목표의 응결 저항 -8%", "short": "목표의 응결저항 -8%", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.25, "always": false, "target": "party", "mode": "echo", "id": "lucilla_slowmo_echo", "min_ascension": 0, "label": "슬로우 모션(에코): 파티 에코 어빌리티 피해 +25% 증가", "short": "파티 에코피해 +25%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.30, "always": false, "target": "self", "mode": "frost", "id": "lucilla_lib_basic", "min_ascension": 0, "label": "생생한 기억(공명 해방, 서리): 일반공격 피해 +30% 증가 (10초)", "short": "일반공격 피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.30, "always": false, "target": "self", "mode": "echo", "id": "lucilla_lib_echo", "min_ascension": 0, "label": "생생한 기억(공명 해방, 에코): 에코 어빌리티 피해 +30% 증가 (10초)", "short": "에코피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.40, "always": false, "target": "party", "mode": "echo", "id": "lucilla_zoom_critdmg", "min_ascension": 0, "label": "줌(에코): 에코 어빌리티 크리티컬 피해 +40% (4스택)", "short": "에코 크피 +40%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_amplify", "value": 0.60, "element": "응결", "always": false, "target": "party", "mode": "frost", "id": "lucilla_montage_frost", "min_ascension": 0, "label": "반주 몽타주(서리): 파티 범위 서리효과 피해 +60% 부스트", "short": "파티 서리효과 피해 +60% 부스트", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_amplify", "value": 0.50, "always": false, "target": "next_character", "min_ascension": 0, "mode": "echo", "label": "반주 몽타주(에코): 다음 캐릭터 에코 어빌리티 피해 +50% 부스트", "short": "다음 캐릭터 에코피해 +50% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "critical_rate", "value": 0.20, "always": false, "target": "self", "id": "lucilla_chain1_crit", "min_ascension": 1, "label": "팔로우 스폿 발동(공명 스킬의 완벽한 초점 성공) 시 크리티컬 +20% (1돌)", "short": "공명 스킬 성공 시 크리티컬 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_amplify", "value": 0.80, "element": "응결", "always": false, "target": "party", "mode": "frost", "id": "lucilla_chain2_frost", "min_ascension": 2, "label": "받는 서리효과 피해 +80% 부스트 (2돌, 서리)", "short": "파티 서리효과 피해 +80% 부스트", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.40, "always": false, "target": "party", "mode": "echo", "id": "lucilla_chain2_echo", "min_ascension": 2, "label": "에코 어빌리티 피해 +40% 증가 (2돌, 에코)", "short": "에코피해 +40%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.30, "always": false, "target": "self", "id": "lucilla_chain4_atk", "min_ascension": 4, "label": "망각 발동 시 공격력 +30% (3스택, 4돌)", "short": "공격력 +30%", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -125,14 +133,14 @@
     "recommended_weapons": ["solsworn_ciphers", "blazing_justice", "pulsation_bracer", "stonard", "aether_strike", "celestial_spiral"],
     "signature_weapon": "solsworn_ciphers",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "element_damage_bonus", "value": 0.18, "always": false, "element": "기류", "target": "party", "id": "skill_blessing_aero_party", "min_ascension": 0, "label": "함의의 축복 6스택: 파티 기류피해 +18%", "short": "파티 기류피해 +18%" },
-      { "type": "element_damage_bonus", "value": 0.30, "always": false, "target": "self", "element": "기류", "id": "skill_blessing_aero_self", "min_ascension": 0, "label": "함의의 축복 6스택 도달 시: 시그리카 기류피해 +30%", "short": "기류피해 +30%" },
-      { "type": "echo_skill_bonus", "value": 0.18, "always": false, "target": "party", "id": "skill_blessing_echo_party", "min_ascension": 0, "label": "함의의 축복 6스택: 파티 에코피해 +18%", "short": "파티 에코피해 +18%" },
-      { "type": "echo_skill_bonus", "value": 0.30, "always": false, "target": "self", "id": "skill_blessing_echo_self", "min_ascension": 0, "label": "함의의 축복 6스택 도달 시: 시그리카 에코피해 +30% (자력)", "short": "에코피해 +30%" },
-      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "sigrika_chain4_team", "min_ascension": 4, "label": "파티 에코 발동 시 파티 공격력 +20% (4돌)", "short": "파티 공격력 +20% (4돌)" },
-      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "absolute_score_only": true, "id": "sigrika_chain6_vuln", "min_ascension": 6, "label": "목표가 받는 시그리카 피해 +30% 부스트 (취약, 6돌)", "short": "받는 피해 +30% 부스트 (취약)" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.18, "always": false, "element": "기류", "target": "party", "id": "skill_blessing_aero_party", "min_ascension": 0, "label": "함의의 축복 6스택: 파티 기류피해 +18%", "short": "파티 기류피해 +18%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.30, "always": false, "target": "self", "element": "기류", "id": "skill_blessing_aero_self", "min_ascension": 0, "label": "함의의 축복 6스택 도달 시: 시그리카 기류피해 +30%", "short": "기류피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.18, "always": false, "target": "party", "id": "skill_blessing_echo_party", "min_ascension": 0, "label": "함의의 축복 6스택: 파티 에코피해 +18%", "short": "파티 에코피해 +18%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "echo_skill_bonus", "value": 0.30, "always": false, "target": "self", "id": "skill_blessing_echo_self", "min_ascension": 0, "label": "함의의 축복 6스택 도달 시: 시그리카 에코피해 +30% (자력)", "short": "에코피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "sigrika_chain4_team", "min_ascension": 4, "label": "파티 에코 발동 시 파티 공격력 +20% (4돌)", "short": "파티 공격력 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "id": "sigrika_chain6_vuln", "min_ascension": 6, "label": "목표가 받는 시그리카 피해 +30% 부스트 (취약, 6돌)", "short": "받는 피해 +30% 부스트 (취약)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -158,15 +166,22 @@
     "recommended_weapons": ["spectrum_blaster", "static_mist", "phasic_homogenizer", "solar_flame", "cadenza"],
     "signature_weapon": "spectrum_blaster",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "element_damage_bonus", "value": 0.25, "element": "회절", "always": false, "target": "self", "id": "lynae_intro_spectro", "min_ascension": 0, "label": "인트로 스킬 · 회절피해 +25% (자력)", "short": "회절피해 +25%" },
-      { "type": "all_damage_amplify", "value": 0.24, "always": false, "target": "party", "absolute_score_only": true, "id": "lynae_lib_alldmg", "min_ascension": 0, "label": "공명 해방 · 전체 피해 +24% 부스트 (파티 전체)", "short": "파티 전체피해 +24% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "self", "absolute_score_only": true, "id": "lynae_seq2_amp", "min_ascension": 2, "label": "전체 피해 증폭 +25% (공명 체인 2)", "short": "전체 피해 +25% 부스트" },
-      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "lynae_seq4_atk", "min_ascension": 4, "label": "공격력 +20% (공명 체인 4)", "short": "공격력 +20%" },
-      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 전체 피해 +15% 부스트 (14초)", "short": "다음 캐릭터 전체 피해 +15% 부스트" },
-      { "type": "resonance_liberation_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 공명해방 피해 +25% 부스트 (14초)", "short": "다음 캐릭터 공명해방 피해 +25% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 2, "label": "반주(공명 체인 2): 다음 등장 캐릭터 전체 피해 +25% 부스트 추가", "short": "다음 캐릭터 전체 피해 +25% 부스트" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.25, "element": "회절", "always": false, "target": "self", "id": "lynae_intro_spectro", "min_ascension": 0, "label": "고유2: 변주 스킬 발동 시 회절피해 +25% (9초, 자력)", "short": "회절피해 +25% (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.24, "always": false, "target": "party", "id": "lynae_lib_alldmg", "min_ascension": 0, "label": "공명 해방 · 전체 피해 +24% 부스트 (파티 전체)", "short": "파티 전체피해 +24% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "self", "id": "lynae_seq2_amp", "min_ascension": 2, "label": "전체 피해 증폭 +25% (공명 체인 2)", "short": "전체 피해 +25% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "lynae_seq4_atk", "min_ascension": 4, "label": "공격력 +20% (공명 체인 4)", "short": "공격력 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "harmony_break_amplify", "value": 40, "always": false, "target": "party", "id": "lynae_visual_harmony", "min_ascension": 0, "label": "공명 회로 일반 공격 · 시각적 충격: 파티 조화도 파괴 증폭 +40pt (30초)", "short": "파티 조화도파괴증폭 +40pt", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.0012, "always": false, "target": "self", "mode": "cluster", "id": "lynae_cluster_response", "min_ascension": 0, "label": "조화 밀집 · 간섭 대응: 조화도 파괴 증폭 1pt·조화 밀집·간섭 1스택당 대상 최종 피해 +0.12%", "short": "조화밀집 대응 최종피해 +0.12%/pt·스택", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "조화도 관련 record_only(근사 점수 밖). value=단가 0.0012(=0.12%/pt·스택). 총 최종피해 = 0.0012 × 조화도파괴증폭(pt) × 조화밀집간섭 스택. 린네 자체 조화도파괴증폭 60pt(시각적충격 40 + 조화세트 '마음을 엮은 꿈의 그림자' 20) → 스택당 +7.2%; 데니아 동행(조화밀집) 시 파티 +최대 60pt로 더 높음. 파티 딜 기능 구현 시 소비 로직 추가 예정" },
+      { "type": "skill_motion_value_amplify", "value": 1.20, "always": false, "target": "self", "id": "lynae_chain1_illusion", "min_ascension": 1, "label": "CHAIN.1: 일반 공격 · 환각빛 피해 배율 +120% (1돌)", "short": "환각빛 배율 +120% (1돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.90, "always": false, "target": "self", "id": "lynae_chain3_visual", "min_ascension": 3, "label": "CHAIN.3: 일반 공격 · 시각적 충격/레인보우 스플래시 피해 배율 +90% (3돌)", "short": "시각충격·레인보우 배율 +90% (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 13.75, "always": false, "target": "self", "id": "lynae_chain3_premix", "min_ascension": 3, "label": "CHAIN.3: 컬러 프리믹싱 — 색 더하기 회절 피해 (스택당 55%, 최대 25스택)", "short": "색 더하기 배율 +55%×25 (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "스택당 55%, 최대 25스택 → value 13.75" },
+      { "type": "skill_motion_value_amplify", "value": 0.70, "always": false, "target": "self", "id": "lynae_chain5_liberation", "min_ascension": 5, "label": "CHAIN.5: 공명 해방 · 컬러 스프레이 폭발 피해 배율 +70% (5돌)", "short": "컬러스프레이 배율 +70% (5돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.90, "always": false, "target": "self", "id": "lynae_chain6_heartcolor", "min_ascension": 6, "label": "CHAIN.6: 마음의 색 — 레인보우 스플래시/시각적 충격 받는 피해 (스택당 30%, 최대 3스택)", "short": "마음의색 받는피해 +30%×3 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "스택당 30%, 최대 3스택 → value 0.90" },
+      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 전체 피해 +15% 부스트 (14초)", "short": "다음 캐릭터 전체 피해 +15% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "resonance_liberation_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 공명해방 피해 +25% 부스트 (14초)", "short": "다음 캐릭터 공명해방 피해 +25% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 2, "label": "반주(공명 체인 2): 다음 등장 캐릭터 전체 피해 +25% 부스트 추가", "short": "다음 캐릭터 전체 피해 +25% 부스트", "record_only": false, "absolute_score_only": true }
     ]
   },
   {
@@ -188,16 +203,16 @@
     "recommended_weapons": ["spectral_trigger", "phasic_homogenizer"],
     "signature_weapon": "spectral_trigger",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "element_damage_bonus", "value": 0.65, "element": "회절", "always": false, "target": "self", "id": "lucy_forte_spectro", "min_ascension": 0, "label": "회절피해 +65% (강화E 사용 후, 8초 간)", "short": "강화E 사용 후, 회절피해 +65%" },
-      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "self", "absolute_score_only": true, "id": "lucy_backdoor_amp", "min_ascension": 0, "label": "네트워크 백도어(표식 추가 보스 처치) 2스택 · 전체 피해 +25% 부스트 (10%×2스택 + 도달 추가 5%)", "short": "전체 피해 +25% 부스트" },
-      { "type": "basic_attack_amplify", "value": 0.25, "always": false, "target": "next_character", "id": "lucy_intro_next_basic", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 일반공격 피해 +25% 부스트", "short": "다음 캐릭터 일반공격 피해 +25% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "id": "lucy_intro_team_hack", "min_ascension": 0, "label": "반주: 루시 제외 파티원 해킹·이탈 시 전체 피해 +20% 부스트", "short": "파티 전체 피해 +20% 부스트" },
-      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "lucy_s1_atk", "min_ascension": 1, "label": "변주 등장 시 공격력 +20% (1돌)", "short": "변주 등장 시 공격력 +20%" },
-      { "type": "critical_damage", "value": 1.00, "always": false, "target": "self", "id": "lucy_chain3_critdmg", "min_ascension": 3, "label": "오버라이드(공명해방) 크리티컬 피해 +100% (3돌)", "short": "공명 해방의 크피 +100% (오버라이드) (3돌)" },
-      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "lucy_s4_team", "min_ascension": 4, "label": "해킹·이탈 시 전속성피해 +20% (4돌)", "short": "파티 전속성피해 +20% (4돌)" },
-      { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "target": "self", "absolute_score_only": true, "id": "lucy_s6_heavy", "min_ascension": 6, "label": "해킹·이탈/간섭 대상이 받는 강공격 피해 +40% 부스트 (6돌)", "short": "강공격 받는 피해 +40% 부스트 (6돌)" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.65, "element": "회절", "always": false, "target": "self", "id": "lucy_forte_spectro", "min_ascension": 0, "label": "회절피해 +65% (강화E 사용 후, 8초 간)", "short": "강화E 사용 후, 회절피해 +65%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "self", "id": "lucy_backdoor_amp", "min_ascension": 0, "label": "네트워크 백도어(표식 추가 보스 처치) 2스택 · 전체 피해 +25% 부스트 (10%×2스택 + 도달 추가 5%)", "short": "전체 피해 +25% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "basic_attack_amplify", "value": 0.25, "always": false, "target": "next_character", "id": "lucy_intro_next_basic", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 일반공격 피해 +25% 부스트", "short": "다음 캐릭터 일반공격 피해 +25% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "id": "lucy_intro_team_hack", "min_ascension": 0, "label": "반주: 루시 제외 파티원 해킹·이탈 시 전체 피해 +20% 부스트", "short": "파티 전체 피해 +20% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "lucy_s1_atk", "min_ascension": 1, "label": "변주 등장 시 공격력 +20% (1돌)", "short": "변주 등장 시 공격력 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 1.00, "always": false, "target": "self", "id": "lucy_chain3_critdmg", "min_ascension": 3, "label": "오버라이드(공명해방) 크리티컬 피해 +100% (3돌)", "short": "공명 해방의 크피 +100% (오버라이드) (3돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "lucy_s4_team", "min_ascension": 4, "label": "해킹·이탈 시 전속성피해 +20% (4돌)", "short": "파티 전속성피해 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "target": "self", "id": "lucy_s6_heavy", "min_ascension": 6, "label": "해킹·이탈/간섭 대상이 받는 강공격 피해 +40% 부스트 (6돌)", "short": "강공격 받는 피해 +40% 부스트 (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -219,20 +234,20 @@
     "recommended_weapons": ["skull_thrasher", "static_mist"],
     "signature_weapon": "skull_thrasher",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "rebecca_huntress", "min_ascension": 0, "label": "「헌트리스」 보너스 · 크피 +30% (기본 모드, 「둘 다 내 거야!」 시 거츠와 동시 적용)", "short": "크피 +30% (헌트리스)" },
-      { "type": "defense_ignore", "value": 0.15, "always": false, "target": "self", "absolute_score_only": true, "id": "rebecca_guts", "min_ascension": 0, "label": "「거츠」 보너스 · 방어력 무시 15% (「둘 다 내 거야!」 시 헌트리스와 동시 적용)", "short": "방어력 무시 15% (거츠)" },
-      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "rebecca_atk_stack", "min_ascension": 0, "label": "네 차례야! · 공격력 +20% (2스택, 자력)", "short": "공격력 +20%" },
-      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "rebecca_liberation_team_atk", "min_ascension": 0, "label": "공명 해방 · 파티 타임! 발동 시 파티 공격력 +20%", "short": "파티 공격력 +20%" },
-      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "rebecca_chain2_team_element", "min_ascension": 2, "label": "변주/공명해방 발동 시 파티 전체 속성 피해 +20% (2돌)", "short": "파티 전속성피해 +20% (2돌)" },
-      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "party", "absolute_score_only": true, "id": "rebecca_chain2_hack_amp", "min_ascension": 2, "label": "해킹·이탈 추가 시 파티 전체 피해 +15% 부스트 (2돌)", "short": "파티 전체 피해 +15% 부스트 (2돌)" },
-      { "type": "critical_damage", "value": 0.18, "always": false, "target": "self", "id": "rebecca_chain4_huntress", "min_ascension": 4, "label": "「둘 다 내 거야!」 보너스 +60% · 헌트리스 크피 추가 +18% (합 48%, 4돌)", "short": "크피 +18% (4돌)" },
-      { "type": "defense_ignore", "value": 0.09, "always": false, "target": "self", "absolute_score_only": true, "id": "rebecca_chain4_guts", "min_ascension": 4, "label": "「둘 다 내 거야!」 보너스 +60% · 거츠 방어력 무시 추가 +9% (합 24%, 공명 체인 4)", "short": "방무 +9% (4돌)" },
-      { "type": "basic_attack_bonus", "value": 0.20, "always": false, "target": "self", "id": "rebecca_chain5_basic", "min_ascension": 5, "label": "해킹·이탈 추가 시 일반공격 피해 +20% (5돌)", "short": "일반공격 피해 +20% (5돌)" },
-      { "type": "damage_type_bonus_factor", "value": 0.40, "always": false, "target": "self", "id": "rebecca_chain6_basic_amp", "min_ascension": 6, "label": "모든 출처 일반공격 피해 보너스 ×1.4 (+40% 상승, 6돌)", "short": "일반공격 피해 보너스 ×1.4 (6돌)" },
-      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "next_character", "id": "rebecca_intro_next_amp", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 전체 피해 +15% 부스트 (14초)", "short": "다음 캐릭터 전체 피해 +15% 부스트" },
-      { "type": "heavy_attack_amplify", "value": 0.35, "always": false, "target": "next_character", "id": "rebecca_intro_next_heavy", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터(엣지러너의 유대) 강공격 피해 +35% 부스트 (오버리미트 최대)", "short": "다음 캐릭터 강공격 피해 +35% 부스트" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "rebecca_huntress", "min_ascension": 0, "label": "「헌트리스」 보너스 · 크피 +30% (기본 모드, 「둘 다 내 거야!」 시 거츠와 동시 적용)", "short": "크피 +30% (헌트리스)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "defense_ignore", "value": 0.15, "always": false, "target": "self", "id": "rebecca_guts", "min_ascension": 0, "label": "「거츠」 보너스 · 방어력 무시 15% (「둘 다 내 거야!」 시 헌트리스와 동시 적용)", "short": "방어력 무시 15% (거츠)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "rebecca_atk_stack", "min_ascension": 0, "label": "네 차례야! · 공격력 +20% (2스택, 자력)", "short": "공격력 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "rebecca_liberation_team_atk", "min_ascension": 0, "label": "공명 해방 · 파티 타임! 발동 시 파티 공격력 +20%", "short": "파티 공격력 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.20, "always": false, "target": "party", "id": "rebecca_chain2_team_element", "min_ascension": 2, "label": "변주/공명해방 발동 시 파티 전체 속성 피해 +20% (2돌)", "short": "파티 전속성피해 +20% (2돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "party", "id": "rebecca_chain2_hack_amp", "min_ascension": 2, "label": "해킹·이탈 추가 시 파티 전체 피해 +15% 부스트 (2돌)", "short": "파티 전체 피해 +15% 부스트 (2돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "critical_damage", "value": 0.18, "always": false, "target": "self", "id": "rebecca_chain4_huntress", "min_ascension": 4, "label": "「둘 다 내 거야!」 보너스 +60% · 헌트리스 크피 추가 +18% (합 48%, 4돌)", "short": "크피 +18% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "defense_ignore", "value": 0.09, "always": false, "target": "self", "id": "rebecca_chain4_guts", "min_ascension": 4, "label": "「둘 다 내 거야!」 보너스 +60% · 거츠 방어력 무시 추가 +9% (합 24%, 공명 체인 4)", "short": "방무 +9% (4돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.20, "always": false, "target": "self", "id": "rebecca_chain5_basic", "min_ascension": 5, "label": "해킹·이탈 추가 시 일반공격 피해 +20% (5돌)", "short": "일반공격 피해 +20% (5돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "damage_type_bonus_factor", "value": 0.40, "always": false, "target": "self", "id": "rebecca_chain6_basic_amp", "min_ascension": 6, "label": "모든 출처 일반공격 피해 보너스 ×1.4 (+40% 상승, 6돌)", "short": "일반공격 피해 보너스 ×1.4 (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "next_character", "id": "rebecca_intro_next_amp", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 전체 피해 +15% 부스트 (14초)", "short": "다음 캐릭터 전체 피해 +15% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "heavy_attack_amplify", "value": 0.35, "always": false, "target": "next_character", "id": "rebecca_intro_next_heavy", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터(엣지러너의 유대) 강공격 피해 +35% 부스트 (오버리미트 최대)", "short": "다음 캐릭터 강공격 피해 +35% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
   {
@@ -258,19 +273,19 @@
     "recommended_weapons": ["forged_dwarf_star", "stringmaster", "augment"],
     "signature_weapon": "forged_dwarf_star",
     "skill_node": [
-      { "type": "critical_damage", "value": 0.16, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.30, "always": false, "target": "self", "id": "denia_entropy_atk", "min_ascension": 0, "label": "엔트로피 변이 강화(환멸) · 공격력 +30%", "short": "1차 해방 이후 공격력 +30%" },
-      { "type": "element_damage_bonus", "value": 0.30, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_mode_fusion", "min_ascension": 0, "label": "공명 모드·불꽃: 파티 용융피해 +30% 증가", "short": "파티 용융피해 +30%" },
-      { "type": "harmony_break_amplify", "value": 10, "always": false, "target": "party", "mode": "cluster", "id": "denia_mode_cluster", "min_ascension": 0, "label": "공명 모드·조화 밀집: 파티 조화도 파괴 증폭 +10pt (최대 +40pt, 부조화 효율 초과 시)", "short": "파티 조화도파괴증폭 +10pt" },
-      { "type": "anomaly_damage_amplify", "value": 0.60, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_montage_flame", "min_ascension": 0, "label": "반주(불꽃): 파티 범위 불꽃효과 피해 +60% 부스트", "short": "반주: 불꽃효과 피해 +60% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.40, "always": false, "target": "next_character", "min_ascension": 0, "mode": "cluster", "label": "반주(조화 밀집): 다음 등장 캐릭터 전체 피해 +15%(조화 밀집·이탈 시 40%) 부스트", "short": "반주: 다음 캐릭터 전체 피해 +40% 부스트" },
-      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "denia_chain1_critdmg", "min_ascension": 1, "label": "크리티컬 피해 +30% (1돌)", "short": "크피 +30% (1돌)" },
-      { "type": "element_damage_bonus", "value": 0.50, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_chain2_fusion", "min_ascension": 2, "label": "불꽃: 파티 내 캐릭터가 불꽃효과 추가 시 용융피해 +50% 증가 (2돌)", "short": "파티 용융피해 +50% (2돌)" },
-      { "type": "harmony_break_amplify", "value": 20, "always": false, "target": "party", "mode": "cluster", "id": "denia_chain2_cluster", "min_ascension": 2, "label": "조화 밀집: 조화 밀집·이탈 추가 후 파티 조화도 파괴 증폭 +20pt (2돌)", "short": "파티 조화도파괴증폭 +20pt (2돌)" },
-      { "type": "element_resistance_ignore", "value": 0.10, "element": "용융", "always": false, "target": "self", "mode": "flame", "absolute_score_only": true, "id": "denia_chain2_resignore", "min_ascension": 2, "label": "불꽃: 타락한 보이드매터 10스택 시 용융 저항 무시 10% (2돌)", "short": "용융 저항무시 10% (2돌)" },
-      { "type": "attack_percent", "value": 0.60, "always": false, "target": "self", "id": "denia_chain6_atk", "min_ascension": 6, "label": "엔트로피 변이 강화 · 공격력 +60% (6돌)", "short": "공격력 +60% (6돌)" },
-      { "type": "element_damage_bonus", "value": 0.60, "element": "용융", "always": false, "target": "self", "id": "denia_chain6_fusion", "min_ascension": 6, "label": "엔트로피 변이 강화 · 용융피해 +60% 증가 (6돌)", "short": "용융피해 +60% (6돌)" }
+      { "type": "critical_damage", "value": 0.16, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.30, "always": false, "target": "self", "id": "denia_entropy_atk", "min_ascension": 0, "label": "엔트로피 변이 강화(환멸) · 공격력 +30%", "short": "1차 해방 이후 공격력 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.30, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_mode_fusion", "min_ascension": 0, "label": "공명 모드·불꽃: 파티 용융피해 +30% 증가", "short": "파티 용융피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "harmony_break_amplify", "value": 10, "always": false, "target": "party", "mode": "cluster", "id": "denia_mode_cluster", "min_ascension": 0, "label": "공명 모드·조화 밀집: 파티 조화도 파괴 증폭 +10pt (최대 +40pt, 부조화 효율 초과 시)", "short": "파티 조화도파괴증폭 +10pt", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "anomaly_damage_amplify", "value": 0.60, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_montage_flame", "min_ascension": 0, "label": "반주(불꽃): 파티 범위 불꽃효과 피해 +60% 부스트", "short": "반주: 불꽃효과 피해 +60% 부스트", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.40, "always": false, "target": "next_character", "min_ascension": 0, "mode": "cluster", "label": "반주(조화 밀집): 다음 등장 캐릭터 전체 피해 +15%(조화 밀집·이탈 시 40%) 부스트", "short": "반주: 다음 캐릭터 전체 피해 +40% 부스트", "record_only": false, "absolute_score_only": true },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "denia_chain1_critdmg", "min_ascension": 1, "label": "크리티컬 피해 +30% (1돌)", "short": "크피 +30% (1돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.50, "element": "용융", "always": false, "target": "party", "mode": "flame", "id": "denia_chain2_fusion", "min_ascension": 2, "label": "불꽃: 파티 내 캐릭터가 불꽃효과 추가 시 용융피해 +50% 증가 (2돌)", "short": "파티 용융피해 +50% (2돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "harmony_break_amplify", "value": 20, "always": false, "target": "party", "mode": "cluster", "id": "denia_chain2_cluster", "min_ascension": 2, "label": "조화 밀집: 조화 밀집·이탈 추가 후 파티 조화도 파괴 증폭 +20pt (2돌)", "short": "파티 조화도파괴증폭 +20pt (2돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "element_resistance_ignore", "value": 0.10, "element": "용융", "always": false, "target": "self", "mode": "flame", "id": "denia_chain2_resignore", "min_ascension": 2, "label": "불꽃: 타락한 보이드매터 10스택 시 용융 저항 무시 10% (2돌)", "short": "용융 저항무시 10% (2돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "attack_percent", "value": 0.60, "always": false, "target": "self", "id": "denia_chain6_atk", "min_ascension": 6, "label": "엔트로피 변이 강화 · 공격력 +60% (6돌)", "short": "공격력 +60% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.60, "element": "용융", "always": false, "target": "self", "id": "denia_chain6_fusion", "min_ascension": 6, "label": "엔트로피 변이 강화 · 용융피해 +60% 증가 (6돌)", "short": "용융피해 +60% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   {
@@ -292,14 +307,14 @@
     "recommended_weapons": ["daybreakers_spine", "pulsation_bracer", "blazing_justice"],
     "signature_weapon": "daybreakers_spine",
     "skill_node": [
-      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드" },
-      { "type": "attack_percent", "value": 0.25, "always": false, "target": "self", "id": "luuk_uncaused_atk", "min_ascension": 0, "label": "「조화 밀집·이탈」 부여/「조화도 파괴」 후 공격력 +25% (자력, 20초)", "short": "공격력 +25%" },
-      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "absolute_score_only": true, "id": "luuk_uncaused_amp", "min_ascension": 0, "label": "「조화 밀집·간섭」 목표 피해 시 전체 피해 +30% 부스트 (자력, 최대)", "short": "전체 피해 +30% 부스트" },
-      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "absolute_score_only": true, "id": "luuk_s2_amp", "min_ascension": 2, "label": "전체 피해 부스트 상한 +30% (합 60%, 2돌)", "short": "전체 피해 부스트 상한 +30% (2돌)" },
-      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "party", "absolute_score_only": true, "id": "luuk_s4_team", "min_ascension": 4, "label": "「조화도 파괴」 피해 후 파티 전체 피해 +20% 부스트 (4돌)", "short": "파티 전체피해 +20% 부스트 (4돌)" },
-      { "type": "basic_attack_bonus", "value": 1.50, "always": false, "target": "self", "record_only": true, "id": "luuk_chain1_aerial", "min_ascension": 1, "label": "공중 공격 시 피해 보너스 +150% (1돌, 사실상 상시·기록 전용)", "short": "공중 피해 보너스 +150% (1돌)" },
-      { "type": "skill_motion_value_amplify", "value": 0.30, "always": false, "target": "self", "record_only": true, "id": "luuk_chain6_vuln", "min_ascension": 6, "label": "햇무리참살·이코르배열·대지를가르는판결 받는 피해 +30% 부스트 (일반공격 적용, 6돌)", "short": "받는 일반공격 피해 +30% 부스트 (6돌)" }
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.25, "always": false, "target": "self", "id": "luuk_uncaused_atk", "min_ascension": 0, "label": "「조화 밀집·이탈」 부여/「조화도 파괴」 후 공격력 +25% (자력, 20초)", "short": "공격력 +25%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "id": "luuk_uncaused_amp", "min_ascension": 0, "label": "「조화 밀집·간섭」 목표 피해 시 전체 피해 +30% 부스트 (자력, 최대)", "short": "전체 피해 +30% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "id": "luuk_s2_amp", "min_ascension": 2, "label": "전체 피해 부스트 상한 +30% (합 60%, 2돌)", "short": "전체 피해 부스트 상한 +30% (2돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "party", "id": "luuk_s4_team", "min_ascension": 4, "label": "「조화도 파괴」 피해 후 파티 전체 피해 +20% 부스트 (4돌)", "short": "파티 전체피해 +20% 부스트 (4돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 1.50, "always": false, "target": "self", "id": "luuk_chain1_aerial", "min_ascension": 1, "label": "공중 공격 시 피해 보너스 +150% (1돌, 사실상 상시·기록 전용)", "short": "공중 피해 보너스 +150% (1돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.30, "always": false, "target": "self", "id": "luuk_chain6_vuln", "min_ascension": 6, "label": "햇무리참살·이코르배열·대지를가르는판결 받는 피해 +30% 부스트 (일반공격 적용, 6돌)", "short": "받는 일반공격 피해 +30% 부스트 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
     ]
   }
 ]

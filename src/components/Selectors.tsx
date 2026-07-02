@@ -1,7 +1,7 @@
 import type { AppState } from '../state/store';
-import { pickMainEcho, combinedMainEchoes, defaultMainFor } from '../state/store';
+import { pickMainEcho, combinedMainEchoes } from '../state/store';
 import { loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
-import { freeTwoPieceSlots } from '../engine/echoSlots';
+import { freeTwoPieceSlots, defaultSlots } from '../engine/echoSlots';
 import { optimalTwoPiecePicks } from '../engine/theory';
 import type { CostLayout, WeaponType } from '../types/domain';
 import type { EchoSet } from '../types/data';
@@ -144,7 +144,7 @@ export function Selectors({ state, setState }: Props) {
         <div className="setting">
           <div className="setting-label">코스트 구성</div>
           <Dropdown value={state.costLayout} options={costOptions}
-            onChange={(v) => setState({ ...state, costLayout: v as CostLayout, mainPrimary: defaultMainFor(v as CostLayout) })} />
+            onChange={(v) => setState({ ...state, costLayout: v as CostLayout, slots: defaultSlots(v as CostLayout) })} />
         </div>
 
         <div className="setting">

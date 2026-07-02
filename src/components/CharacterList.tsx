@@ -8,7 +8,7 @@ import { theoryBest, kkjakPerf, optimalThreeCoMode } from '../engine/theory';
 import { Dropdown } from './Dropdown';
 
 function hasSubstats(state: AppState): boolean {
-  return state.substats.some((echo) => echo.some((l) => l.type && l.value != null));
+  return state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
 }
 
 function scoresOf(state: AppState): { theory: number; kkjak: number } | null {

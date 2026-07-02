@@ -1,11 +1,11 @@
 import type { StatKey, Cost, CostLayout } from '../types/domain';
-import type { CalcContext, MainPrimaryPick } from './context';
+import type { CalcContext, MainPrimaryPick, SubstatLine } from './context';
 import { buildPerfInput, sumEffectiveSubstats } from './build';
 import { computePerf } from './perf';
 import { COST_LAYOUTS, MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
 import { hasEnergyConversion } from './mechanisms';
 import { loadTwoPieceEffects } from './loadData';
-import { freeTwoPieceSlots } from './echoSlots';
+import { freeTwoPieceSlots, slotsFrom } from './echoSlots';
 import { effectiveSubstatsOf } from './mode';
 
 // 크크작 시 평균적으로 따라오는 공명효율(%). 30만건 시뮬레이션 평균(약 1.37줄 ≈ 13.1%).
@@ -134,12 +134,12 @@ export function theoryBest(ctx: CalcContext): TheoryResult {
 
   for (const alloc of subAllocations(keys, totalLines)) {
     // 이 배분으로 부옵 substats 구성 (각 유효옵 = 줄수 × max단계)
-    const substats: CalcContext['substats'] = keys.map((k, idx) => {
+    const substats: SubstatLine[][] = keys.map((k, idx) => {
       const lines = alloc[idx];
       return lines > 0 ? [{ type: k, value: lines * substatMaxStage(k) }] : [];
     });
     for (const picks of combos) {
-      const trial: CalcContext = { ...ctx, mainPrimary: picks, substats };
+      const trial: CalcContext = { ...ctx, slots: slotsFrom(ctx.costLayout, picks, substats) };
       const perf = computePerf(buildPerfInput(trial));
       if (!best || perf > best.perf) {
         const subAllocation: Partial<Record<StatKey, number>> = {};
@@ -158,7 +158,7 @@ export function theoryRatio(ctx: CalcContext): number {
 
 /** 크크작 분모 컨텍스트: 크리5+크피5(밑4번째) + (전환형) 평균 공효, 메인은 모드별 구성 */
 function kkjakCtx(ctx: CalcContext, mode: ThreeCoMode): CalcContext {
-  return { ...ctx, mainPrimary: kkjakModePicks(ctx, mode), substats: kkjakSub(ctx) };
+  return { ...ctx, slots: slotsFrom(ctx.costLayout, kkjakModePicks(ctx, mode), kkjakSub(ctx)) };
 }
 
 export function kkjakPerf(ctx: CalcContext, mode: ThreeCoMode): number {
@@ -189,8 +189,8 @@ export interface RecoRow { label: string; relative: number; best: boolean }
 export interface RecoGroup { label: string; theory: RecoRow[]; kkjak: RecoRow[] }
 
 /** 한 메인 조합(고정 슬롯 + 가변 슬롯)에서 이론최고 부옵 / 크크작 부옵의 통합 성능 */
-function perfWithMain(ctx: CalcContext, picks: MainPrimaryPick[], sub: CalcContext['substats']): number {
-  return computePerf(buildPerfInput({ ...ctx, mainPrimary: picks, substats: sub }));
+function perfWithMain(ctx: CalcContext, picks: MainPrimaryPick[], sub: SubstatLine[][]): number {
+  return computePerf(buildPerfInput({ ...ctx, slots: slotsFrom(ctx.costLayout, picks, sub) }));
 }
 
 function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): number {
@@ -198,7 +198,7 @@ function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): numb
   const total = Math.min(25 - energyRegenLines(ctx), keys.length * 5);
   let best = 0;
   for (const alloc of subAllocations(keys, total)) {
-    const sub: CalcContext['substats'] = keys.map((k, idx) =>
+    const sub: SubstatLine[][] = keys.map((k, idx) =>
       alloc[idx] > 0 ? [{ type: k, value: alloc[idx] * substatMaxStage(k) }] : []);
     const p = perfWithMain(ctx, picks, sub);
     if (p > best) best = p;
@@ -206,11 +206,11 @@ function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): numb
   return best;
 }
 
-function kkjakSub(ctx: CalcContext): CalcContext['substats'] {
+function kkjakSub(ctx: CalcContext): SubstatLine[][] {
   const crit = substatFourthFromBottom('critical_rate') * 5;
   const cd = substatFourthFromBottom('critical_damage') * 5;
   // ER 전환형은 크크작 시 따라오는 평균 공명효율(13.1%)을 분모에 반영
-  const erLine: CalcContext['substats'][number] = hasEnergyConversion(ctx.character.special_mechanism)
+  const erLine: SubstatLine[] = hasEnergyConversion(ctx.character.special_mechanism)
     ? [{ type: 'energy_regen', value: KKJAK_ENERGY_REGEN }]
     : [];
   return [[{ type: 'critical_rate', value: crit }], [{ type: 'critical_damage', value: cd }], erLine, [], []];
@@ -331,9 +331,9 @@ export function compareSubstats(
   // 현재 유효옵 합을 한 에코에 몰아넣은 동등 컨텍스트 + override 적용
   const base = sumEffectiveSubstats(ctx);
   const merged: Partial<Record<StatKey, number>> = { ...base, ...override };
-  const substats: CalcContext['substats'] = effectiveSubstatsOf(ctx).map((k) =>
+  const substats: SubstatLine[][] = effectiveSubstatsOf(ctx).map((k) =>
     merged[k] != null ? [{ type: k, value: merged[k]! }] : []);
-  const compared = computePerf(buildPerfInput({ ...ctx, substats }));
+  const compared = computePerf(buildPerfInput({ ...ctx, slots: ctx.slots.map((s, i) => ({ ...s, substats: substats[i] ?? [] })) }));
   return { current, compared, diffPercent: (compared / current - 1) * 100 };
 }
 
@@ -343,7 +343,7 @@ export function recommendedMainPicks(ctx: CalcContext): MainPrimaryPick[] {
   const sub = kkjakSub(ctx);
   let best: { perf: number; picks: MainPrimaryPick[] } | null = null;
   for (const picks of mainCombos(layout)) {
-    const perf = computePerf(buildPerfInput({ ...ctx, mainPrimary: picks, substats: sub }));
+    const perf = computePerf(buildPerfInput({ ...ctx, slots: slotsFrom(ctx.costLayout, picks, sub) }));
     if (!best || perf > best.perf) best = { perf, picks };
   }
   return best!.picks;

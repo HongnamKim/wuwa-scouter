@@ -1,28 +1,11 @@
 import type { Character, EchoSet, MainSlotEcho } from '../types/data';
-import type { CalcContext, SubstatLine, MainPrimaryPick, ManualBuff } from '../engine/context';
+import type { CalcContext, SubstatLine, MainPrimaryPick, ManualBuff, EchoSlot } from '../engine/context';
 import { loadCharacters, loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
-import { COST_LAYOUTS, MAIN_PRIMARY } from '../engine/constants';
 import { optimalTwoPiecePicks } from '../engine/theory';
-import { freeTwoPieceSlots } from '../engine/echoSlots';
-import type { StatKey, CostLayout } from '../types/domain';
+import { freeTwoPieceSlots, defaultSlots, slotsFrom } from '../engine/echoSlots';
+import type { CostLayout } from '../types/domain';
 
 export type AppState = CalcContext;
-
-const DEAL_KEYS: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
-
-/** 코스트 구성별 기본 메인 옵션 (4코=크피, 그 외=공%) */
-export function defaultMainFor(layout: CostLayout): MainPrimaryPick[] {
-  return COST_LAYOUTS[layout].map((cost) => {
-    const opts = (Object.keys(MAIN_PRIMARY[cost]) as StatKey[]).filter((k) => DEAL_KEYS.includes(k));
-    const def: StatKey = cost === 4 ? 'critical_damage' : 'attack_percent';
-    return { cost, type: opts.includes(def) ? def : opts[0] };
-  });
-}
-
-/** 빈 부옵 (5에코 × 5줄) */
-export function emptySubstats(): SubstatLine[][] {
-  return Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => ({ type: '' as const, value: null })));
-}
 
 /** 착용한 세트들의 메인슬롯 에코를 id 기준으로 합친 목록 */
 export function combinedMainEchoes(echoSets: EchoSet[]): MainSlotEcho[] {
@@ -58,10 +41,9 @@ export function defaultStateForCharacter(character: Character): AppState {
   const echoSets = [getEchoSet(character.recommended_echo_sets[0], sets)];
   const mainEcho = pickMainEcho(echoSets, character);
 
-  // 조건부 토글 기본 on (상시 외 조건부 버프 전부)
+  // 조건부 토글: 미터치 상태로 시작. 실제 기본값은 defaultBuffChecked(default_on/돌파)로 동적 계산.
+  // 사전 채움하면 default_on_from_ascension(돌파 변화에 따라 달라짐)이 고정돼버리므로 비워둔다.
   const conditionalToggles: Record<string, boolean> = {};
-  [...character.skill_node, ...mainEcho.buffs, ...weapon.buffs, ...echoSets.flatMap((s) => s.buffs)]
-    .forEach((b) => { if (!b.always && b.id) conditionalToggles[b.id] = true; });
 
   const state: AppState = {
     character,
@@ -69,10 +51,9 @@ export function defaultStateForCharacter(character: Character): AppState {
     mainEcho,
     echoSets,
     costLayout: '43311',
-    mainPrimary: defaultMainFor('43311'),
+    slots: defaultSlots('43311'),
     twoPiecePicks: [],
     selectedMode: character.modes?.[0]?.id,
-    substats: emptySubstats(),
     conditionalToggles,
     manualBuffs: [],
     requiredEnergyRegen: character.default_required_energy_regen,
@@ -92,10 +73,12 @@ interface SavedState {
   echoSetIds: string[];
   mainEchoId: string;
   costLayout: CostLayout;
-  mainPrimary: MainPrimaryPick[];
+  slots?: EchoSlot[];
+  // 구버전 저장분 마이그레이션용 (읽기 전용)
+  mainPrimary?: MainPrimaryPick[];
+  substats?: SubstatLine[][];
   twoPiecePicks?: string[];
   selectedMode?: string;
-  substats: SubstatLine[][];
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
   requiredEnergyRegen?: number;
@@ -109,10 +92,9 @@ function serializeState(state: AppState): SavedState {
     echoSetIds: state.echoSets.map((e) => e.id),
     mainEchoId: state.mainEcho.id,
     costLayout: state.costLayout,
-    mainPrimary: state.mainPrimary,
+    slots: state.slots,
     twoPiecePicks: state.twoPiecePicks ?? [],
     selectedMode: state.selectedMode,
-    substats: state.substats,
     conditionalToggles: state.conditionalToggles,
     manualBuffs: state.manualBuffs,
     requiredEnergyRegen: state.requiredEnergyRegen,
@@ -162,16 +144,29 @@ export function loadCharacterState(character: Character): AppState | null {
     const safeSets = echoSets.length ? echoSets : [getEchoSet(character.recommended_echo_sets[0], sets)];
     const combined = combinedMainEchoes(safeSets);
     const mainEcho = combined.find((m) => m.id === s.mainEchoId) ?? pickMainEcho(safeSets, character);
+    const layout = s.costLayout ?? '43311';
+    // 신형 slots: 길이 5 + 각 요소 형태 검증(손상/구포맷 저장분이 malformed slots로 로드돼 렌더 시 크래시하는 것 방지)
+    const validSlot = (x: unknown): x is EchoSlot => {
+      const o = x as EchoSlot | undefined;
+      return !!o && typeof o === 'object'
+        && (o.cost === null || o.cost === 1 || o.cost === 3 || o.cost === 4)
+        && typeof o.main === 'string'
+        && Array.isArray(o.substats);
+    };
+    const slots = Array.isArray(s.slots) && s.slots.length === 5 && s.slots.every(validSlot)
+      ? s.slots
+      : (s.mainPrimary && s.substats) // 구버전 저장분 1:1 변환
+        ? slotsFrom(layout, s.mainPrimary, s.substats)
+        : defaultSlots(layout);
     const state: AppState = {
       character,
       weapon,
       mainEcho,
       echoSets: safeSets,
-      costLayout: s.costLayout ?? '43311',
-      mainPrimary: s.mainPrimary ?? defaultMainFor(s.costLayout ?? '43311'),
+      costLayout: layout,
+      slots,
       twoPiecePicks: [],
       selectedMode: character.modes?.some((m) => m.id === s.selectedMode) ? s.selectedMode : character.modes?.[0]?.id,
-      substats: s.substats ?? emptySubstats(),
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],
       requiredEnergyRegen: s.requiredEnergyRegen,
@@ -181,8 +176,8 @@ export function loadCharacterState(character: Character): AppState | null {
     // 자유 2세트 효과: 저장값이 유효하면 사용, 아니면(구버전/누락) 최적 조합으로 보정
     const pool = loadTwoPieceEffects();
     const saved = s.twoPiecePicks;
-    const slots = freeTwoPieceSlots(safeSets);
-    const valid = Array.isArray(saved) && saved.length === slots
+    const twoPieceSlotCount = freeTwoPieceSlots(safeSets);
+    const valid = Array.isArray(saved) && saved.length === twoPieceSlotCount
       && saved.every((id) => pool.some((p) => p.id === id));
     return { ...state, twoPiecePicks: valid ? saved! : optimalTwoPiecePicks(state) };
   } catch {

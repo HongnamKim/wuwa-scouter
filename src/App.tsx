@@ -13,8 +13,7 @@ import { freeTwoPieceSlots } from './engine/echoSlots';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
-import { MainPrimaryTable } from './components/MainPrimaryTable';
-import { SubstatInput } from './components/SubstatInput';
+import { EchoSlots } from './components/EchoSlots';
 import { CharacterSpec } from './components/CharacterSpec';
 import { BuffPanel } from './components/BuffPanel';
 import { Scores } from './components/Scores';
@@ -134,10 +133,8 @@ function AnalysisScreen({ character }: { character: Character }) {
           <BuffPanel state={state} setState={setState} />
         </div>
         <div className="right-col">
-          <h3>메인 옵션</h3>
-          <MainPrimaryTable state={state} setState={setState} />
-          <h3>부옵</h3>
-          <SubstatInput state={state} setState={setState} />
+          <h3>에코 슬롯</h3>
+          <EchoSlots state={state} setState={setState} />
         </div>
       </div>
       {/* 맨 아래 부옵 드롭다운이 한 화면에 펼쳐질 수 있도록 넉넉한 하단 여백 */}

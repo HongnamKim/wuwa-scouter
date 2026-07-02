@@ -17,15 +17,20 @@ export interface MainPrimaryPick {
   type: StatKey; // 그 슬롯에서 고른 메인 옵션
 }
 
+export interface EchoSlot {
+  cost: Cost | null;       // 1 | 3 | 4, 미배정 시 null (사용자가 남은 코스트에서 직접 선택)
+  main: StatKey | '';      // 그 슬롯 메인 옵션 (cost에 따라 유효 선택지 제한). cost 미배정 시 ''
+  substats: SubstatLine[]; // 5줄
+}
+
 export interface CalcContext {
   character: Character;
   weapon: Weapon;
   mainEcho: MainSlotEcho;
   echoSets: EchoSet[]; // 동시에 여러 세트 착용 가능(최대 3)
   costLayout: CostLayout;
-  mainPrimary: MainPrimaryPick[]; // 슬롯 순서대로
+  slots: EchoSlot[]; // 길이 5, 코스트 멀티셋 = COST_LAYOUTS[costLayout]
   twoPiecePicks?: string[];       // 자유 2세트 효과 선택(풀 id). 길이 = 선택 세트에서 파생된 자유 슬롯 수. 0이면 빈 배열/미지정
-  substats: SubstatLine[][];      // 5 에코 × 5 줄
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];
   requiredEnergyRegen?: number; // 필요 공효(%). 이론 최고에서 도달 최소 줄 수만큼 딜 슬롯 차감(전제형). 미지정 시 30

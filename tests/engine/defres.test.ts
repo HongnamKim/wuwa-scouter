@@ -3,6 +3,7 @@ import { defenseResistanceFactor, buildPerfInput } from '../../src/engine/build'
 import { computePerf } from '../../src/engine/perf';
 import { loadCharacters, loadWeapons, loadEchoSets } from '../../src/engine/loadData';
 import type { CalcContext } from '../../src/engine/context';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 describe('방무·저무 딜 반영 (무기 비교용)', () => {
   it('0/0이면 배수 1 (기존 점수 불변)', () => {
@@ -24,7 +25,7 @@ describe('방무·저무 딜 반영 (무기 비교용)', () => {
     const echoSet = loadEchoSets().find((s) => s.id === 'trailblazing_star')!;
     const base: CalcContext = {
       character, weapon, mainEcho: echoSet.main_slot_echoes[0], echoSets: [echoSet],
-      costLayout: '43311', mainPrimary: [], substats: [[], [], [], [], []],
+      costLayout: '43311', slots: slotsFrom('43311', [], []),
       conditionalToggles: { weapon_def_ignore: false, weapon_fusion_res_ignore: false },
       manualBuffs: [], ascensionLevel: 0, refinementLevel: 1,
     };

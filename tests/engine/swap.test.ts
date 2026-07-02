@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadCharacters, loadWeapons, loadEchoSets } from '../../src/engine/loadData';
 import { aggregateBuffs } from '../../src/engine/buffs';
 import type { CalcContext } from '../../src/engine/context';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 /**
  * Simulates a weapon swap to emerald_of_genesis where conditionalToggles has NOT
@@ -11,27 +12,27 @@ function swapCtx(overrideToggles: Record<string, boolean> = {}): CalcContext {
   const character = loadCharacters().find((c) => c.id === 'hiyuki')!;
   const weapon = loadWeapons().find((w) => w.id === 'emerald_of_genesis')!;
   const echoSet = loadEchoSets()[0];
-  const substats = [
-    [{ type: 'critical_rate', value: 35.7 }],
-    [{ type: 'critical_damage', value: 60 }],
-    [{ type: 'attack_percent', value: 29.3 }],
-    [{ type: 'resonance_liberation_bonus', value: 33.8 }],
-    [],
-  ] as CalcContext['substats'];
   return {
     character,
     weapon,
     mainEcho: echoSet.main_slot_echoes[0],
     echoSets: [echoSet],
     costLayout: '43311',
-    mainPrimary: [
-      { cost: 4, type: 'critical_damage' },
-      { cost: 3, type: 'attack_percent' },
-      { cost: 3, type: 'attack_percent' },
-      { cost: 1, type: 'attack_percent' },
-      { cost: 1, type: 'attack_percent' },
-    ],
-    substats,
+    slots: slotsFrom('43311',
+      [
+        { cost: 4, type: 'critical_damage' },
+        { cost: 3, type: 'attack_percent' },
+        { cost: 3, type: 'attack_percent' },
+        { cost: 1, type: 'attack_percent' },
+        { cost: 1, type: 'attack_percent' },
+      ],
+      [
+        [{ type: 'critical_rate', value: 35.7 }],
+        [{ type: 'critical_damage', value: 60 }],
+        [{ type: 'attack_percent', value: 29.3 }],
+        [{ type: 'resonance_liberation_bonus', value: 33.8 }],
+        [],
+      ]),
     conditionalToggles: overrideToggles,
     manualBuffs: [],
   };

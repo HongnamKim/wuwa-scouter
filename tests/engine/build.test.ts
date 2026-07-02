@@ -3,34 +3,35 @@ import { loadCharacters, loadWeapons, loadEchoSets } from '../../src/engine/load
 import { computePerf } from '../../src/engine/perf';
 import { buildPerfInput } from '../../src/engine/build';
 import type { CalcContext } from '../../src/engine/context';
+import { slotsFrom } from '../../src/engine/echoSlots';
 
 // 부록 A 재현 컨텍스트 (5세트 ON, 무기 부스트 OFF)
 function hiyukiCtx(): CalcContext {
   const character = loadCharacters().find((c) => c.id === 'hiyuki')!;
   const weapon = loadWeapons().find((w) => w.id === 'frostbound_flame')!;
   const echoSet = loadEchoSets()[0];
-  // 부옵 유효옵 합: 크리 35.7, 크피 60, 공% 29.3, 해방 33.8 (깡공 0)
-  const substats = [
-    [{ type: 'critical_rate', value: 35.7 }],
-    [{ type: 'critical_damage', value: 60 }],
-    [{ type: 'attack_percent', value: 29.3 }],
-    [{ type: 'resonance_liberation_bonus', value: 33.8 }],
-    [],
-  ] as CalcContext['substats'];
   return {
     character,
     weapon,
     mainEcho: echoSet.main_slot_echoes[0],
     echoSets: [echoSet],
     costLayout: '43311',
-    mainPrimary: [
-      { cost: 4, type: 'critical_damage' }, // 크피44
-      { cost: 3, type: 'attack_percent' },  // 공%30
-      { cost: 3, type: 'attack_percent' },  // 공%30
-      { cost: 1, type: 'attack_percent' },  // 공%18
-      { cost: 1, type: 'attack_percent' },  // 공%18
-    ],
-    substats,
+    slots: slotsFrom('43311',
+      [
+        { cost: 4, type: 'critical_damage' }, // 크피44
+        { cost: 3, type: 'attack_percent' },  // 공%30
+        { cost: 3, type: 'attack_percent' },  // 공%30
+        { cost: 1, type: 'attack_percent' },  // 공%18
+        { cost: 1, type: 'attack_percent' },  // 공%18
+      ],
+      [
+        // 부옵 유효옵 합: 크리 35.7, 크피 60, 공% 29.3, 해방 33.8 (깡공 0)
+        [{ type: 'critical_rate', value: 35.7 }],
+        [{ type: 'critical_damage', value: 60 }],
+        [{ type: 'attack_percent', value: 29.3 }],
+        [{ type: 'resonance_liberation_bonus', value: 33.8 }],
+        [],
+      ]),
     conditionalToggles: {
       set_5pc_element: true, set_5pc_critical: true,
       weapon_glacio_amplify: false, weapon_def_ignore: false,

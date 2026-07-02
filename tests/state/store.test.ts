@@ -9,7 +9,7 @@ describe('initialState', () => {
     expect(s.character.id).toBe('hiyuki');
     expect(s.weapon.id).toBe('frostbound_flame');
     expect(s.costLayout).toBe('43311');
-    expect(s.substats).toHaveLength(5);
+    expect(s.slots).toHaveLength(5);
   });
 
   it('기본 상태(무기 부스트 ON)는 양수 통합 성능', () => {
