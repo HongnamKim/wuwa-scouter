@@ -134,17 +134,28 @@ export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlo
   return echoes[0];
 }
 
-/** 캐릭터의 기본 세팅 상태(저장값 없을 때). 무기/화음세트/메인에코/코스트는 미선택으로 시작한다. */
+/** 캐릭터의 기본 세팅 상태(저장값 없을 때).
+ * 전용무기(없으면 추천무기 1순위)·추천 화음세트·추천 메인에코·기본 코스트(43311)를 미리 채워
+ * 메인 조합 추천이 바로 보이게 한다. 이 함수는 결정적(deterministic)이어야 하며,
+ * isUntouchedDefault가 이 결과와 deep-equal로 비교해 "미조작 이탈 시 저장 팝업"을 막는다.
+ * 코스트별 슬롯 배정·조건부 토글은 비워둔다(코스트는 사용자 배정, 토글은 돌파 기준 동적 계산). */
 export function defaultStateForCharacter(character: Character): AppState {
-  // 조건부 토글: 미터치 상태로 시작. 실제 기본값은 defaultBuffChecked(default_on/돌파)로 동적 계산.
-  // 사전 채움하면 default_on_from_ascension(돌파 변화에 따라 달라짐)이 고정돼버리므로 비워둔다.
-  return {
+  const weapons = loadWeapons();
+  const sets = loadEchoSets();
+  const weaponId = character.signature_weapon ?? character.recommended_weapons[0] ?? null;
+  const weapon = weaponId ? (weapons.find((w) => w.id === weaponId) ?? null) : null;
+  const echoSets = character.recommended_echo_sets
+    .map((id) => sets.find((s) => s.id === id))
+    .filter((x): x is EchoSet => !!x);
+  const mainEcho = echoSets.length ? pickMainEcho(echoSets, character) : null;
+  const costLayout: CostLayout = character.cost_layout;
+  const base: AppState = {
     character,
-    weapon: null,
-    mainEcho: null,
-    echoSets: [],
-    costLayout: null,
-    slots: [],
+    weapon,
+    mainEcho,
+    echoSets,
+    costLayout,
+    slots: defaultSlots(costLayout),
     twoPiecePicks: [],
     selectedMode: character.modes?.[0]?.id,
     partyMembers: [],
@@ -154,6 +165,9 @@ export function defaultStateForCharacter(character: Character): AppState {
     ascensionLevel: 0,
     refinementLevel: 1,
   };
+  // 자유 2세트 슬롯이 있으면 최적 조합으로 채움(로드 경로와 동일, 결정적)
+  const ctx = analysisContext(base, false);
+  return { ...base, twoPiecePicks: ctx ? optimalTwoPiecePicks(ctx) : [] };
 }
 
 // ===== 캐릭터별 저장/불러오기 (localStorage; 백엔드 도입 시 교체) =====

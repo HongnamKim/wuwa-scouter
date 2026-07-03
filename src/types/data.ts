@@ -1,5 +1,5 @@
 import type {
-  StatKey, Element, BuffElement, WeaponType, ScaleStat, DamageBonusType, EnergyRegenMode, SetPieces, BuffTarget,
+  StatKey, Element, BuffElement, WeaponType, ScaleStat, DamageBonusType, EnergyRegenMode, SetPieces, BuffTarget, CostLayout,
 } from './domain';
 
 export interface Buff {
@@ -46,6 +46,7 @@ export interface Character {
   version: number; // 출시 버전 (예: 히유키 = 3)
   element: Element;
   weapon_type: WeaponType; // 착용 무기 타입
+  cost_layout: CostLayout; // 에코 코스트 구성 기본값 (예: '43311'). 신규 진입 시 기본 세팅에 사용
   scale_stat: ScaleStat;
   matrix_cost: number; // 매트릭스(파티 편성) 코스트. 현재 전원 1, 신규 기본 1 (향후 매트릭스 파티 구성 기능용)
   base_attack: number;

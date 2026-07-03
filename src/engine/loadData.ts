@@ -1,6 +1,7 @@
 import type { Buff, Character, Weapon, EchoSet, TwoPieceEffect } from '../types/data';
 import { STAT_KEYS, BUFF_ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
 import { MECHANISM_KEYS } from './mechanisms';
+import { COST_LAYOUTS } from './constants';
 import charactersRaw from '../data/characters.json';
 import weaponsRaw from '../data/weapons.json';
 import echoSetsRaw from '../data/echo-sets.json';
@@ -38,6 +39,9 @@ function validateWeaponType(t: any, owner: string): void {
 export function loadCharacters(): Character[] {
   return (charactersRaw as any[]).map((c) => {
     validateWeaponType(c.weapon_type, c.id);
+    if (!(c.cost_layout in COST_LAYOUTS)) {
+      throw new Error(`unknown cost_layout: ${c.cost_layout} (${c.id})`);
+    }
     if (c.special_mechanism != null && !MECHANISM_KEYS.includes(c.special_mechanism)) {
       throw new Error(`unknown special mechanism: ${c.special_mechanism} (${c.id})`);
     }

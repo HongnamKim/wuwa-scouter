@@ -62,7 +62,7 @@ export function WeaponCompare({ base }: { base: CalcContext }) {
               <tr key={r.key} style={r.current ? { background: '#eef2ff' } : undefined}>
                 <td style={{ textAlign: 'left' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <img src={`/weapons/${r.id}.png`} alt="" style={{ width: 24, height: 24, objectFit: 'contain', flex: '0 0 auto' }}
+                    <img src={`/weapons/${r.id}.webp`} alt="" style={{ width: 24, height: 24, objectFit: 'contain', flex: '0 0 auto' }}
                       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                     <span>{r.name} <span className="muted">{r.refinement}공진</span>{r.current ? ' (현재)' : ''}{r.deal === best ? ' ★' : ''}</span>
                   </span>

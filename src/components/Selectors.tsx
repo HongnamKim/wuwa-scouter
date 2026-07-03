@@ -46,7 +46,7 @@ export function Selectors({ state, setState }: Props) {
 
   const weaponOptions: DropdownOption[] = char.recommended_weapons.map((id) => {
     const w = getWeapon(id, weapons);
-    return { value: id, label: (id === char.signature_weapon ? '★ ' : '') + w.name, image: `/weapons/${id}.png` };
+    return { value: id, label: (id === char.signature_weapon ? '★ ' : '') + w.name, image: `/weapons/${id}.webp` };
   });
   // 추천 항목을 상단에 고정하고 ★ 표시
   const recFirst = <T extends { id: string }>(items: T[], rec: string[]) => [
@@ -54,9 +54,9 @@ export function Selectors({ state, setState }: Props) {
     ...items.filter((x) => !rec.includes(x.id)),
   ];
   const setOptions: DropdownOption[] = recFirst(allSets, char.recommended_echo_sets)
-    .map((s) => ({ value: s.id, label: (char.recommended_echo_sets.includes(s.id) ? '★ ' : '') + s.name, image: `/echo-sets/${s.id}.png` }));
+    .map((s) => ({ value: s.id, label: (char.recommended_echo_sets.includes(s.id) ? '★ ' : '') + s.name, image: `/echo-sets/${s.id}.webp` }));
   const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets), char.recommended_main_echo)
-    .map((m) => ({ value: m.id, label: (char.recommended_main_echo.includes(m.id) ? '★ ' : '') + m.name, image: `/echoes/${m.id}.png` }));
+    .map((m) => ({ value: m.id, label: (char.recommended_main_echo.includes(m.id) ? '★ ' : '') + m.name, image: `/echoes/${m.id}.webp` }));
   const costOptions: DropdownOption[] = [{ value: '43311', label: '43311' }, { value: '44111', label: '44111' }];
   // 자유 2세트 효과 풀 (원소피해는 캐릭터 원소명으로 표시)
   const twoPieceOptions: DropdownOption[] = loadTwoPieceEffects().map((e) => ({
@@ -75,7 +75,7 @@ export function Selectors({ state, setState }: Props) {
   return (
     <div className="char-config">
       <div className="char-left">
-        <img className="char-image" src={`/characters/${char.id}.png`} alt={char.name}
+        <img className="char-image" src={`/characters/${char.id}.webp`} alt={char.name}
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
         {char.modes && char.modes.length > 0 && (
           <div className="mode-toggle">

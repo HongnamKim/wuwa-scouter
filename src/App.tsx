@@ -86,7 +86,7 @@ function AnalysisScreen({ character }: { character: Character }) {
       <div className="char-select-row">
         <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
           <Dropdown value={character.id}
-            options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.png` }))}
+            options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp` }))}
             onChange={(cid) => navigate(`/analysis/${cid}`)} />
         </label>
       </div>
@@ -208,7 +208,7 @@ function CompareScreen({ character }: { character: Character }) {
     <>
       <label style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8 }}>캐릭터:
         <Dropdown value={character.id}
-          options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.png` }))}
+          options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp` }))}
           onChange={(id) => navigate(`/compare/${id}`)} />
       </label>
       <h2>

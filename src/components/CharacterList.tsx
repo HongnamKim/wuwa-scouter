@@ -68,7 +68,7 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
           return (
             <div className="char-card" key={character.id} onClick={() => onSelect(character.id)}>
               <img className={recorded ? 'card-image' : 'card-image not-recorded'}
-                src={`/characters/${character.id}.png`} alt={character.name}
+                src={`/characters/${character.id}.webp`} alt={character.name}
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
               <div className="card-name">{character.name}</div>
               <div className="muted">{character.version}버전 · {character.element}</div>
