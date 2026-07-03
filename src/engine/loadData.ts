@@ -1,5 +1,5 @@
 import type { Buff, Character, Weapon, EchoSet, TwoPieceEffect } from '../types/data';
-import { STAT_KEYS, ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
+import { STAT_KEYS, BUFF_ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
 import { MECHANISM_KEYS } from './mechanisms';
 import charactersRaw from '../data/characters.json';
 import weaponsRaw from '../data/weapons.json';
@@ -8,7 +8,7 @@ import twoPieceRaw from '../data/two-piece-effects.json';
 
 export function validateBuff(b: any): Buff {
   if (!STAT_KEYS.includes(b.type)) throw new Error(`unknown buff type: ${b.type}`);
-  if (b.element !== undefined && !ELEMENTS.includes(b.element)) {
+  if (b.element !== undefined && !BUFF_ELEMENTS.includes(b.element)) {
     throw new Error(`unknown element: ${b.element}`);
   }
   if (b.target !== undefined && !BUFF_TARGETS.includes(b.target)) {

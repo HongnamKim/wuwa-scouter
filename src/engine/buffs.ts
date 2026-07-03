@@ -61,6 +61,14 @@ export function memberProvidedBuffs(build: MemberBuild, char: Character): { key:
     .filter(({ buff: b }) => (b.target === 'party' || b.target === 'next_character') && !b.record_only)
     .filter(({ buff: b }) => b.min_ascension == null || asc >= b.min_ascension)   // 돌파 게이트: 미달 버프 제외
     .filter(({ buff: b }) => !b.mode || b.mode === (build.selectedMode ?? char.modes?.[0]?.id))
+    // 피해유형 게이트: 파티원(멤버)의 현재 모드 피해유형 기준 (예: 반주 분기는 공명해방 멤버에겐 미제공)
+    .filter(({ buff: b }) => {
+      if (!b.damage_bonus_type && !b.exclude_damage_bonus_type) return true;
+      const dbt = damageBonusTypeOf({ character: char, selectedMode: build.selectedMode });
+      if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;
+      if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
+      return true;
+    })
     .map(({ buff: b, source }, i) => ({ key: b.id ?? `#${i}`, buff: b, source }));
 }
 
@@ -77,7 +85,12 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
   if (b.record_only) return false;
   // 단일 공명자 분석: 내게 적용되는 버프만(self/party). next_character 등은 제외
   if (b.target && b.target !== 'self' && b.target !== 'party') return false;
-  if (b.element && b.element !== ctx.character.element) return false;
+  // element 게이트: 지정 원소가 캐릭터와 다르면 제외. '전체'(전체 속성피해)는 게이트 없이 통과.
+  if (b.element && b.element !== '전체' && b.element !== ctx.character.element) return false;
+  // 피해유형 게이트(예: 「강설」→공명해방 크리 분기 / 반주 분기). 모드 전환 캐릭터는 현재 모드 피해유형 기준
+  const dbt = damageBonusTypeOf(ctx);
+  if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;
+  if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
   // 모드 전환 캐릭터: 버프에 mode 지정 시 해당 모드 선택일 때만 활성
   if (b.mode && b.mode !== activeModeId(ctx)) return false;
   // 돌파(공명 체인) 조건: 미달이면 비활성 (예: 히유키 6돌 2스택)

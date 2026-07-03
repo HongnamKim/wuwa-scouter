@@ -242,7 +242,9 @@
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
       { "type": "energy_regen", "value": 0.128, "always": true, "refinement_values": [0.128, 0.16, 0.192, 0.224, 0.256], "note": "무기 패시브 (공명 효율)", "record_only": false, "absolute_score_only": false },
-      { "type": "attack_percent", "value": 0.10, "always": false, "target": "next_character", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "note": "반주 스킬 후 교체(다음) 캐릭터 공격력 +10~20%", "record_only": false, "absolute_score_only": false }
+      { "type": "attack_percent", "value": 0.10, "always": false, "target": "next_character", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20],
+        "label": "반주 스킬 후 교체 캐릭터 공격력 +{v}",
+        "note": "반주 스킬 후 교체(다음) 캐릭터 공격력 +10~20%", "record_only": false, "absolute_score_only": false }
     ]
   },
   {

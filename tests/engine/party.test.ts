@@ -44,4 +44,22 @@ describe('파티원 제공 버프 (내 저장 빌드 기준)', () => {
     const withBuff = aggregateBuffs(ctx([{ type: 'critical_damage', value: 0.4, always: true }]));
     expect(withBuff.critical_damage).toBeCloseTo(base.critical_damage + 0.4, 6);
   });
+
+  it('기도의 눈 반주 분기(다음 캐릭터 응결): 비공명해방 멤버(루실라)만 제공, 공명해방 멤버(히유키)는 미제공', () => {
+    const wishes = loadEchoSets().find((s) => s.id === 'wishes_of_quiet_snowfall')!;
+    const lucilla = loadCharacters().find((c) => c.id === 'lucilla')!;
+    const hiyuki = loadCharacters().find((c) => c.id === 'hiyuki')!;
+    const luc = memberProvidedBuffs({ echoSets: [wishes] }, lucilla).map((x) => x.buff.id);
+    const hiy = memberProvidedBuffs({ echoSets: [wishes] }, hiyuki).map((x) => x.buff.id);
+    expect(luc.includes('set_5pc_next_element')).toBe(true);
+    expect(hiy.includes('set_5pc_next_element')).toBe(false);
+  });
+
+  it("element 게이트: '전체'는 원소 불문 적용, 특정 원소는 불일치 시 제외 (수혜자=히유키 응결)", () => {
+    const base = aggregateBuffs(ctx([])).element_bonus;
+    const jeonche = aggregateBuffs(ctx([{ type: 'element_damage_bonus', value: 0.1, always: true, element: '전체' }])).element_bonus;
+    const mismatch = aggregateBuffs(ctx([{ type: 'element_damage_bonus', value: 0.1, always: true, element: '용융' }])).element_bonus;
+    expect(jeonche - base).toBeCloseTo(0.1, 6); // 전체 → 적용
+    expect(mismatch - base).toBeCloseTo(0, 6);   // 용융 → 응결 캐릭터엔 제외
+  });
 });

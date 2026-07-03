@@ -5,6 +5,7 @@ import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
 import { defaultBuffChecked } from '../engine/buffs';
+import { damageBonusTypeOf } from '../engine/mode';
 import { computeEnergyRegen } from '../engine/build';
 import { energyScaleValue } from '../engine/mechanisms';
 import { PartyTab } from './PartyTab';
@@ -34,7 +35,6 @@ export function BuffPanel({ state, setState }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   // 카테고리 탭 선택 인덱스
   const [tab, setTab] = useState(0);
-  const [partyNotice, setPartyNotice] = useState(false); // 파티 탭: 기능 보완 중 안내 팝업
 
   // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
   // 고유 스킬만 조건부 노출.
@@ -62,6 +62,13 @@ export function BuffPanel({ state, setState }: Props) {
         // record_only(특정 스킬 계수/한정, 계산 제외)는 순수 기록용 → 패널 비표시
         .filter((b) => !b.record_only)
         .filter((b) => !b.mode || b.mode === (state.selectedMode ?? state.character.modes?.[0]?.id))
+        // 피해유형 게이트: 캐릭터(모드) 피해유형과 안 맞는 버프는 비표시 (예: 「강설」 크리 분기는 공명해방 캐릭터만)
+        .filter((b) => {
+          const dbt = damageBonusTypeOf({ character: state.character, selectedMode: state.selectedMode });
+          if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;
+          if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
+          return true;
+        })
         .map((b): Item => ({ b, passive: !!b.always })),
     }))
     // 무기 그룹은 버프가 없어도 스탯 줄을 보기 위해 항상 표시. 그 외 그룹은 표시할 버프가 있을 때만.
@@ -213,23 +220,9 @@ export function BuffPanel({ state, setState }: Props) {
       {/* 카테고리 탭 — 버튼이 패널 좌우 폭을 모두 채우도록 각 버튼 flex:1 */}
       <div className="mode-toggle" style={{ display: 'flex', width: '100%', marginTop: 12, marginBottom: 8 }}>
         {tabLabels.map((label, i) => (
-          <button key={label} type="button" style={{ flex: 1 }} className={'mode-btn' + (i === activeIdx ? ' active' : '')} onClick={() => (label === '파티' ? setPartyNotice(true) : setTab(i))}>{label}</button>
+          <button key={label} type="button" style={{ flex: 1 }} className={'mode-btn' + (i === activeIdx ? ' active' : '')} onClick={() => setTab(i)}>{label}</button>
         ))}
       </div>
-
-      {partyNotice && (
-        <div className="modal-overlay" onClick={() => setPartyNotice(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <p className="modal-msg">
-              파티 버프 기능은 현재 보완 중입니다.<br />
-              파티원 버프는 <b>[기타]</b> 탭에서 수동으로 추가해 주세요.
-            </p>
-            <div className="modal-actions">
-              <button className="modal-confirm" onClick={() => setPartyNotice(false)}>확인</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {activeTab ? (
         <div>{activeTab.groups.map(renderGroup)}</div>

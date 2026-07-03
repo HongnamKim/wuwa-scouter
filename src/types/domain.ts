@@ -84,6 +84,11 @@ export const STAT_KEYS: readonly StatKey[] = [
 
 export const ELEMENTS: readonly Element[] = ['응결', '용융', '전도', '기류', '회절', '인멸'];
 
+// 버프 element 게이트 전용 값. 실제 원소 + '전체'(전체 속성피해: 게이트 없이 모든 원소에 적용).
+// 캐릭터 element은 항상 실제 Element라 이 확장은 버프에만 쓴다.
+export type BuffElement = Element | '전체';
+export const BUFF_ELEMENTS: readonly BuffElement[] = [...ELEMENTS, '전체'];
+
 export const WEAPON_TYPES: readonly WeaponType[] = ['broad_blade', 'sword', 'pistols', 'gauntlets', 'rectifier'];
 
 export const BUFF_TARGETS: readonly BuffTarget[] = ['self', 'party', 'next_character'];

@@ -37,3 +37,11 @@ describe('echo_skill 피해 유형', () => {
     expect(aggregateBuffs(ctx).damage_type_bonus).toBeCloseTo(0.20, 10);
   });
 });
+
+describe('기도의 눈 5세트 「강설」 크리 분기(damage_bonus_type 게이트)', () => {
+  it('공명해방 캐릭터만 set_5pc_critical(크리 +25%) 적용, 비공명해방은 미적용', () => {
+    const rl = aggregateBuffs(ctxWith('resonance_liberation')).critical_rate;
+    const ba = aggregateBuffs(ctxWith('basic_attack')).critical_rate;
+    expect(rl - ba).toBeCloseTo(0.25, 10);
+  });
+});

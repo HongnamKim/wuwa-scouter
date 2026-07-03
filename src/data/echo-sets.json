@@ -4,23 +4,24 @@
     "name": "소리 없이 내려앉은 기도의 눈",
     "buffs": [
       { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "응결", "record_only": false, "absolute_score_only": false },
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 5, "always": false, "element": "응결", "id": "set_5pc_element", "label": "서리효과 부여 시 응결피해 +10% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "critical_rate", "value": 0.25, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "label": "서리효과 부여 시 크리티컬 +25% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 5, "always": false, "element": "응결", "id": "set_5pc_element", "label": "서리효과 부여 시 응결피해 +10% (5세트 효과)", "short":"응결피해 +10%","record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_rate", "value": 0.25, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "damage_bonus_type": "resonance_liberation", "label": "공명해방 피해 시 크리티컬 +25% (5세트 효과)", "short":"크리티컬 +25%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.25, "set_pieces": 5, "always": false, "id": "set_5pc_next_element", "element": "응결", "target": "next_character", "exclude_damage_bonus_type": "resonance_liberation", "label": "반주 스킬 시 다음 캐릭터 응결피해 +25% (5세트 효과)", "short":"다음 캐릭터 응결피해 +25%","record_only": false, "absolute_score_only": false, "default_on": true }
     ],
     "main_slot_echoes": [
       {
         "id": "void_god_echo",
         "name": "공명의 메아리 · 명식 · 허무의 신",
         "buffs": [
-          { "type": "element_damage_bonus", "value": 0.12, "always": true, "target":"self", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
-          { "type": "resonance_liberation_bonus", "value": 0.12, "always": true, "target": "self","note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+          { "type": "element_damage_bonus", "value": 0.12, "always": true, "target":"self", "element": "응결", "label":"자신의 응결 피해 보너스 12% 증가", "short":"응결피해 +12%","note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+          { "type": "resonance_liberation_bonus", "value": 0.12, "always": true, "target": "self", "label": "공명 해방 피해 보너스 12% 증가", "short": "공명해방피해 +12%","note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
         ]
       },
       {
         "id": "glommoth",
         "name": "글로모스",
         "buffs": [
-          { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "note": "다음 변주 등장 캐릭터에게 제공", "record_only": false, "absolute_score_only": false }
+          { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "element": "응결", "label":"다음 변주 스킬로 등장하는 캐릭터의 응결 피해 보너스 +12%", "short":"다음 캐릭터 응결피해 +12%","note": "다음 변주 등장 캐릭터에게 제공", "record_only": false, "absolute_score_only": false }
         ]
       }
     ]
@@ -29,16 +30,16 @@
     "id": "trailblazing_star",
     "name": "긴 여정을 떠나는 별",
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "용융", "record_only": false, "absolute_score_only": false },
-      { "type": "element_damage_bonus", "value": 0.20, "set_pieces": 5, "always": false, "element": "용융", "id": "set_5pc_element", "label": "용융피해 +20% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "label": "크리티컬 +20% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "용융", "label":"용융 피해 10% 증가", "short": "용융피해 +10%","record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.20, "set_pieces": 5, "always": false, "element": "용융", "id": "set_5pc_element", "label": "「불꽃 효과」 혹은 「조화 파동 · 이탈」 추가 시, 용융피해 +20% (5세트 효과)", "short":"용융피해 +20%","record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_critical", "label": "「불꽃 효과」 혹은 「조화 파동 · 이탈」 추가 시, 크리티컬 +20% (5세트 효과)", "short": "크리티컬 +20%","record_only": false, "absolute_score_only": false, "default_on": true }
     ],
     "main_slot_echoes": [
       {
         "id": "sigillum",
         "name": "시길룸",
         "buffs": [
-          { "type": "resonance_liberation_bonus", "value": 0.25, "always": true, "target": "self","note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+          { "type": "resonance_liberation_bonus", "value": 0.25, "always": true, "label":"공명 해방 피해 보너스 25% 증가", "short": "공명해방피해 +25%","target": "self","note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
         ]
       }
     ]
@@ -47,17 +48,17 @@
     "id": "sound_of_true_name",
     "name": "함의의 소리를 따라",
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "기류", "record_only": false, "absolute_score_only": false },
-      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_echo_crit", "label": "에코 어빌리티 피해 시 크리티컬 +20% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "element_damage_bonus", "value": 0.15, "set_pieces": 5, "always": false, "element": "기류", "id": "set_5pc_echo_aero", "label": "에코 어빌리티 피해 시 기류피해 +15% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "label":"기류 피해 10% 증가", "short":"기류피해 +10%","element": "기류", "record_only": false, "absolute_score_only": false },
+      { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "id": "set_5pc_echo_crit", "label": "에코 어빌리티 피해 시 크리티컬 +20% (5세트 효과)", "short": "크리티컬 +20%","record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.15, "set_pieces": 5, "always": false, "element": "기류", "id": "set_5pc_echo_aero", "label": "에코 어빌리티 피해 시 기류피해 +15% (5세트 효과)", "short":"기류피해 +15%", "record_only": false, "absolute_score_only": false, "default_on": true }
     ],
     "main_slot_echoes": [
       {
         "id": "nameless_explorer",
         "name": "이름없는 탐색자",
         "buffs": [
-          { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "기류", "target": "self", "note": "메인슬롯 패시브 (기류피해 +12%)", "record_only": false, "absolute_score_only": false },
-          { "type": "echo_skill_bonus", "value": 0.20, "always": true, "target": "self", "note": "메인슬롯 패시브 (에코피해 +20%)", "record_only": false, "absolute_score_only": false }
+          { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "기류", "target": "self", "label":"기류 피해 보너스 12% 증가", "short":"기류피해 +12%","note": "메인슬롯 패시브 (기류피해 +12%)", "record_only": false, "absolute_score_only": false },
+          { "type": "echo_skill_bonus", "value": 0.20, "always": true, "target": "self", "label":"에코 어빌리티 피해 보너스 20% 증가", "short":"에코피해 +20%","note": "메인슬롯 패시브 (에코피해 +20%)", "record_only": false, "absolute_score_only": false }
         ]
       }
     ]
@@ -66,15 +67,15 @@
     "id": "pack_of_neonlight_leap",
     "name": "역광 속 눈부신 서약",
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "회절", "record_only": false, "absolute_score_only": false },
-      { "type": "attack_percent", "value": 0.15, "set_pieces": 5, "always": false, "target": "next_character", "note": "5세트: 다음 변주 캐릭터 공격력 +15% (+조화도 파괴 1pt당 0.3%, max +15%)", "record_only": false, "absolute_score_only": false }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "회절", "label":"회절 피해 10% 증가", "short":"회절피해 +10%","record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.15, "set_pieces": 5, "always": false, "target": "next_character", "label": "다음 변주 캐릭터 공격력 +15% (+조화도 파괴 1pt당 0.3%, max +15%, 5세트 효과)", "short": "다음 캐릭터 공격력 +15%","note": "5세트: 다음 변주 캐릭터 공격력 +15% (+조화도 파괴 1pt당 0.3%, max +15%)", "record_only": false, "absolute_score_only": false }
     ],
     "main_slot_echoes": [
       {
         "id": "hyvatia",
         "name": "하이와티아",
         "buffs": [
-          { "type": "element_damage_bonus", "value": 0.10, "always": false, "target": "next_character", "note": "다음 변주 캐릭터 전체속성피해 +10%", "record_only": false, "absolute_score_only": false }
+          { "type": "element_damage_bonus", "value": 0.10, "always": false, "target": "next_character", "element": "전체", "label": "다음 변주 캐릭터 전체 속성 피해 +10%", "short": "다음 캐릭터 전체속성피해 +10%","note": "다음 변주 캐릭터 전체속성피해 +10%", "record_only": false, "absolute_score_only": false }
         ]
       }
     ]
@@ -83,17 +84,17 @@
     "id": "rite_of_gilded_revelation",
     "name": "흐르는 금빛 속 진리의 답",
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "회절", "record_only": false, "absolute_score_only": false },
-      { "type": "element_damage_bonus", "value": 0.30, "set_pieces": 5, "always": false, "element": "회절", "id": "set_5pc_spectro", "label": "일반공격 시 회절피해 +10% (3스택, 5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "basic_attack_bonus", "value": 0.40, "set_pieces": 5, "always": false, "id": "set_5pc_basic", "label": "3스택+공명해방 발동 시 일반공격피해 +40% (5세트 효과)", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "회절", "label":"회절 피해 10% 증가", "short":"회절피해 +10%", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.30, "set_pieces": 5, "always": false, "element": "회절", "id": "set_5pc_spectro", "label": "일반공격 시 회절피해 +10% (3스택 총 30%, 5세트 효과)", "short":"회절피해 +30%","record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "basic_attack_bonus", "value": 0.40, "set_pieces": 5, "always": false, "id": "set_5pc_basic", "label": "3스택+공명해방 발동 시 일반공격피해 +40% (5세트 효과)", "short":"일반공격피해 +40%", "record_only": false, "absolute_score_only": false, "default_on": true }
     ],
     "main_slot_echoes": [
       {
         "id": "twin_nova_nebulous_cannon",
         "name": "트윈 노바 · 네뷸러스 캐논",
         "buffs": [
-          { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "회절", "target": "self", "note": "메인슬롯 패시브 (회절피해 +12%)", "record_only": false, "absolute_score_only": false },
-          { "type": "basic_attack_bonus", "value": 0.12, "always": true, "target": "self", "note": "메인슬롯 패시브 (일반공격피해 +12%)", "record_only": false, "absolute_score_only": false }
+          { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "회절", "target": "self", "label":"회절 피해 보너스 12.00% 증가", "short":"회절피해 +12%","note": "메인슬롯 패시브 (회절피해 +12%)", "record_only": false, "absolute_score_only": false },
+          { "type": "basic_attack_bonus", "value": 0.12, "always": true, "target": "self","label":"일반 공격 피해 보너스 12.00% 증가", "short":"일반공격피해 +12%", "note": "메인슬롯 패시브 (일반공격피해 +12%)", "record_only": false, "absolute_score_only": false }
         ]
       }
     ]
@@ -102,12 +103,12 @@
     "id": "shadow_of_shattered_dreams",
     "name": "꿈을 깨뜨리는 망령의 악몽",
     "buffs": [
-      { "type": "basic_attack_bonus", "value": 0.35, "set_pieces": 1, "always": true, "note": "1세트: 해킹·이탈 시 일반공격피해 +35% (15초)", "record_only": false, "absolute_score_only": false },
-      { "type": "heavy_attack_bonus", "value": 0.35, "set_pieces": 1, "always": true, "note": "1세트: 해킹·이탈 시 강공격피해 +35% (15초)", "record_only": false, "absolute_score_only": false }
+      { "type": "basic_attack_bonus", "value": 0.35, "set_pieces": 1, "always": true, "label": "일반 공격 피해 보너스 35% 증가","short": "일반공격피해 +35%","note": "1세트: 해킹·이탈 시 일반공격피해 +35% (15초)", "record_only": false, "absolute_score_only": false },
+      { "type": "heavy_attack_bonus", "value": 0.35, "set_pieces": 1, "always": true, "label": "강공격 피해 보너스 35% 증가","short":"강공격피해 +35%","note": "1세트: 해킹·이탈 시 강공격피해 +35% (15초)", "record_only": false, "absolute_score_only": false }
     ],
     "main_slot_echoes": [
       { "id": "nightmare_adam_smasher", "name": "공명의 메아리 · 악몽 아담 · 스매셔", "buffs": [
-        { "type": "critical_rate", "value": 0.15, "always": true, "target": "self", "note": "메인슬롯 패시브 (루시/레베카 크리티컬 +15%)", "record_only": false, "absolute_score_only": false }
+        { "type": "critical_rate", "value": 0.15, "always": true, "target": "self", "label":"루시 혹은 레베카일 경우 크리티컬 15% 증가","short":"크리티컬 +15%","note": "메인슬롯 패시브 (루시/레베카 크리티컬 +15%)", "record_only": false, "absolute_score_only": false }
       ] }
     ]
   },
@@ -115,12 +116,12 @@
     "id": "moonlit_clouds",
     "name": "떠오르는 구름",
     "buffs": [
-      { "type": "energy_regen", "value": 0.10, "set_pieces": 2, "always": true, "note": "2세트: 공명 효율 +10%", "record_only": false, "absolute_score_only": false },
-      { "type": "attack_percent", "value": 0.225, "set_pieces": 5, "always": false, "target": "next_character", "note": "5세트: 반주 후 다음 등장 공명자 공격력 +22.5%", "record_only": false, "absolute_score_only": false }
+      { "type": "energy_regen", "value": 0.10, "set_pieces": 2, "always": true, "label":"공명 효율 10% 증가", "short":"공명 효율 +10%", "note": "2세트: 공명 효율 +10%", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.225, "set_pieces": 5, "always": false, "label":"다음 변주 캐릭터 공격력 22.5% 증가", "short":"다음 변주 캐릭터 공격력 +22.5%","target": "next_character", "note": "5세트: 반주 후 다음 등장 공명자 공격력 +22.5%", "record_only": false, "absolute_score_only": false }
     ],
     "main_slot_echoes": [
       { "id": "impermanence_heron", "name": "음험한 백로", "buffs": [
-        { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "note": "반주 시 다음 교체 캐릭터 피해 +12% (공명에너지 10pt 회복)", "record_only": false, "absolute_score_only": false }
+        { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "element": "전체", "label":"다음 변주 등장 캐릭터의 피해 12% 증가", "short":"다음 캐릭터 피해 +12%","note": "다음 캐릭터 피해 +12% (공명에너지 10pt 회복)", "record_only": false, "absolute_score_only": false }
       ] }
     ]
   },
@@ -128,13 +129,13 @@
     "id": "chromatic_foam",
     "name": "오색찬란한 거품",
     "buffs": [
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "element": "용융", "record_only": false, "absolute_score_only": false },
-      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 5, "always": false, "element": "용융", "id": "chromatic_5pc_self", "label": "불꽃 효과 부여 시 용융피해 +10% 증가 (5세트, 15초)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "element_damage_bonus", "value": 0.25, "set_pieces": 5, "always": false, "element": "용융", "target": "next_character", "note": "5세트: 반주 후 다음 변주 등장 캐릭터 용융피해 +25% 증가", "record_only": false, "absolute_score_only": false }
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 2, "always": true, "label": "용융 피해 10% 증가", "short":"용융 피해 +10%","element": "용융", "record_only": false, "absolute_score_only": false },
+      { "type": "element_damage_bonus", "value": 0.10, "set_pieces": 5, "always": false, "element": "용융", "id": "chromatic_5pc_self", "label": "불꽃 효과 부여 시 용융피해 +10% 증가 (5세트, 15초)", "short":"용융 피해 +10%","record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.25, "set_pieces": 5, "always": false, "element": "용융", "target": "next_character", "label":"다음 변주 등장 캐릭터의 용융 피해 25% 증가", "short": "다음 캐릭터 용융 피해 +25%","note": "5세트: 반주 후 다음 변주 등장 캐릭터 용융피해 +25% 증가", "record_only": false, "absolute_score_only": false }
     ],
     "main_slot_echoes": [
       { "id": "reminiscence_denia", "name": "공명의 메아리 · 데니아", "buffs": [
-        { "type": "element_damage_bonus", "value": 0.12, "always": false, "element": "용융", "target": "next_character", "note": "다음 변주 등장 캐릭터 용융피해 +12% 증가", "record_only": false, "absolute_score_only": false }
+        { "type": "element_damage_bonus", "value": 0.12, "always": false, "element": "용융", "target": "next_character", "label":"다음 변주 등장 캐릭터의 용융 피해 12% 증가", "short": "다음 캐릭터 용융 피해 +12%","note": "다음 변주 등장 캐릭터 용융피해 +12% 증가", "record_only": false, "absolute_score_only": false }
       ] }
     ]
   },
@@ -142,12 +143,12 @@
     "id": "reel_of_spliced_memories",
     "name": "마음을 엮은 꿈의 그림자",
     "buffs": [
-      { "type": "attack_percent", "value": 0.10, "set_pieces": 2, "always": true, "note": "2세트: 공격력 +10%", "record_only": false, "absolute_score_only": false },
-      { "type": "attack_percent", "value": 0, "set_pieces": 5, "always": false, "target": "next_character", "note": "5세트: 조화 파동/밀집·이탈 추가 시 파티 조화도 파괴 증폭 +20 (딜 무관, 5세트 임계 표식)", "record_only": false, "absolute_score_only": false }
+      { "type": "attack_percent", "value": 0.10, "set_pieces": 2, "always": true, "label": "공격력 10% 증가","short":"공격력 +10%","note": "2세트: 공격력 +10%", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0, "set_pieces": 5, "always": false, "target": "next_character", "label":"「조화 파동 · 이탈」 혹은 「조화 밀집 · 이탈」 추가 시, 파티의 조화도 파괴 증폭이 20 증가", "short":"파티 조화도 파괴 증폭 +20","note": "5세트: 조화 파동/밀집·이탈 추가 시 파티 조화도 파괴 증폭 +20 (딜 무관, 5세트 임계 표식)", "record_only": false, "absolute_score_only": false }
     ],
     "main_slot_echoes": [
       { "id": "voidwing_moth", "name": "보이드 모스", "buffs": [
-        { "type": "attack_percent", "value": 0.12, "always": false, "target": "next_character", "note": "다음 변주 등장 캐릭터 공격력 +12%", "record_only": false, "absolute_score_only": false }
+        { "type": "attack_percent", "value": 0.12, "always": false, "target": "next_character", "label":"다음 변주 등장 캐릭터의 공격력 12% 증가", "short": "다음 캐릭터 공격력 +12%", "note": "다음 변주 등장 캐릭터 공격력 +12%", "record_only": false, "absolute_score_only": false }
       ] }
     ]
   },
@@ -155,11 +156,11 @@
    "id": "halo_of_starry_radiance",
    "name": "빛을 쫓는 별의 고리",
    "buffs": [
-    { "type": "healing_bonus", "value": 0.10, "set_pieces": 2, "always": true, "record_only": false, "absolute_score_only": false },
-    { "type": "attack_percent", "value": 0.25, "set_pieces": 5, "always": false, "target": "party", "id": "set_halo_5pc", "label": "파티원 치료 시 파티 공격력 +25% 증가 (부조화 수치 최대 가정)", "short": "파티 공격력 +25% (5세트)", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "실제 스케일 스탯은 부조화 수치 누적 효율(모니에는 최대 150%로 25% 상한 도달)이나, 계산 단순화를 위해 상한 25% 고정 적용" }
+    { "type": "healing_bonus", "value": 0.10, "set_pieces": 2, "always": true, "label": "치료 효과 10% 증가", "short": "치료 효과 +10%","record_only": false, "absolute_score_only": false },
+    { "type": "attack_percent", "value": 0.25, "set_pieces": 5, "always": false, "target": "party", "id": "set_halo_5pc", "label": "파티원 치료 시 파티 공격력 +25% 증가 (부조화 수치 최대 가정)", "short": "파티 공격력 +25%", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "실제 스케일 스탯은 부조화 수치 누적 효율(모니에는 최대 150%로 25% 상한 도달)이나, 계산 단순화를 위해 상한 25% 고정 적용" }
    ],
    "main_slot_echoes": [
-    { "id": "reactor_husk", "name": "리액터 허스크", "buffs": [ { "type": "energy_regen", "value": 0.10, "always": true, "target": "self", "note": "메인슬롯 패시브: 공명 효율 +10%", "record_only": false, "absolute_score_only": false } ] }
+    { "id": "reactor_husk", "name": "리액터 허스크", "buffs": [ { "type": "energy_regen", "value": 0.10, "always": true, "target": "self", "label":"공명 효율 10% 증가", "short":"공명 효율 +10%", "note": "메인슬롯 패시브: 공명 효율 +10%", "record_only": false, "absolute_score_only": false } ] }
    ]
   }
 ]

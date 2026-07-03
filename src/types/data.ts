@@ -1,5 +1,5 @@
 import type {
-  StatKey, Element, WeaponType, ScaleStat, DamageBonusType, EnergyRegenMode, SetPieces, BuffTarget,
+  StatKey, Element, BuffElement, WeaponType, ScaleStat, DamageBonusType, EnergyRegenMode, SetPieces, BuffTarget,
 } from './domain';
 
 export interface Buff {
@@ -9,12 +9,14 @@ export interface Buff {
   id?: string;            // 조건부 토글 식별자
   label?: string;         // 풀 표기(조건부 표시). {v}는 현재 수치로 치환
   short?: string;         // 간략 표기. JSON에서 직접 관리. 미지정 시 label로 폴백. {v} 치환 지원
-  element?: Element;      // 지정 시 캐릭터 element 일치할 때만
+  element?: BuffElement;  // 지정 시 캐릭터 element 일치할 때만. '전체'=전체 속성피해(게이트 없이 모든 원소에 적용)
   set_pieces?: SetPieces; // 에코세트 버프 전용 (1|2|3|5)
   target?: BuffTarget;    // 수혜 대상. 미지정 시 self. next_character는 내 계산에서 제외
   min_ascension?: number; // 돌파(공명 체인) 조건. 지정 시 ascensionLevel >= 값일 때만 활성/노출 (예: 히유키 6돌 2스택)
   refinement_values?: number[]; // 무기 버프 전용. 재련(공진) 1~5별 수치 5개. 지정 시 refinement_values[공진-1]로 value 대체
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
+  damage_bonus_type?: DamageBonusType; // 지정 시 캐릭터(모드)의 피해유형이 이 값과 일치할 때만 활성/노출 (element 게이트와 동일 개념). 예: 「강설」→공명해방 크리 분기
+  exclude_damage_bonus_type?: DamageBonusType; // 지정 시 캐릭터(모드)의 피해유형이 이 값이 아닐 때만 활성/노출 (damage_bonus_type의 역). 예: 반주 분기는 공명해방 캐릭터에겐 미노출
   record_only?: boolean; // 특정 스킬 계수/특정 스킬 한정 효과 — 계산 완전 제외 + 패널 숨김(순수 기록용). 예: 에이메스 종결 부스트, 루크 공중공격 보너스
   absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
   default_on?: boolean; // 조건부 버프 체크박스 기본 상태(미지정 시 true). 모든 조건부 버프에 명시
