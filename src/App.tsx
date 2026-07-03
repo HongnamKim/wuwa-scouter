@@ -22,6 +22,7 @@ import { TwoPieceReco } from './components/TwoPieceReco';
 import { WeaponCompare } from './components/WeaponCompare';
 import { SubstatSwapCompare } from './components/SubstatSwapCompare';
 import { Dropdown } from './components/Dropdown';
+import { Analytics } from '@vercel/analytics/react';
 import './styles.css';
 
 const LAST_KEY = 'wuwa-scouter:last-character';
@@ -249,5 +250,10 @@ const router = createBrowserRouter([
 ]);
 
 export function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Analytics />
+    </>
+  );
 }
