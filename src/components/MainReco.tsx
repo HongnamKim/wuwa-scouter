@@ -1,4 +1,5 @@
 import type { AppState } from '../state/store';
+import { analysisContext } from '../state/store';
 import { mainRecommendation, RecoRow } from '../engine/theory';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
@@ -16,7 +17,15 @@ function Cell({ rows }: { rows: RecoRow[] }) {
 }
 
 export function MainReco({ state }: { state: AppState }) {
-  const groups = mainRecommendation(state);
+  const ctx = analysisContext(state);
+  if (!ctx) {
+    return (
+      <p className="muted" style={{ margin: '8px 0' }}>
+        무기 · 화음 세트 · 메인 에코 · 코스트 구성을 먼저 설정해 주세요.
+      </p>
+    );
+  }
+  const groups = mainRecommendation(ctx);
   // 후보가 많은 그룹(44111 4코 조합, ER 전환형 3코 조합 등)은 상위 3건만 표시
   const top = (rows: RecoRow[]) => rows.slice(0, 3);
   return (

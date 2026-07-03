@@ -35,8 +35,8 @@ export function computeEnergyRegen(ctx: CalcContext): number {
     + buffs.energy_regen + (main.energy_regen ?? 0);
 }
 
-/** 유효옵 부옵 합 (% → 그대로 % 단위 숫자) */
-export function sumEffectiveSubstats(ctx: CalcContext): Partial<Record<StatKey, number>> {
+/** 유효옵 부옵 합 (% → 그대로 % 단위 숫자). 무기 미설정(부분) 상태에서도 호출 가능하도록 최소 형태만 요구 */
+export function sumEffectiveSubstats(ctx: Pick<CalcContext, 'character' | 'selectedMode' | 'slots'>): Partial<Record<StatKey, number>> {
   const sum: Partial<Record<StatKey, number>> = {};
   const eff = new Set(effectiveSubstatsOf(ctx));
   for (const slot of ctx.slots) {
@@ -45,6 +45,19 @@ export function sumEffectiveSubstats(ctx: CalcContext): Partial<Record<StatKey, 
         sum[line.type] = (sum[line.type] ?? 0) + line.value;
       }
     }
+  }
+  return sum;
+}
+
+/** 유효옵 총합(표시용): 부옵 합 + 선택한 메인 옵션(primary) 값. % 는 % 숫자, flat은 raw.
+ * 계산용 아님(계산은 부옵/메인을 따로 더함) — 유효옵 합 표 표시 전용. */
+export function sumEffectiveTotal(ctx: Pick<CalcContext, 'character' | 'selectedMode' | 'slots'>): Partial<Record<StatKey, number>> {
+  const sum = { ...sumEffectiveSubstats(ctx) };
+  const eff = new Set(effectiveSubstatsOf(ctx));
+  for (const slot of ctx.slots) {
+    if (slot.cost == null || !slot.main || !eff.has(slot.main)) continue;
+    const pct = MAIN_PRIMARY[slot.cost][slot.main]; // % 숫자(예: 4코 크피 44)
+    if (pct != null) sum[slot.main] = (sum[slot.main] ?? 0) + pct;
   }
   return sum;
 }

@@ -1,4 +1,5 @@
 import type { AppState } from '../state/store';
+import { analysisContext } from '../state/store';
 import { twoPieceRecommendationGroups, RecoRow } from '../engine/theory';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
@@ -18,7 +19,8 @@ function Cell({ rows }: { rows: RecoRow[] }) {
 
 /** 자유 2세트 효과(1+2+2, 3+2) 조합별 상대 성능 추천 — 최고점/크크작 기준. 자유 슬롯 0이면 렌더 안 함 */
 export function TwoPieceReco({ state }: { state: AppState }) {
-  const groups = twoPieceRecommendationGroups(state);
+  const ctx = analysisContext(state);
+  const groups = ctx ? twoPieceRecommendationGroups(ctx) : null;
   if (!groups) return null;
   return (
     <table className="reco-grid">

@@ -1,5 +1,5 @@
 import type { AppState } from '../state/store';
-import { pickMainEcho, combinedMainEchoes } from '../state/store';
+import { combinedMainEchoes, analysisContext } from '../state/store';
 import { loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
 import { freeTwoPieceSlots, defaultSlots } from '../engine/echoSlots';
 import { optimalTwoPiecePicks } from '../engine/theory';
@@ -25,16 +25,23 @@ export function Selectors({ state, setState }: Props) {
   const allSets = loadEchoSets();
   const char = state.character;
 
-  // 에코 세트 변경 시: 자유 슬롯 모드(파생 슬롯>0)면 단일 주 세트로 정리,
-  // 메인 에코 재선택, 자유 2세트 효과를 새 슬롯 수에 맞춰 최적 조합으로 재설정
+  // 설정이 완성(무기·세트·메인에코·코스트)됐고 자유 슬롯이 있으며 아직 2세트 효과 미선택이면 최적 조합으로 채운다.
+  // (이미 사용자가 고른 2세트 효과는 건드리지 않음)
+  const commit = (next: AppState) => {
+    const ctx = analysisContext(next);
+    const needPicks = ctx && (next.twoPiecePicks?.length ?? 0) === 0 && freeTwoPieceSlots(next.echoSets) > 0;
+    setState(needPicks ? { ...next, twoPiecePicks: optimalTwoPiecePicks(ctx!) } : next);
+  };
+
+  // 에코 세트 변경 시: 자유 슬롯 모드(파생 슬롯>0)면 단일 주 세트로 정리. 메인 에코는 새 세트에 없으면 비운다.
+  // 자유 2세트 효과는 슬롯 수가 바뀌므로 (설정 완성 시) 최적 조합으로 재설정, 아니면 비움.
   const applyEchoSets = (echoSets: EchoSet[]) => {
     const sets = freeTwoPieceSlots(echoSets) > 0 ? [echoSets[0]] : echoSets;
     const combined = combinedMainEchoes(sets);
-    const mainEcho = combined.some((e) => e.id === state.mainEcho.id)
-      ? state.mainEcho
-      : pickMainEcho(sets, char);
-    const next = { ...state, echoSets: sets, mainEcho };
-    setState({ ...next, twoPiecePicks: optimalTwoPiecePicks(next) });
+    const mainEcho = state.mainEcho && combined.some((e) => e.id === state.mainEcho!.id) ? state.mainEcho : null;
+    const next: AppState = { ...state, echoSets: sets, mainEcho };
+    const ctx = analysisContext(next);
+    setState({ ...next, twoPiecePicks: ctx ? optimalTwoPiecePicks(ctx) : [] });
   };
 
   const weaponOptions: DropdownOption[] = char.recommended_weapons.map((id) => {
@@ -95,9 +102,9 @@ export function Selectors({ state, setState }: Props) {
         </div>
 
         <div className="setting">
-          <div className="setting-label">무기 <span className="muted">({WEAPON_TYPE_LABEL[state.weapon.weapon_type]})</span></div>
-          <Dropdown value={state.weapon.id} options={weaponOptions}
-            onChange={(id) => setState({ ...state, weapon: getWeapon(id, weapons), refinementLevel: 1 })} />
+          <div className="setting-label">무기 {state.weapon && <span className="muted">({WEAPON_TYPE_LABEL[state.weapon.weapon_type]})</span>}</div>
+          <Dropdown value={state.weapon?.id ?? ''} options={weaponOptions}
+            onChange={(id) => commit({ ...state, weapon: getWeapon(id, weapons), refinementLevel: 1 })} />
         </div>
 
         <div className="setting">
@@ -113,11 +120,15 @@ export function Selectors({ state, setState }: Props) {
         <div className="setting">
           <div className="setting-label">화음 세트</div>
           <div className="echo-set-list">
-            {state.echoSets.map((s, i) => (
+            {(state.echoSets.length ? state.echoSets.map((s) => s.id) : ['']).map((sid, i) => (
               <div key={i} className="echo-set-item">
-                <Dropdown value={s.id}
+                <Dropdown value={sid}
                   options={setOptions}
-                  onChange={(id) => applyEchoSets(state.echoSets.map((x, idx) => idx === i ? getEchoSet(id, allSets) : x))} />
+                  onChange={(id) => applyEchoSets(
+                    state.echoSets.length
+                      ? state.echoSets.map((x, idx) => idx === i ? getEchoSet(id, allSets) : x)
+                      : [getEchoSet(id, allSets)]
+                  )} />
               </div>
             ))}
           </div>
@@ -137,14 +148,14 @@ export function Selectors({ state, setState }: Props) {
 
         <div className="setting">
           <div className="setting-label">메인 에코</div>
-          <Dropdown value={state.mainEcho.id} options={mainEchoOptions}
-            onChange={(id) => setState({ ...state, mainEcho: combinedMainEchoes(state.echoSets).find((m) => m.id === id)! })} />
+          <Dropdown value={state.mainEcho?.id ?? ''} options={mainEchoOptions}
+            onChange={(id) => commit({ ...state, mainEcho: combinedMainEchoes(state.echoSets).find((m) => m.id === id) ?? null })} />
         </div>
 
         <div className="setting">
           <div className="setting-label">코스트 구성</div>
-          <Dropdown value={state.costLayout} options={costOptions}
-            onChange={(v) => setState({ ...state, costLayout: v as CostLayout, slots: defaultSlots(v as CostLayout) })} />
+          <Dropdown value={state.costLayout ?? ''} options={costOptions}
+            onChange={(v) => commit({ ...state, costLayout: v as CostLayout, slots: defaultSlots(v as CostLayout) })} />
         </div>
 
         <div className="setting">

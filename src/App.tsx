@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import {
   createBrowserRouter, RouterProvider, Outlet, Navigate,
   useNavigate, useParams, useLocation, useBlocker,
@@ -6,7 +6,7 @@ import {
 import type { Character } from './types/data';
 import {
   saveCharacterState, isStateSaved, hasSavedState, deleteCharacterState,
-  buildStateForCharacter, defaultStateForCharacter, loadCharacterState,
+  buildStateForCharacter, defaultStateForCharacter, loadCharacterState, analysisContext, isRecordOnly, isUntouchedDefault,
 } from './state/store';
 import { loadCharacters } from './engine/loadData';
 import { freeTwoPieceSlots } from './engine/echoSlots';
@@ -74,8 +74,9 @@ function AnalysisScreen({ character }: { character: Character }) {
   const [deleting, setDeleting] = useState(false);
 
   const dirty = !isStateSaved(state);
-  // 미저장 변경이 있으면 화면 이탈(헤더/뒤로가기/캐릭터 변경 포함)을 가로채 확인
-  const blocker = useBlocker(dirty);
+  // 미저장 변경이 있으면 화면 이탈(헤더/뒤로가기/캐릭터 변경 포함)을 가로채 확인.
+  // 단, 데이터 없는 캐릭터의 손대지 않은 기본(빈) 상태는 저장할 것이 없으므로 차단하지 않는다.
+  const blocker = useBlocker(dirty && !isUntouchedDefault(state));
 
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
 
@@ -91,20 +92,27 @@ function AnalysisScreen({ character }: { character: Character }) {
 
       <div className="top-row">
         <Selectors state={state} setState={setState} />
-        <div className="top-reco">
-          <h2>메인 조합 추천</h2>
-          <MainReco state={state} />
-          {freeTwoPieceSlots(state.echoSets) > 0 && (
-            <>
-              <h3 style={{ marginTop: 12 }}>보조 2세트 효과 추천</h3>
-              <TwoPieceReco state={state} />
-            </>
-          )}
-        </div>
+        {isRecordOnly(character) ? (
+          <div className="top-reco">
+            <h2>기록 전용 (서포터)</h2>
+            <p className="muted">개인 딜 최적화(메인 조합 추천·상대 점수)는 제공하지 않고, 스펙·버프·딜 상승 수치만 기록용으로 표시합니다.</p>
+          </div>
+        ) : (
+          <div className="top-reco">
+            <h2>메인 조합 추천</h2>
+            <MainReco state={state} />
+            {freeTwoPieceSlots(state.echoSets) > 0 && (
+              <>
+                <h3 style={{ marginTop: 12 }}>보조 2세트 효과 추천</h3>
+                <TwoPieceReco state={state} />
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <h2>점수</h2>
-      <Scores key={state.character.id + state.costLayout + (state.selectedMode ?? '')} state={state} />
+      <Scores key={state.character.id + (state.costLayout ?? '') + (state.selectedMode ?? '') + (analysisContext(state) ? 'c' : 'u')} state={state} />
       <p className="muted" style={{ fontSize: '0.8rem', margin: '6px 0 0' }}>
         ※ 이상효과(서리·불꽃·풍식 등) 딜은 별도 스케일로 점수에 포함되지 않습니다.
       </p>
@@ -175,10 +183,25 @@ function CompareRoute() {
  * 비교 화면 골격: 저장된 빌드를 기준으로 무기/부옵 교체 시 딜 변화를 본다.
  * 비교 로직은 추후 구현 — 지금은 레이아웃/진입/빈 상태만.
  */
+/** 접이식 섹션(아코디언). 헤더 클릭으로 토글. */
+function AccordionSection({ title, open, onToggle, children, topBorder = true }: { title: string; open: boolean; onToggle: () => void; children: ReactNode; topBorder?: boolean }) {
+  return (
+    <div style={{ borderTop: topBorder ? '1px solid #ddd' : undefined, margin: '4px 0' }}>
+      <h3 style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 8px' }} onClick={onToggle}>
+        <span style={{ fontSize: '0.8rem', color: '#888' }}>{open ? '▾' : '▸'}</span>{title}
+      </h3>
+      {open && <div style={{ marginBottom: 12 }}>{children}</div>}
+    </div>
+  );
+}
+
 function CompareScreen({ character }: { character: Character }) {
   const navigate = useNavigate();
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
-  const base = loadCharacterState(character);
+  const saved = loadCharacterState(character);
+  const base = saved ? analysisContext(saved) : null;
+  const [openWeapon, setOpenWeapon] = useState(false); // 무기 비교: 전용무기 쓰면 잘 안 봄 → 기본 접힘
+  const [openSwap, setOpenSwap] = useState(true);       // 에코 교체 비교: 기본 펼침
 
   return (
     <>
@@ -199,11 +222,12 @@ function CompareScreen({ character }: { character: Character }) {
         </div>
       ) : (
         <>
-          <h3>무기 비교</h3>
-          <WeaponCompare base={base} />
-
-          <h3>부옵 교체 비교</h3>
-          <SubstatSwapCompare base={base} />
+          <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)} topBorder={false}>
+            <SubstatSwapCompare base={base} />
+          </AccordionSection>
+          <AccordionSection title="무기 비교" open={openWeapon} onToggle={() => setOpenWeapon((o) => !o)}>
+            <WeaponCompare base={base} />
+          </AccordionSection>
         </>
       )}
     </>

@@ -150,5 +150,16 @@
         { "type": "attack_percent", "value": 0.12, "always": false, "target": "next_character", "note": "다음 변주 등장 캐릭터 공격력 +12%", "record_only": false, "absolute_score_only": false }
       ] }
     ]
+  },
+  {
+   "id": "halo_of_starry_radiance",
+   "name": "빛을 쫓는 별의 고리",
+   "buffs": [
+    { "type": "healing_bonus", "value": 0.10, "set_pieces": 2, "always": true, "record_only": false, "absolute_score_only": false },
+    { "type": "attack_percent", "value": 0.25, "set_pieces": 5, "always": false, "target": "party", "id": "set_halo_5pc", "label": "파티원 치료 시 파티 공격력 +25% 증가 (부조화 수치 최대 가정)", "short": "파티 공격력 +25% (5세트)", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "실제 스케일 스탯은 부조화 수치 누적 효율(모니에는 최대 150%로 25% 상한 도달)이나, 계산 단순화를 위해 상한 25% 고정 적용" }
+   ],
+   "main_slot_echoes": [
+    { "id": "reactor_husk", "name": "리액터 허스크", "buffs": [ { "type": "energy_regen", "value": 0.10, "always": true, "target": "self", "note": "메인슬롯 패시브: 공명 효율 +10%", "record_only": false, "absolute_score_only": false } ] }
+   ]
   }
 ]

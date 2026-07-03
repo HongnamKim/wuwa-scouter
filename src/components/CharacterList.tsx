@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
-import { loadCharacterState } from '../state/store';
+import { loadCharacterState, analysisContext, isRecordOnly } from '../state/store';
+import type { Character } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput } from '../engine/build';
@@ -11,12 +12,18 @@ function hasSubstats(state: AppState): boolean {
   return state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
 }
 
-function scoresOf(state: AppState): { theory: number; kkjak: number } | null {
-  if (!hasSubstats(state)) return null;
-  const mine = computePerf(buildPerfInput(state));
+// 카드 하단 점수 두 줄. 기록 전용(서포터)은 상대 점수가 없으므로 딜 상승 수치만.
+function cardScoreLines(character: Character, state: AppState | null): { primary: string; secondary: string } {
+  const record = isRecordOnly(character);
+  const ctx = state ? analysisContext(state) : null;
+  if (!state || !ctx || !hasSubstats(state)) {
+    return record ? { primary: '딜 -', secondary: '서포터(기록)' } : { primary: '크크작 -', secondary: '최고점 -' };
+  }
+  const mine = computePerf(buildPerfInput(ctx));
+  if (record) return { primary: `딜 ${mine.toFixed(0)}`, secondary: '서포터(기록)' };
   return {
-    theory: (mine / theoryBest(state).perf) * 100,
-    kkjak: (mine / kkjakPerf(state, optimalThreeCoMode(state))) * 100,
+    primary: `크크작 ${((mine / kkjakPerf(ctx, optimalThreeCoMode(ctx))) * 100).toFixed(1)}%`,
+    secondary: `최고점 ${((mine / theoryBest(ctx).perf) * 100).toFixed(1)}%`,
   };
 }
 
@@ -56,7 +63,7 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
 
       <div className="card-grid">
         {filtered.map(({ character, state }) => {
-          const sc = state ? scoresOf(state) : null;
+          const { primary, secondary } = cardScoreLines(character, state);
           const recorded = !!state;
           return (
             <div className="char-card" key={character.id} onClick={() => onSelect(character.id)}>
@@ -65,8 +72,8 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
               <div className="card-name">{character.name}</div>
               <div className="muted">{character.version}버전 · {character.element}</div>
-              <div className="card-score">크크작 {sc ? sc.kkjak.toFixed(1) + '%' : '-'}</div>
-              <div className="muted">최고점 {sc ? sc.theory.toFixed(1) + '%' : '-'}</div>
+              <div className="card-score">{primary}</div>
+              <div className="muted">{secondary}</div>
             </div>
           );
         })}

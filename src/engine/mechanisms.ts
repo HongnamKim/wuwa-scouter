@@ -22,11 +22,23 @@ export const SPECIAL_MECHANISMS: Record<string, SpecialMechanism> = {
 
 export const MECHANISM_KEYS = Object.keys(SPECIAL_MECHANISMS);
 
-/** special_mechanism 키 + 공명효율로 추가 피해유형 보너스(소수)를 계산. 키 없으면 0. */
+/** special_mechanism 키 + 공명효율로 추가 피해유형 보너스(소수)를 계산. 키 없으면 0. (deal_conversion) */
 export function mechanismDamageTypeBonus(key: string | null, energyRegen: number): number {
   if (!key) return 0;
   const m = SPECIAL_MECHANISMS[key];
   return m?.damageTypeBonusFromEnergyRegen?.(energyRegen) ?? 0;
+}
+
+/** 공효 스케일 버프 파라미터. buff_conversion 캐릭터(모니에 등)의 버프가 공효로 값이 변함. */
+export interface EnergyScale { per_percent: number; cap: number; }
+
+/**
+ * buff_conversion: 공명효율(소수, 1.0=100%) 초과분(100% 기준)으로 버프값을 계산.
+ * 값 = min(per_percent × 초과공효%, cap). 예: 간섭표기 0.25%/1%, cap 40% → 공효 260%에서 0.40.
+ * deal_conversion(공효→자기 딜)과 대응되는 buff_conversion(공효→버프값)의 변환 함수.
+ */
+export function energyScaleValue(s: EnergyScale, energyRegen: number): number {
+  return Math.min(s.per_percent * Math.max(0, energyRegen * 100 - 100), s.cap);
 }
 
 /** 공명효율을 다른 스탯으로 전환하는 캐릭터인지 (예: 시그리카) */

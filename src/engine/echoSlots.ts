@@ -1,12 +1,14 @@
 import type { EchoSet } from '../types/data';
-import type { Cost, CostLayout, StatKey } from '../types/domain';
+import type { Cost, CostLayout, StatKey, ScaleStat } from '../types/domain';
 import type { EchoSlot, MainPrimaryPick, SubstatLine } from './context';
 import { COST_LAYOUTS, MAIN_PRIMARY } from './constants';
 
 const DEAL_KEYS: StatKey[] = ['attack_percent', 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
+const SCALE_TO_PERCENT: Record<ScaleStat, StatKey> = { attack: 'attack_percent', hp: 'hp_percent', defense: 'defense_percent' };
 
-/** 코스트별 기본 메인 (4코=크피, 그 외=공%; 없으면 첫 딜키) */
-export function defaultMainForCost(cost: Cost): StatKey {
+/** 코스트별 기본 메인 (4코=크피, 1코=스케일 스탯 %, 3코=속성/공%; 없으면 첫 딜키) */
+export function defaultMainForCost(cost: Cost, scaleStat: ScaleStat = 'attack'): StatKey {
+  if (cost === 1) return SCALE_TO_PERCENT[scaleStat]; // 1코 기본 = 캐릭터 스케일 스탯 %(방어/체력/공격)
   const opts = (Object.keys(MAIN_PRIMARY[cost]) as StatKey[]).filter((k) => DEAL_KEYS.includes(k));
   const def: StatKey = cost === 4 ? 'critical_damage' : 'attack_percent';
   return opts.includes(def) ? def : opts[0];

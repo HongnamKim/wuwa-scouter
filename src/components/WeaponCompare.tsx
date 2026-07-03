@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AppState } from '../state/store';
+import type { CalcContext } from '../engine/context';
 import { loadWeapons, getWeapon } from '../engine/loadData';
 import { buildPerfInput } from '../engine/build';
 import { computePerf } from '../engine/perf';
@@ -8,7 +8,7 @@ import { computePerf } from '../engine/perf';
  * 무기 비교: 저장된 빌드에서 무기만 바꿔가며 딜 상승 수치를 계산.
  * 현재(저장) 무기를 100%로 두고 추천무기들의 상대 % 표시. 공진은 슬라이더로 일괄 조절.
  */
-export function WeaponCompare({ base }: { base: AppState }) {
+export function WeaponCompare({ base }: { base: CalcContext }) {
   const weapons = loadWeapons();
   const savedRef = base.refinementLevel ?? 1;
   const [refinement, setRefinement] = useState(savedRef);

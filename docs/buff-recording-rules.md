@@ -79,7 +79,7 @@
     ├─ 이상효과 (별도 스케일)
     │       → anomaly_*,  record_only: false, absolute_score_only: false (타입 자체가 SCORE_HIDDEN)
     └─ 조화도 관련 (조화도 파괴 증폭 / 조화 밀집·파동 대응 등)
-            → harmony_break_amplify 등,  record_only: true (기록만, 계산·표시 제외)
+            → harmony(통합 타입) 등,  record_only: true (기록만, 계산·표시 제외)
 ```
 
 ### 플래그 조합별 동작
@@ -91,7 +91,7 @@
 | true | false | X | X | X (완전 숨김) | 특정 스킬 배율·에코로 못 얻는 한정 효과 |
 | true | true | — | — | — | **금지 조합** (상호 배타) |
 
-이상효과(`anomaly_*`)는 두 플래그가 모두 false여도 **타입 자체가 SCORE_HIDDEN**이라 계산·표시에서 빠진다. **조화도 관련(`harmony_break_amplify` 등 조화도 파괴·조화 밀집/파동 대응)은 `record_only: true`로 기록**한다(계산·표시 제외, 데이터엔 남김).
+이상효과(`anomaly_*`)는 두 플래그가 모두 false여도 **타입 자체가 SCORE_HIDDEN**이라 계산·표시에서 빠진다. **조화도 관련(`harmony` 타입 — 조화도 파괴 증폭·조화 밀집/파동 대응 등 통합)은 `record_only: true`로 기록**한다(계산·표시 제외, 데이터엔 남김).
 
 ### 핵심 구분: "특정 스킬 한정"의 두 갈래
 
@@ -135,7 +135,7 @@
                  heavy_attack_amplify, resonance_skill_amplify, resonance_liberation_amplify, echo_skill_amplify
 특정 스킬 배율 : skill_motion_value_bonus, skill_motion_value_amplify   (record_only: true 전제)
 이상효과       : anomaly_damage_amplify, anomaly_damage_additional      (SCORE_HIDDEN)
-조화도 파괴    : harmony_break_amplify                                  (조화도 관련은 record_only: true로 기록)
+조화도        : harmony (조화도 파괴 증폭 pt·조화 밀집 대응 등 통합, record_only: true로 기록)
 배수형         : damage_type_bonus_factor                              (유형 보너스 합 ×(1+값))
 방어/저항      : defense_ignore(방어력 무시), element_resistance_ignore(속성 저항 무시)
 ```
@@ -199,6 +199,6 @@
 | 햇무리참살 등 3스킬 받는 피해 +30% | skill_motion_value_amplify | true | false | 특정 스킬 한정 배율 |
 | 공중공격 시 피해 +150% (루크 1돌) | skill_motion_value_amplify | true | false | 상황 한정, 에코로 못 얻음 |
 | 냉해효과 피해 +30% 부스트 | anomaly_damage_amplify | false | false | 이상효과 별도 스케일(타입으로 숨김) |
-| 조화도 파괴 증폭 +10pt | harmony_break_amplify | true | false | 조화도 관련은 record_only로 기록 |
+| 조화도 파괴 증폭 +10pt / 조화 밀집 대응 | harmony | true | false | 조화도 관련은 harmony 타입 record_only |
 | 모든 일반공격 피해 보너스 ×1.4 (레베카 6돌) | damage_type_bonus_factor | false | false | 증가 버킷 배수, 반영 |
 | 반주: 다음 캐릭터 전체 피해 +15% (target: next_character) | all_damage_amplify | false | true | 기록만, 본인 미수혜 |

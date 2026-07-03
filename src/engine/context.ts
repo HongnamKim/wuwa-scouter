@@ -1,4 +1,4 @@
-import type { Character, Weapon, EchoSet, MainSlotEcho } from '../types/data';
+import type { Character, Weapon, EchoSet, MainSlotEcho, Buff } from '../types/data';
 import type { StatKey, Cost, CostLayout } from '../types/domain';
 
 export interface SubstatLine {
@@ -15,6 +15,12 @@ export interface ManualBuff {
 export interface MainPrimaryPick {
   cost: Cost;
   type: StatKey; // 그 슬롯에서 고른 메인 옵션
+}
+
+/** 편성한 파티원. 그 캐릭터가 제공하는 party/next_character 버프를 개별로 토글. */
+export interface PartyMember {
+  id: string;          // 파티원 캐릭터 id
+  disabled?: string[]; // 끈(미적용) 제공 버프 키 목록. 기본 전부 적용(빈 배열)
 }
 
 export interface EchoSlot {
@@ -37,4 +43,6 @@ export interface CalcContext {
   ascensionLevel?: number; // 돌파(공명 체인) 0~6. 일부 캐릭터의 스택형 자체 버프에 영향. 미지정 시 0
   refinementLevel?: number; // 무기 재련(공진) 1~5. 무기 버프량에 영향. 미지정 시 1
   selectedMode?: string; // 모드 전환 캐릭터의 선택 모드 id. 미지정 시 character.modes[0]
+  partyMembers?: PartyMember[]; // 편성한 파티원(최대 2). UI/저장용
+  partyProvidedBuffs?: Buff[];  // partyMembers를 내 저장 빌드로 해석한 버프(store가 주입). aggregateBuffs가 합산
 }

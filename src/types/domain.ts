@@ -11,7 +11,7 @@ export type DamageBonusType =
   | 'resonance_liberation'
   | 'echo_skill'; // 에코 어빌리티 피해
 
-export type EnergyRegenMode = 'premise' | 'deal_conversion';
+export type EnergyRegenMode = 'premise' | 'deal_conversion' | 'buff_conversion';
 
 export type CostLayout = '43311' | '44111';
 export type Cost = 1 | 3 | 4;
@@ -56,8 +56,8 @@ export type StatKey =
   | 'anomaly_damage_amplify'
   // 이상효과 추가타(받는 피해 부스트가 아니라 이상효과 피해를 1회 더 입힘). value=이상효과 배율(예: 1.02). 점수 미반영
   | 'anomaly_damage_additional'
-  // 조화도 파괴 증폭(pt 단위, 조화 밀집 모드 지원 스탯). 근사 점수 미반영 — 파티 조합 매칭용 기록
-  | 'harmony_break_amplify'
+  // 조화도 관련 통합 타입(조화도 파괴 증폭 pt, 조화 밀집·간섭 대응 최종피해 등). 근사 점수 미반영(record_only 전제) — 기록·파티 조합용
+  | 'harmony'
   // 피해유형 보너스(증가) 합계에 곱하는 배수형 버프. value 0.40 → 캐릭터 피해유형 보너스 ×1.4
   // (예: 레베카 6돌 "모든 출처 일반공격 피해 보너스 +40% 상승")
   | 'damage_type_bonus_factor'
@@ -76,7 +76,7 @@ export const STAT_KEYS: readonly StatKey[] = [
   'resonance_skill_bonus', 'resonance_liberation_bonus', 'echo_skill_bonus',
   'element_damage_amplify', 'all_damage_amplify', 'basic_attack_amplify',
   'heavy_attack_amplify', 'resonance_skill_amplify', 'resonance_liberation_amplify', 'echo_skill_amplify',
-  'anomaly_damage_amplify', 'anomaly_damage_additional', 'harmony_break_amplify',
+  'anomaly_damage_amplify', 'anomaly_damage_additional', 'harmony',
   'damage_type_bonus_factor',
   'skill_motion_value_bonus', 'skill_motion_value_amplify',
   'defense_ignore', 'element_resistance_ignore',

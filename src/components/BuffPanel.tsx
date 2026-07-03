@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
+import { analysisContext } from '../state/store';
 import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
 import { defaultBuffChecked } from '../engine/buffs';
+import { computeEnergyRegen } from '../engine/build';
+import { energyScaleValue } from '../engine/mechanisms';
+import { PartyTab } from './PartyTab';
 
 const SIMPLE_KEY = 'wuwa-scouter:buff-simple';
 
 // 점수에 집계되지 않는(이상효과·조화도 파괴 등) 버프 타입.
 // 데이터엔 기록하되 추가 버프 패널엔 표시하지 않는다(점수 영향 버프만 노출).
-const SCORE_HIDDEN_TYPES: StatKey[] = ['anomaly_damage_amplify', 'anomaly_damage_additional', 'harmony_break_amplify'];
+const SCORE_HIDDEN_TYPES: StatKey[] = ['anomaly_damage_amplify', 'anomaly_damage_additional', 'harmony'];
 
 const BUFF_TYPES: { key: StatKey; label: string }[] = [
   { key: 'critical_rate', label: '크리티컬%' }, { key: 'critical_damage', label: '크리티컬 피해%' },
@@ -26,16 +30,21 @@ export function BuffPanel({ state, setState }: Props) {
     try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
   });
   const toggleSimple = (v: boolean) => { setSimple(v); try { localStorage.setItem(SIMPLE_KEY, v ? '1' : '0'); } catch { /* noop */ } };
+  // 돌파 미달로 잠긴 버프는 기본 숨김, 그룹별 "더보기"로 펼침 (키 = 그룹 source)
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // 카테고리 탭 선택 인덱스
+  const [tab, setTab] = useState(0);
 
   // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
   // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
   type Item = { b: Buff; passive: boolean };
+  // 무기/메인에코는 미설정(null)일 수 있으므로 설정된 출처만 그룹에 포함
   const condGroups: { source: string; weaponStats: boolean; items: Item[] }[] = [
     { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false, weaponStats: false },
-    { source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, withPassive: true, weaponStats: true },
+    ...(state.weapon ? [{ source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, withPassive: true, weaponStats: true }] : []),
     ...uniqueSets.map((s) => ({ source: `화음 세트: ${s.name}`, buffs: s.buffs, withPassive: true, weaponStats: false })),
-    { source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, withPassive: true, weaponStats: false },
+    ...(state.mainEcho ? [{ source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, withPassive: true, weaponStats: false }] : []),
   ]
     .map((g) => ({
       source: g.source,
@@ -54,12 +63,21 @@ export function BuffPanel({ state, setState }: Props) {
         .filter((b) => !b.mode || b.mode === (state.selectedMode ?? state.character.modes?.[0]?.id))
         .map((b): Item => ({ b, passive: !!b.always })),
     }))
-    .filter((g) => g.items.length > 0);
+    // 무기 그룹은 버프가 없어도 스탯 줄을 보기 위해 항상 표시. 그 외 그룹은 표시할 버프가 있을 때만.
+    .filter((g) => g.items.length > 0 || g.weaponStats);
 
   // 돌파 조건 미달 → 잠금(체크 불가)
   const isLocked = (b: Buff) => b.min_ascension != null && (state.ascensionLevel ?? 0) < b.min_ascension;
   // 조건부 버프 현재 체크 상태: 저장값 우선, 미터치면 default_on/돌파 기준
   const isChecked = (b: Buff) => state.conditionalToggles[b.id!] ?? defaultBuffChecked(b, state.ascensionLevel ?? 0);
+
+  // 공효 스케일 버프(energy_scale)의 현재 적용량: 현재 빌드 공효로 계산. 설정 미완성이면 계산 불가(null).
+  const ctx = analysisContext(state);
+  const currentER = ctx ? computeEnergyRegen(ctx) : null;
+  const scaleNowText = (b: Buff): string | null => {
+    if (!b.energy_scale || currentER == null) return null;
+    return `현재 ${+(energyScaleValue(b.energy_scale, currentER) * 100).toFixed(2)}%`;
+  };
 
   // {v}를 현재 수치로 치환. 무기 버프는 공진(refinement_values)에 따라 값이 변함.
   const ref = state.refinementLevel ?? 1;
@@ -77,13 +95,14 @@ export function BuffPanel({ state, setState }: Props) {
     basic_attack_bonus: '일반공격 피해', heavy_attack_bonus: '강공격 피해', basic_attack_amplify: '일반공격 피해', heavy_attack_amplify: '강공격 피해',
     resonance_skill_bonus: '공명스킬 피해', resonance_liberation_bonus: '공명해방 피해',
     resonance_skill_amplify: '공명스킬 피해', resonance_liberation_amplify: '공명해방 피해',
-    echo_skill_bonus: '에코 피해', echo_skill_amplify: '에코 피해', energy_regen: '공명 효율',
-    anomaly_damage_amplify: '이상효과 피해', anomaly_damage_additional: '이상효과 추가타', harmony_break_amplify: '조화도 파괴 증폭',
+    echo_skill_bonus: '에코 피해', echo_skill_amplify: '에코 피해', energy_regen: '공명 효율', healing_bonus: '치료 효과 보너스',
+    anomaly_damage_amplify: '이상효과 피해', anomaly_damage_additional: '이상효과 추가타', harmony: '조화도',
     defense_ignore: '방어력 무시', element_resistance_ignore: '속성 저항 무시',
     flat_attack: '공격력(깡공)', flat_hp: 'HP(깡체력)', flat_defense: '방어력(깡방)',
   };
   // 무기 자체 스탯(기초 공격 + 부가 스탯 1종) 한 줄 표기. 예: "공격 587 · 크리티컬 24.3%"
   const weaponStatLine = () => {
+    if (!state.weapon) return '';
     const bs = state.weapon.base_stats;
     const parts = [`공격 ${bs.attack}`];
     (Object.keys(bs) as StatKey[]).forEach((k) => {
@@ -108,10 +127,11 @@ export function BuffPanel({ state, setState }: Props) {
   // 간략: JSON의 short(수치 치환). 미지정 시 풀로 폴백 — 코드로 간략문을 만들지 않음
   const shortText = (b: Buff) => (b.short ? tmpl(b.short, b) : fullText(b));
 
-  // 전체 토글: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off
+  // 전체 적용/미적용: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off (1회 액션)
   const condItems = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b));
   const condIds = condItems.map((b) => b.id!);
   const toggleCount = condIds.length + state.manualBuffs.length;
+  // 활성화 가능한 버프가 모두 체크되어 있는지 → 버튼이 '전체 미적용'(해제)일지 '전체 적용'일지 결정
   const allOn = toggleCount > 0
     && condItems.every((b) => isChecked(b))
     && state.manualBuffs.every((m) => m.enabled !== false);
@@ -125,61 +145,106 @@ export function BuffPanel({ state, setState }: Props) {
     });
   };
 
+  // 카테고리 탭: 고유 스킬 / 무기 / 화음 세트(메인 에코 포함) / 파티·기타. 라벨은 짧게(무기: X → 무기).
+  const catOf = (source: string) =>
+    source.startsWith('무기') ? '무기'
+      : (source.startsWith('화음 세트') || source.startsWith('메인 에코')) ? '화음 세트'
+        : source; // 고유 스킬
+  const catMap = new Map<string, typeof condGroups>();
+  for (const g of condGroups) {
+    const c = catOf(g.source);
+    const arr = catMap.get(c);
+    if (arr) arr.push(g); else catMap.set(c, [g]);
+  }
+  const buffTabs = [...catMap.entries()].map(([label, groups]) => ({ label, groups }));
+  const tabLabels = [...buffTabs.map((t) => t.label), '파티', '기타'];
+  const activeIdx = tab < tabLabels.length ? tab : 0;
+  const activeTab = activeIdx < buffTabs.length ? buffTabs[activeIdx] : null;
+
+  // 한 버프 그룹 렌더 (탭 내부). 잠긴 버프는 기본 펼침(더보기 누른 상태) — 숨기기로 접을 수 있음.
+  const renderGroup = (g: (typeof condGroups)[number]) => {
+    const hasLocked = g.items.some((it) => !it.passive && isLocked(it.b));
+    const show = expanded[g.source] ?? true;
+    const vis = show ? g.items : g.items.filter((it) => it.passive || !isLocked(it.b));
+    const label = g.source.split(':')[0].trim();
+    return (
+      <div key={g.source}>
+        {g.source !== label && <div className="muted" style={{ margin: '2px 0 6px', fontWeight: 'bold' }}>{g.source}</div>}
+        {g.weaponStats && <div style={{ margin: '0 0 8px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>}
+        {vis.map(({ b, passive }, idx) => {
+          const locked = !passive && isLocked(b);
+          const checked = passive ? true : (!locked && isChecked(b));
+          return (
+            <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
+              <input type="checkbox" disabled={passive || locked} checked={checked}
+                onChange={(e) => { if (passive) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
+              <span>{simple ? shortText(b) : fullText(b)}{passive ? ' (상시)' : ''}
+                {scaleNowText(b) && <span className="muted" style={{ marginLeft: 4 }}>· {scaleNowText(b)}</span>}
+              </span>
+            </label>
+          );
+        })}
+        {vis.length === 0 && !g.weaponStats && !hasLocked && <div className="muted" style={{ fontSize: '0.85rem' }}>표시할 버프가 없습니다.</div>}
+        {hasLocked && (
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '2px 0 8px' }}>
+            <button onClick={() => setExpanded((e) => ({ ...e, [g.source]: !(e[g.source] ?? true) }))}>
+              {show ? '숨기기' : '더보기'}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         추가 버프
         <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.8rem', fontWeight: 'normal' }}>
           <label style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략
+            <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략 설명
           </label>
-          <label style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <input type="checkbox" checked={allOn} disabled={toggleCount === 0}
-              onChange={(e) => setAll(e.target.checked)} /> 전체
-          </label>
+          <button type="button" disabled={toggleCount === 0} onClick={() => setAll(!allOn)}>
+            {allOn ? '전체 미적용' : '전체 적용'}
+          </button>
         </span>
       </h3>
-      {condGroups.map((g) => (
-        <div key={g.source}>
-          <div className="muted" style={{ margin: '6px 0 2px', fontWeight: 'bold' }}>{g.source}</div>
-          {g.weaponStats && (
-            <div style={{ margin: '0 0 2px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>
-          )}
-          {g.items.map(({ b, passive }, idx) => {
-            const locked = !passive && isLocked(b);
-            const checked = passive ? true : (!locked && isChecked(b));
-            return (
-            <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
-              <input type="checkbox" disabled={passive || locked} checked={checked}
-                onChange={(e) => { if (passive) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
-              <span>{simple ? shortText(b) : fullText(b)}{passive ? ' (상시)' : ''}</span>
-            </label>
-            );
-          })}
+      {/* 카테고리 탭 — 버튼이 패널 좌우 폭을 모두 채우도록 각 버튼 flex:1 */}
+      <div className="mode-toggle" style={{ display: 'flex', width: '100%', marginTop: 12, marginBottom: 8 }}>
+        {tabLabels.map((label, i) => (
+          <button key={label} type="button" style={{ flex: 1 }} className={'mode-btn' + (i === activeIdx ? ' active' : '')} onClick={() => setTab(i)}>{label}</button>
+        ))}
+      </div>
+
+      {activeTab ? (
+        <div>{activeTab.groups.map(renderGroup)}</div>
+      ) : activeIdx === buffTabs.length ? (
+        <PartyTab state={state} setState={setState} simple={simple} />
+      ) : (
+        <div>
+          {state.manualBuffs.map((mb, i) => (
+            <div className="sub-row" key={i}>
+              <input type="checkbox" checked={mb.enabled !== false} onChange={(e) => {
+                const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, enabled: e.target.checked } : x);
+                setState({ ...state, manualBuffs: next });
+              }} />
+              <Dropdown value={mb.type}
+                options={[{ value: '', label: '유형' }, ...BUFF_TYPES.map((t) => ({ value: t.key, label: t.label }))]}
+                onChange={(v) => {
+                  const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, type: v as StatKey | '' } : x);
+                  setState({ ...state, manualBuffs: next });
+                }} />
+              <input type="number" step="0.1" placeholder="수치" value={mb.value ?? ''}
+                onChange={(e) => {
+                  const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, value: e.target.value === '' ? null : parseFloat(e.target.value) } : x);
+                  setState({ ...state, manualBuffs: next });
+                }} />
+              <button onClick={() => setState({ ...state, manualBuffs: state.manualBuffs.filter((_, idx) => idx !== i) })}>×</button>
+            </div>
+          ))}
+          <button onClick={() => setState({ ...state, manualBuffs: [...state.manualBuffs, { type: '', value: null, enabled: true }] })}>+ 버프 추가</button>
         </div>
-      ))}
-      <div className="muted" style={{ margin: '6px 0 2px', fontWeight: 'bold' }}>파티/기타 버프</div>
-      {state.manualBuffs.map((mb, i) => (
-        <div className="sub-row" key={i}>
-          <input type="checkbox" checked={mb.enabled !== false} onChange={(e) => {
-            const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, enabled: e.target.checked } : x);
-            setState({ ...state, manualBuffs: next });
-          }} />
-          <Dropdown value={mb.type}
-            options={[{ value: '', label: '유형' }, ...BUFF_TYPES.map((t) => ({ value: t.key, label: t.label }))]}
-            onChange={(v) => {
-              const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, type: v as StatKey | '' } : x);
-              setState({ ...state, manualBuffs: next });
-            }} />
-          <input type="number" step="0.1" placeholder="수치" value={mb.value ?? ''}
-            onChange={(e) => {
-              const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, value: e.target.value === '' ? null : parseFloat(e.target.value) } : x);
-              setState({ ...state, manualBuffs: next });
-            }} />
-          <button onClick={() => setState({ ...state, manualBuffs: state.manualBuffs.filter((_, idx) => idx !== i) })}>×</button>
-        </div>
-      ))}
-      <button onClick={() => setState({ ...state, manualBuffs: [...state.manualBuffs, { type: '', value: null, enabled: true }] })}>+ 버프 추가</button>
+      )}
     </div>
   );
 }

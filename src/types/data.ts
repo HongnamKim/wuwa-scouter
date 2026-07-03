@@ -19,6 +19,8 @@ export interface Buff {
   absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
   default_on?: boolean; // 조건부 버프 체크박스 기본 상태(미지정 시 true). 모든 조건부 버프에 명시
   default_on_from_ascension?: number; // 지정 시 해당 돌파 이상일 때만 기본 체크(미만이면 기본 해제, 잠금 아님). default_on보다 우선
+  // 공명 효율 초과분 스케일 버프(예: 모니에). 실제 공효로 값 계산: min(per_percent × (공효% − 100), cap). value는 무시.
+  energy_scale?: { per_percent: number; cap: number };
   note?: string;
 }
 

@@ -306,5 +306,32 @@
       { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "불꽃/조율 부여 시 공명해방 피해 +{v} 증가 (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
       { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "불꽃/조화밀집·이탈 부여 후 (해당 캐릭터) 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
+  },
+  {
+   "id": "starfield_calibrator",
+   "name": "별하늘 연산 측정기",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 412, "energy_regen": 0.77 },
+   "buffs": [
+    { "type": "defense_percent", "value": 0.16, "always": true, "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "note": "무기 패시브: 방어력 증가", "record_only": false, "absolute_score_only": false },
+    { "type": "critical_damage", "value": 0.20, "always": false, "target": "party", "id": "weapon_starcalib_heal_critdmg", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "치료 효과 발동 시 파티 크리티컬 피해 +{v} (4초)", "short": "파티 크피 +{v} (치료 시)", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "discord",
+   "name": "기묘한 울림",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 337, "energy_regen": 0.518 },
+   "buffs": []
+  },
+  {
+   "id": "dauntless_evernight",
+   "name": "장야의 불빛",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 337, "defense_percent": 0.615 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.08, "always": false, "id": "weapon_dauntless_atk", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "변주 스킬 발동 시 공격력 +{v} (15초)", "short": "공격력 +{v} (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "defense_percent", "value": 0.15, "always": false, "id": "weapon_dauntless_def", "refinement_values": [0.15, 0.1875, 0.225, 0.2625, 0.30], "label": "변주 스킬 발동 시 방어력 +{v} (15초)", "short": "방어력 +{v} (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
   }
 ]
