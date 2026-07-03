@@ -34,6 +34,7 @@ export function BuffPanel({ state, setState }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   // 카테고리 탭 선택 인덱스
   const [tab, setTab] = useState(0);
+  const [partyNotice, setPartyNotice] = useState(false); // 파티 탭: 기능 보완 중 안내 팝업
 
   // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
   // 고유 스킬만 조건부 노출.
@@ -212,9 +213,23 @@ export function BuffPanel({ state, setState }: Props) {
       {/* 카테고리 탭 — 버튼이 패널 좌우 폭을 모두 채우도록 각 버튼 flex:1 */}
       <div className="mode-toggle" style={{ display: 'flex', width: '100%', marginTop: 12, marginBottom: 8 }}>
         {tabLabels.map((label, i) => (
-          <button key={label} type="button" style={{ flex: 1 }} className={'mode-btn' + (i === activeIdx ? ' active' : '')} onClick={() => setTab(i)}>{label}</button>
+          <button key={label} type="button" style={{ flex: 1 }} className={'mode-btn' + (i === activeIdx ? ' active' : '')} onClick={() => (label === '파티' ? setPartyNotice(true) : setTab(i))}>{label}</button>
         ))}
       </div>
+
+      {partyNotice && (
+        <div className="modal-overlay" onClick={() => setPartyNotice(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <p className="modal-msg">
+              파티 버프 기능은 현재 보완 중입니다.<br />
+              파티원 버프는 <b>[기타]</b> 탭에서 수동으로 추가해 주세요.
+            </p>
+            <div className="modal-actions">
+              <button className="modal-confirm" onClick={() => setPartyNotice(false)}>확인</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeTab ? (
         <div>{activeTab.groups.map(renderGroup)}</div>
