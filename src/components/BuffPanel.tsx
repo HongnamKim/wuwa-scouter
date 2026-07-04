@@ -31,8 +31,10 @@ export function BuffPanel({ state, setState }: Props) {
     try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
   });
   const toggleSimple = (v: boolean) => { setSimple(v); try { localStorage.setItem(SIMPLE_KEY, v ? '1' : '0'); } catch { /* noop */ } };
-  // 돌파 미달로 잠긴 버프는 기본 숨김, 그룹별 "더보기"로 펼침 (키 = 그룹 source)
+  // 돌파 미달로 잠긴 버프는 그룹별 "더보기/숨기기"로 토글 (키 = 그룹 source)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // 미터치 그룹의 기본 상태: 데스크톱은 펼침, 모바일(좁은 화면)은 접힘
+  const [defaultShow] = useState(() => !(typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 640px)').matches));
   // 카테고리 탭 선택 인덱스
   const [tab, setTab] = useState(0);
 
@@ -172,7 +174,7 @@ export function BuffPanel({ state, setState }: Props) {
   // 한 버프 그룹 렌더 (탭 내부). 잠긴 버프는 기본 펼침(더보기 누른 상태) — 숨기기로 접을 수 있음.
   const renderGroup = (g: (typeof condGroups)[number]) => {
     const hasLocked = g.items.some((it) => !it.passive && isLocked(it.b));
-    const show = expanded[g.source] ?? true;
+    const show = expanded[g.source] ?? defaultShow;
     const vis = show ? g.items : g.items.filter((it) => it.passive || !isLocked(it.b));
     const label = g.source.split(':')[0].trim();
     return (
@@ -195,7 +197,7 @@ export function BuffPanel({ state, setState }: Props) {
         {vis.length === 0 && !g.weaponStats && !hasLocked && <div className="muted" style={{ fontSize: '0.85rem' }}>표시할 버프가 없습니다.</div>}
         {hasLocked && (
           <div style={{ display: 'flex', justifyContent: 'center', margin: '2px 0 8px' }}>
-            <button onClick={() => setExpanded((e) => ({ ...e, [g.source]: !(e[g.source] ?? true) }))}>
+            <button onClick={() => setExpanded((e) => ({ ...e, [g.source]: !(e[g.source] ?? defaultShow) }))}>
               {show ? '숨기기' : '더보기'}
             </button>
           </div>

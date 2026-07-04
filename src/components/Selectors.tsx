@@ -90,7 +90,7 @@ export function Selectors({ state, setState }: Props) {
 
       <div className="char-right">
         <div className="setting">
-          <div className="setting-label">돌파 (공명 체인)</div>
+          <div className="setting-label">돌파 <span className="muted">(공명 체인)</span></div>
           <div className="setting-row">
             <input type="range" min={0} max={6} step={1} style={{ flex: 1, minWidth: 120 }}
               value={state.ascensionLevel ?? 0}
@@ -108,7 +108,7 @@ export function Selectors({ state, setState }: Props) {
         </div>
 
         <div className="setting">
-          <div className="setting-label">무기 재련 (공진)</div>
+          <div className="setting-label">무기 재련 <span className="muted">(공진)</span></div>
           <div className="setting-row">
             <input type="range" min={1} max={5} step={1} style={{ flex: 1, minWidth: 120 }}
               value={state.refinementLevel ?? 1}

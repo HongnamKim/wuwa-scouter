@@ -7,6 +7,7 @@ import type { Character } from './types/data';
 import {
   saveCharacterState, isStateSaved, hasSavedState, deleteCharacterState,
   buildStateForCharacter, defaultStateForCharacter, loadCharacterState, analysisContext, isRecordOnly, isUntouchedDefault,
+  charactersInListOrder,
 } from './state/store';
 import { loadCharacters } from './engine/loadData';
 import { freeTwoPieceSlots } from './engine/echoSlots';
@@ -23,6 +24,7 @@ import { WeaponCompare } from './components/WeaponCompare';
 import { SubstatSwapCompare } from './components/SubstatSwapCompare';
 import { Dropdown } from './components/Dropdown';
 import { Analytics } from '@vercel/analytics/react';
+import { FiSave, FiRotateCcw, FiTrash2 } from 'react-icons/fi';
 import './styles.css';
 
 const LAST_KEY = 'wuwa-scouter:last-character';
@@ -39,14 +41,17 @@ function Layout() {
   const onList = pathname.startsWith('/list');
   const onAnalysis = pathname.startsWith('/analysis');
   const onCompare = pathname.startsWith('/compare');
+  const [menuOpen, setMenuOpen] = useState(false); // 모바일: 햄버거로 네비 토글
+  const go = (path: string) => { setMenuOpen(false); navigate(path); };
   return (
     <>
       <header className="app-header">
-        <div className="brand" onClick={() => navigate('/list')}>명조스카우터</div>
-        <nav className="header-nav">
-          <button className={onList ? 'active' : ''} onClick={() => navigate('/list')}>공명자 목록</button>
-          <button className={onAnalysis ? 'active' : ''} onClick={() => navigate(`/analysis/${lastCharacterId()}`)}>공명자 분석</button>
-          <button className={onCompare ? 'active' : ''} onClick={() => navigate(`/compare/${lastCharacterId()}`)}>비교</button>
+        <div className="brand" onClick={() => go('/list')}>명조스카우터</div>
+        <button className="nav-toggle" aria-label="메뉴" onClick={() => setMenuOpen((o) => !o)}>☰</button>
+        <nav className={menuOpen ? 'header-nav open' : 'header-nav'}>
+          <button className={onList ? 'active' : ''} onClick={() => go('/list')}>공명자 목록</button>
+          <button className={onAnalysis ? 'active' : ''} onClick={() => go(`/analysis/${lastCharacterId()}`)}>공명자 분석</button>
+          <button className={onCompare ? 'active' : ''} onClick={() => go(`/compare/${lastCharacterId()}`)}>비교</button>
         </nav>
       </header>
       <div className="app"><Outlet /></div>
@@ -86,7 +91,7 @@ function AnalysisScreen({ character }: { character: Character }) {
       <div className="char-select-row">
         <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
           <Dropdown value={character.id}
-            options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp` }))}
+            options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
             onChange={(cid) => navigate(`/analysis/${cid}`)} />
         </label>
       </div>
@@ -126,13 +131,15 @@ function AnalysisScreen({ character }: { character: Character }) {
         <button className="compare-btn" onClick={() => navigate(`/compare/${character.id}`)}>비교 화면 →</button>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="save-btn" disabled={!dirty} onClick={() => { saveCharacterState(state); rerender(); }}>
-            {dirty ? '저장하기' : '저장됨'}
+            <span className="btn-icon" aria-hidden><FiSave /></span><span className="btn-text">{dirty ? '저장하기' : '저장됨'}</span>
           </button>
           <button className="reset-btn" disabled={!dirty}
             onClick={() => setState(buildStateForCharacter(character))}>
-            초기화
+            <span className="btn-icon" aria-hidden><FiRotateCcw /></span><span className="btn-text">초기화</span>
           </button>
-          <button className="delete-btn" disabled={!hasSavedState(character.id)} onClick={() => setDeleting(true)}>삭제</button>
+          <button className="delete-btn" disabled={!hasSavedState(character.id)} onClick={() => setDeleting(true)}>
+            <span className="btn-icon" aria-hidden><FiTrash2 /></span><span className="btn-text">삭제</span>
+          </button>
         </div>
       </div>
       <div className="two-col">
@@ -208,7 +215,7 @@ function CompareScreen({ character }: { character: Character }) {
     <>
       <label style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8 }}>캐릭터:
         <Dropdown value={character.id}
-          options={loadCharacters().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp` }))}
+          options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
           onChange={(id) => navigate(`/compare/${id}`)} />
       </label>
       <h2>

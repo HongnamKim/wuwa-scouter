@@ -41,7 +41,7 @@ export const MAIN_PRIMARY: Record<Cost, Partial<Record<StatKey, number>>> = {
     element_damage_bonus: 30.0, energy_regen: 32.0,
   },
   4: {
-    attack_percent: 33.0, hp_percent: 33.0, defense_percent: 41.5,
+    attack_percent: 33.0, hp_percent: 33.0, defense_percent: 41.8,
     critical_rate: 22.0, critical_damage: 44.0, healing_bonus: 26.0,
   },
 };

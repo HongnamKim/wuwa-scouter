@@ -5,6 +5,7 @@ export interface DropdownOption {
   label: string;
   image?: string;    // 없으면 텍스트만 표시
   disabled?: boolean; // 선택 불가(이미 다른 곳에서 선택 등)
+  group?: string;    // 지정 시 드롭다운을 그룹(아코디언)으로 렌더. 같은 group끼리 묶임(옵션 순서대로 그룹 등장)
 }
 
 interface Props {
@@ -22,6 +23,18 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
   const ref = useRef<HTMLDivElement>(null);
   const selected = options.find((o) => o.value === value);
 
+  // 그룹(아코디언) 모드: 옵션에 group이 하나라도 있으면 활성. 그룹 등장 순서 = 옵션 배열 순서.
+  const grouped = options.some((o) => o.group != null);
+  const groups = grouped ? [...new Set(options.map((o) => o.group!))] : [];
+  // 기본: 전부 접힘 (헤더만 보이고, 펼쳐서 해당 버전 캐릭터 확인)
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
+  const toggleGroup = (g: string) =>
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(g)) next.delete(g); else next.add(g);
+      return next;
+    });
+
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
@@ -31,11 +44,20 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
     return () => document.removeEventListener('mousedown', onDoc);
   }, [open]);
 
-  const img = (src?: string) =>
+  const img = (src?: string, alt = '') =>
     src ? (
-      <img className="dropdown-img" src={src} alt=""
+      <img className="dropdown-img" src={src} alt={alt}
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
     ) : null;
+
+  const renderOption = (o: DropdownOption, inGroup: boolean) => (
+    <li key={o.value}
+      className={'dropdown-option' + (inGroup ? ' grouped' : '') + (o.value === value ? ' selected' : '') + (o.disabled ? ' disabled' : '')}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (o.disabled) return; onChange(o.value); setOpen(false); }}>
+      {img(o.image, o.label)}
+      <span className="dropdown-label">{o.label}</span>
+    </li>
+  );
 
   if (readOnly) {
     // 편집 드롭다운과 동일한 button 요소·구조로 렌더(높이/정렬 일치), 삼각형은 자리만 두고 숨김
@@ -43,7 +65,7 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
       <div className={'dropdown' + (className ? ' ' + className : '')}>
         <button type="button" className="dropdown-trigger dropdown-readonly" tabIndex={-1}>
           <span className="dropdown-item">
-            {img(selected?.image)}
+            {img(selected?.image, selected?.label)}
             <span className="dropdown-label">{selected?.label ?? '-'}</span>
           </span>
           <span className="dropdown-arrow" aria-hidden style={{ visibility: 'hidden' }}>▾</span>
@@ -57,21 +79,28 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
       <button type="button" className="dropdown-trigger" disabled={disabled}
         onClick={(e) => { e.stopPropagation(); if (disabled) return; setOpen((o) => !o); }}>
         <span className="dropdown-item">
-          {img(selected?.image)}
+          {img(selected?.image, selected?.label)}
           <span className="dropdown-label">{selected?.label ?? '선택'}</span>
         </span>
         <span className="dropdown-arrow">▾</span>
       </button>
       {open && (
         <ul className="dropdown-menu">
-          {options.map((o) => (
-            <li key={o.value}
-              className={'dropdown-option' + (o.value === value ? ' selected' : '') + (o.disabled ? ' disabled' : '')}
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (o.disabled) return; onChange(o.value); setOpen(false); }}>
-              {img(o.image)}
-              <span className="dropdown-label">{o.label}</span>
-            </li>
-          ))}
+          {grouped
+            ? groups.flatMap((g) => {
+                const rows = [
+                  <li key={'group:' + g} className="dropdown-group-header"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleGroup(g); }}>
+                    <span className="dropdown-group-arrow">{expandedGroups.has(g) ? '▾' : '▸'}</span>
+                    <span>{g}</span>
+                  </li>,
+                ];
+                if (expandedGroups.has(g)) {
+                  for (const o of options.filter((o) => o.group === g)) rows.push(renderOption(o, true));
+                }
+                return rows;
+              })
+            : options.map((o) => renderOption(o, false))}
         </ul>
       )}
     </div>

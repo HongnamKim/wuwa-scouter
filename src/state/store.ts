@@ -134,6 +134,17 @@ export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlo
   return echoes[0];
 }
 
+/** 목록 정렬 = 출시 시간순. 기본(내림차순)=버전 desc + 같은 버전 내 후반→전반, 오름차순=버전 asc + 전반→후반.
+ * 이름은 방향과 무관하게 항상 오름차순(동일 버전·전반후반 내 안정적 표시). 미지정 phase는 뒤. 목록·드롭다운 공통. */
+const phaseRankDesc = (p?: string) => (p === '후반' ? 0 : p === '전반' ? 1 : 2); // 내림차순 기준: 후반 먼저
+export function charactersInListOrder(ascending = false): Character[] {
+  const dir = ascending ? -1 : 1;
+  return [...loadCharacters()].sort((a, b) =>
+    dir * (b.version - a.version)
+    || dir * (phaseRankDesc(a.version_phase) - phaseRankDesc(b.version_phase))
+    || a.name.localeCompare(b.name));
+}
+
 /** 캐릭터의 기본 세팅 상태(저장값 없을 때).
  * 전용무기(없으면 추천무기 1순위)·추천 화음세트·추천 메인에코·기본 코스트(43311)를 미리 채워
  * 메인 조합 추천이 바로 보이게 한다. 이 함수는 결정적(deterministic)이어야 하며,

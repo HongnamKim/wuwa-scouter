@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
-import { loadCharacterState, analysisContext, isRecordOnly } from '../state/store';
+import { loadCharacterState, analysisContext, isRecordOnly, charactersInListOrder } from '../state/store';
 import type { Character } from '../types/data';
-import { loadCharacters } from '../engine/loadData';
+import type { Element } from '../types/domain';
+import { ELEMENTS } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput } from '../engine/build';
 import { theoryBest, kkjakPerf, optimalThreeCoMode } from '../engine/theory';
 import { Dropdown } from './Dropdown';
+
+// 속성 → 아이콘 파일명(slug). 아이콘은 public/elements/<slug>.webp (없으면 onError로 숨김)
+const ELEMENT_SLUG: Record<Element, string> = {
+  '응결': 'glacio', '용융': 'fusion', '전도': 'electro', '기류': 'aero', '회절': 'spectro', '인멸': 'havoc',
+};
+const elementIcon = (el: Element) => `/elements/${ELEMENT_SLUG[el]}.webp`;
 
 function hasSubstats(state: AppState): boolean {
   return state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
@@ -28,23 +35,54 @@ function cardScoreLines(character: Character, state: AppState | null): { primary
 }
 
 export function CharacterList({ onSelect }: { onSelect: (characterId: string) => void }) {
-  // 데이터에 존재하는 모든 공명자 표시 (저장값 없으면 흑백)
-  const entries = loadCharacters().map((c) => ({ character: c, state: loadCharacterState(c) }));
   const [version, setVersion] = useState('all');
   const [element, setElement] = useState('all');
+  const [reversed, setReversed] = useState(false); // 정렬 방향(기본: 최신 버전순 desc). true=오름차순(오래된순)
+  // 데이터에 존재하는 모든 공명자 표시 (저장값 없으면 흑백). 정렬 방향 반영.
+  const entries = charactersInListOrder(reversed).map((c) => ({ character: c, state: loadCharacterState(c) }));
 
   // 출시 버전은 정수(메이저)로 필터링: 3 선택 시 3.0~3.x 모두 포함
   const versions = [...new Set(entries.map((e) => Math.floor(e.character.version)))].sort((a, b) => a - b);
-  const elements = [...new Set(entries.map((e) => e.character.element))];
+  // 속성 필터 순서 고정: 응결·용융·전도·기류·회절·인멸(ELEMENTS 순), 데이터에 존재하는 것만
+  const present = new Set(entries.map((e) => e.character.element));
+  const elements = ELEMENTS.filter((el) => present.has(el));
 
+  // entries가 이미 방향까지 반영해 정렬돼 있으므로 필터만 적용(순서 보존).
   const filtered = entries
     .filter((e) =>
       (version === 'all' || String(Math.floor(e.character.version)) === version)
-      && (element === 'all' || e.character.element === element))
-    // 정렬: 버전 내림차순 → 이름 순
-    .sort((a, b) =>
-      b.character.version - a.character.version
-      || a.character.name.localeCompare(b.character.name));
+      && (element === 'all' || e.character.element === element));
+
+  // major 버전별 그룹. filtered가 버전 순으로 연속 정렬돼 있으므로 연속 묶음.
+  type Entry = { character: Character; state: AppState | null };
+  const byVersion: { major: number; items: Entry[] }[] = [];
+  for (const e of filtered) {
+    const major = Math.floor(e.character.version);
+    const last = byVersion[byVersion.length - 1];
+    if (last && last.major === major) last.items.push(e);
+    else byVersion.push({ major, items: [e] });
+  }
+
+  const renderCard = ({ character, state }: Entry) => {
+    const { primary, secondary } = cardScoreLines(character, state);
+    const recorded = !!state;
+    return (
+      <div className="char-card" key={character.id} onClick={() => onSelect(character.id)}>
+        <span className="card-element" title={character.element}>
+          <img className="card-element-icon" src={elementIcon(character.element)} alt={character.element}
+            onError={(e) => { const t = e.currentTarget; t.style.display = 'none'; (t.nextElementSibling as HTMLElement).style.display = 'inline'; }} />
+          <span className="card-element-text">{character.element}</span>
+        </span>
+        <img className={recorded ? 'card-image' : 'card-image not-recorded'}
+          src={`/characters/${character.id}.webp`} alt={character.name}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
+        <div className="card-name">{character.name}</div>
+        <div className="muted">{character.version}버전{character.version_phase ? ` ${character.version_phase}` : ''}</div>
+        <div className="card-score">{primary}</div>
+        <div className="muted">{secondary}</div>
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -56,28 +94,22 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
         </label>
         <label>속성:
           <Dropdown className="dd-narrow" value={element}
-            options={[{ value: 'all', label: '전체' }, ...elements.map((el) => ({ value: el, label: el }))]}
+            options={[{ value: 'all', label: '전체' }, ...elements.map((el) => ({ value: el, label: el, image: elementIcon(el) }))]}
             onChange={setElement} />
         </label>
+        <button type="button" className="sort-dir-btn" onClick={() => setReversed((r) => !r)}
+          title="정렬 방향 전환">
+          <span className="sort-dir-arrow">{reversed ? '↑' : '↓'}</span>
+          <span>{reversed ? '오래된 버전순' : '최신 버전순'}</span>
+        </button>
       </div>
 
-      <div className="card-grid">
-        {filtered.map(({ character, state }) => {
-          const { primary, secondary } = cardScoreLines(character, state);
-          const recorded = !!state;
-          return (
-            <div className="char-card" key={character.id} onClick={() => onSelect(character.id)}>
-              <img className={recorded ? 'card-image' : 'card-image not-recorded'}
-                src={`/characters/${character.id}.webp`} alt={character.name}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
-              <div className="card-name">{character.name}</div>
-              <div className="muted">{character.version}버전 · {character.element}</div>
-              <div className="card-score">{primary}</div>
-              <div className="muted">{secondary}</div>
-            </div>
-          );
-        })}
-      </div>
+      {byVersion.map(({ major, items }) => (
+        <section key={major} className="version-group">
+          <h3 className="version-heading">{major}버전</h3>
+          <div className="card-grid">{items.map(renderCard)}</div>
+        </section>
+      ))}
     </div>
   );
 }

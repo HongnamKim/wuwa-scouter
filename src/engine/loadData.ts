@@ -42,6 +42,9 @@ export function loadCharacters(): Character[] {
     if (!(c.cost_layout in COST_LAYOUTS)) {
       throw new Error(`unknown cost_layout: ${c.cost_layout} (${c.id})`);
     }
+    if (c.version_phase != null && c.version_phase !== '전반' && c.version_phase !== '후반') {
+      throw new Error(`unknown version_phase: ${c.version_phase} (${c.id})`);
+    }
     if (c.special_mechanism != null && !MECHANISM_KEYS.includes(c.special_mechanism)) {
       throw new Error(`unknown special mechanism: ${c.special_mechanism} (${c.id})`);
     }

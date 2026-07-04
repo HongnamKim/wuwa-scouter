@@ -43,7 +43,8 @@ export interface MainSlotEcho {
 export interface Character {
   id: string;
   name: string;
-  version: number; // 출시 버전 (예: 히유키 = 3)
+  version: number; // 출시 버전 (예: 히유키 = 3.3)
+  version_phase?: '전반' | '후반'; // 해당 버전(패치)의 전반/후반. 정렬: 버전 → 전반/후반 → 이름
   element: Element;
   weapon_type: WeaponType; // 착용 무기 타입
   cost_layout: CostLayout; // 에코 코스트 구성 기본값 (예: '43311'). 신규 진입 시 기본 세팅에 사용
