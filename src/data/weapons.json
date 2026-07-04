@@ -335,5 +335,100 @@
     { "type": "attack_percent", "value": 0.08, "always": false, "id": "weapon_dauntless_atk", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "변주 스킬 발동 시 공격력 +{v} (15초)", "short": "공격력 +{v} (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true },
     { "type": "defense_percent", "value": 0.15, "always": false, "id": "weapon_dauntless_def", "refinement_values": [0.15, 0.1875, 0.225, 0.2625, 0.30], "label": "변주 스킬 발동 시 방어력 +{v} (15초)", "short": "방어력 +{v} (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
+  },
+  {
+   "id": "kumokiri",
+   "name": "쿠모키리",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 500, "critical_rate": 0.36 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+    { "type": "resonance_liberation_bonus", "value": 0.24, "always": false, "id": "weapon_kumokiri_rl", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "변주/「이상 효과」 추가 시 공명해방 피해 +{v} (최대 3스택)", "short": "공명해방 피해 +{v}", "note": "스택당 8~16%, 최대 3스택 → value ×3", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "element": "전체", "id": "weapon_kumokiri_party", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "3스택 시 파티 「이상 효과」 추가 시 전체 속성피해 +{v}", "short": "파티 전체속성피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "wildfire_mark",
+   "name": "불길",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 587, "critical_damage": 0.486 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+    { "type": "resonance_liberation_bonus", "value": 0.24, "always": false, "id": "weapon_searing_rl", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "변주/공명 해방 발동 시 공명해방 피해 +{v}", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "element": "용융", "id": "weapon_searing_party", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "효과 연장 성공 시 파티 용융 피해 +{v}", "short": "파티 용융피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "radiance_cleaver",
+   "name": "에너지 절단",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 587, "critical_damage": 0.486 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+    { "type": "resonance_liberation_bonus", "value": 0.24, "always": false, "id": "weapon_energysever_rl", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 피해 후 공명해방 피해 +{v}", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "autumntrace",
+   "name": "가을의 무늬",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 412, "critical_rate": 0.202 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.20, "always": false, "id": "weapon_autumn_atk", "refinement_values": [0.20, 0.31, 0.42, 0.53, 0.64], "label": "일반/강공격 시 공격력 +{v} (최대 5스택)", "short": "공격력 +{v}", "note": "스택당 4~12.8%, 최대 5스택 → value ×5", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "waning_redshift",
+   "name": "멸망의 주파수",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 462, "attack_percent": 0.182 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_doom_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v} (16초)", "short": "공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "meditations_on_mercy",
+   "name": "용서의 명상록",
+   "weapon_type": "broad_blade",
+   "base_stats": { "attack": 462, "attack_percent": 0.182 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.16, "always": false, "id": "weapon_forgiveness_atk", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "「이상 효과」 몬스터 피해 시 공격력 +{v} (최대 4스택)", "short": "공격력 +{v}", "note": "스택당 4~8%, 최대 4스택 → value ×4", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "keen_feather",
+   "name": "예리한 날개깃",
+   "weapon_type": "sword",
+   "base_stats": { "attack": 412, "critical_rate": 0.202 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.072, "always": false, "id": "weapon_keenfeather_atk", "refinement_values": [0.072, 0.111, 0.151, 0.19, 0.23], "label": "공명 해방 발동 시 공격력 +{v} (15초)", "short": "공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_keenfeather_rl", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명 해방 발동 시 공명해방 피해 +{v} (15초)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "march_overture",
+   "name": "행진의 서곡",
+   "weapon_type": "sword",
+   "base_stats": { "attack": 338, "energy_regen": 0.518 },
+   "buffs": []
+  },
+  {
+   "id": "stellar_symphony",
+   "name": "뭇별의 교향곡",
+   "weapon_type": "rectifier",
+   "base_stats": { "attack": 413, "energy_regen": 0.77 },
+   "buffs": [
+    { "type": "hp_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (HP)", "record_only": false, "absolute_score_only": false },
+    { "type": "attack_percent", "value": 0.14, "always": false, "target": "party", "id": "weapon_stellar_party_atk", "refinement_values": [0.14, 0.175, 0.21, 0.245, 0.28], "label": "공명 스킬로 치료 효과 발동 시 파티 공격력 +{v} (30초)", "short": "파티 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
+  },
+  {
+   "id": "call_of_the_abyss",
+   "name": "심해의 메아리",
+   "weapon_type": "rectifier",
+   "base_stats": { "attack": 337, "energy_regen": 0.518 },
+   "buffs": [
+    { "type": "healing_bonus", "value": 0.16, "always": false, "id": "weapon_abyss_heal", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "공명 해방 발동 시 치료 효과 보너스 +{v} (15초)", "short": "치료 효과 +{v}", "note": "치료, 딜 무관", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
   }
 ]

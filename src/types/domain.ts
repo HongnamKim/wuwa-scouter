@@ -17,8 +17,9 @@ export type CostLayout = '43311' | '44111';
 export type Cost = 1 | 3 | 4;
 export type SetPieces = 1 | 2 | 3 | 5;
 
-/** 버프 수혜 대상. 미지정 시 self로 취급 */
-export type BuffTarget = 'self' | 'party' | 'next_character';
+/** 버프 수혜 대상. 미지정 시 self로 취급.
+ *  specific_character: target_character로 지정한 캐릭터를 볼 때만 표시·활성(예: 파수인→방랑자 공효) */
+export type BuffTarget = 'self' | 'party' | 'next_character' | 'specific_character';
 
 /** 버프 type / 부옵 키 / 메인 옵션 키의 통합 어휘 */
 export type StatKey =
@@ -91,4 +92,4 @@ export const BUFF_ELEMENTS: readonly BuffElement[] = [...ELEMENTS, '전체'];
 
 export const WEAPON_TYPES: readonly WeaponType[] = ['broad_blade', 'sword', 'pistols', 'gauntlets', 'rectifier'];
 
-export const BUFF_TARGETS: readonly BuffTarget[] = ['self', 'party', 'next_character'];
+export const BUFF_TARGETS: readonly BuffTarget[] = ['self', 'party', 'next_character', 'specific_character'];

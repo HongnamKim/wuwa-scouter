@@ -29,16 +29,29 @@ export function mechanismDamageTypeBonus(key: string | null, energyRegen: number
   return m?.damageTypeBonusFromEnergyRegen?.(energyRegen) ?? 0;
 }
 
-/** 공효 스케일 버프 파라미터. buff_conversion 캐릭터(모니에 등)의 버프가 공효로 값이 변함. */
-export interface EnergyScale { per_percent: number; cap: number; }
+/** 공효 스케일 버프 파라미터. buff_conversion 캐릭터(모니에 등)의 버프가 공효로 값이 변함.
+ *  base: 스케일 기준선(%) — 이 값 초과분에만 비례. 미지정 시 100(모니에: 100% 초과분).
+ *  수안인처럼 공효 총량 비례(0부터)면 base:0. */
+export interface EnergyScale { per_percent: number; cap: number; base?: number; }
 
 /**
- * buff_conversion: 공명효율(소수, 1.0=100%) 초과분(100% 기준)으로 버프값을 계산.
- * 값 = min(per_percent × 초과공효%, cap). 예: 간섭표기 0.25%/1%, cap 40% → 공효 260%에서 0.40.
+ * buff_conversion: 공명효율(소수, 1.0=100%)의 base 초과분으로 버프값을 계산.
+ * 값 = min(per_percent × (공효% − base), cap). 예: 모니에 간섭표기 0.25%/1%, base 100, cap 40% → 공효 260%에서 0.40.
+ * 수안인 심층 0.05%/1%, base 0, cap 12.5% → 공효 250%에서 0.125.
  * deal_conversion(공효→자기 딜)과 대응되는 buff_conversion(공효→버프값)의 변환 함수.
  */
 export function energyScaleValue(s: EnergyScale, energyRegen: number): number {
-  return Math.min(s.per_percent * Math.max(0, energyRegen * 100 - 100), s.cap);
+  return Math.min(s.per_percent * Math.max(0, energyRegen * 100 - (s.base ?? 100)), s.cap);
+}
+
+export interface CritScale { per_percent: number; threshold: number; cap: number; }
+
+/**
+ * 크리티컬 확률(소수) 초과분(threshold% 기준)으로 크리 피해 버프값을 계산.
+ * 값 = min(per_percent × (크리% − threshold), cap). 예: 구원 공명해방 0.02/1%, threshold 50, cap 0.30 → 크리 65%에서 0.30.
+ */
+export function critScaleValue(s: CritScale, criticalRate: number): number {
+  return Math.min(s.per_percent * Math.max(0, criticalRate * 100 - s.threshold), s.cap);
 }
 
 /** 공명효율을 다른 스탯으로 전환하는 캐릭터인지 (예: 시그리카) */

@@ -59,9 +59,9 @@ describe('자유 2세트 효과', () => {
     expect(+(twice - base).toFixed(4)).toBe(0.20);
   });
 
-  it('추천: 3개 조합(회절+회절/회절+공격/공격+공격), 최고 1개', () => {
+  it('추천: 풀 3종(원소피해/공격력/공명효율)의 중복조합 6개, 최고 1개', () => {
     const recos = twoPieceRecommendation(lucyCtx());
-    expect(recos.length).toBe(3);
+    expect(recos.length).toBe(6); // C(3+2-1, 2) = 6
     expect(recos.filter((r) => r.best).length).toBe(1);
   });
 

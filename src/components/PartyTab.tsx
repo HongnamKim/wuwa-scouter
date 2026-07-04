@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { AppState } from '../state/store';
 import { memberProvidedBuffsFor } from '../state/store';
 import type { PartyMember } from '../engine/context';
 import type { Buff } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
+import { ConfirmModal } from './ConfirmModal';
 
 const valText = (b: Buff) => (b.type.startsWith('flat') ? String(b.value) : `${+(b.value * 100).toFixed(1)}%`);
 // 파티원 제공 버프 설명. label(풀)/short(간략) 우선({v} 치환), 없으면 유형+수치. next_character는 표시로 구분.
@@ -18,10 +20,13 @@ const MAX_PARTY = 2;
 
 /** 파티 탭: 파티원(최대 2) 편성 + 각 파티원의 party/next 버프 적용 토글. */
 export function PartyTab({ state, setState, simple }: Props) {
+  const navigate = useNavigate();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [moveTo, setMoveTo] = useState<string | null>(null); // 칩 클릭 시 이동 확인 대상
   const pickerRef = useRef<HTMLDivElement>(null);
   const chars = loadCharacters();
   const members = state.partyMembers ?? [];
+  const moveTarget = moveTo ? chars.find((c) => c.id === moveTo) : null;
 
   useEffect(() => {
     if (!pickerOpen) return;
@@ -82,9 +87,9 @@ export function PartyTab({ state, setState, simple }: Props) {
             {members.map((m) => {
               const c = chars.find((x) => x.id === m.id);
               return (
-                <span key={m.id} className="party-chip">
+                <span key={m.id} className="party-chip" onClick={() => setMoveTo(m.id)} title="이 캐릭터로 이동">
                   {c?.name ?? m.id}
-                  <button type="button" onClick={() => removeMember(m.id)} aria-label="삭제">×</button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); removeMember(m.id); }} aria-label="삭제">×</button>
                 </span>
               );
             })}
@@ -93,7 +98,9 @@ export function PartyTab({ state, setState, simple }: Props) {
           {members.map((m) => {
             const c = chars.find((x) => x.id === m.id);
             if (!c) return null;
-            const provided = memberProvidedBuffsFor(c);
+            // specific_character 버프는 지금 보는 캐릭터가 그 지정 대상일 때만 노출·토글
+            const provided = memberProvidedBuffsFor(c)
+              .filter(({ buff }) => buff.target !== 'specific_character' || buff.target_character === state.character.id);
             const off = new Set(m.disabled ?? []);
             return (
               <div key={m.id} style={{ marginBottom: 12 }}>
@@ -114,6 +121,16 @@ export function PartyTab({ state, setState, simple }: Props) {
             );
           })}
         </>
+      )}
+
+      {moveTarget && (
+        <ConfirmModal
+          message={`${moveTarget.name}(으)로 이동하시겠습니까?`}
+          confirmLabel="이동"
+          onConfirm={() => { const id = moveTarget.id; setMoveTo(null); navigate(`/analysis/${id}`); }}
+          onCancel={() => setMoveTo(null)}
+          onDismiss={() => setMoveTo(null)}
+        />
       )}
     </div>
   );

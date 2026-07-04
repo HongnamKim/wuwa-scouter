@@ -75,6 +75,8 @@ function resolvePartyProvidedBuffs(partyMembers: PartyMember[] | undefined, self
     const off = new Set(pm.disabled ?? []);
     return memberProvidedBuffs(build, char)
       .filter(({ key }) => !off.has(key))
+      // specific_character: 내가(수신자) 그 지정 캐릭터일 때만 수혜
+      .filter(({ buff: b }) => b.target !== 'specific_character' || b.target_character === selfId)
       .map(({ buff: b }): Buff => ({
         type: b.type,
         value: b.energy_scale ? energyScaleValue(b.energy_scale, memberER) : b.value,
@@ -155,9 +157,12 @@ export function defaultStateForCharacter(character: Character): AppState {
   const sets = loadEchoSets();
   const weaponId = character.signature_weapon ?? character.recommended_weapons[0] ?? null;
   const weapon = weaponId ? (weapons.find((w) => w.id === weaponId) ?? null) : null;
-  const echoSets = character.recommended_echo_sets
+  const recSets = character.recommended_echo_sets
     .map((id) => sets.find((s) => s.id === id))
     .filter((x): x is EchoSet => !!x);
+  // 자유 2세트 슬롯이 생기는 빌드(3+2, 1+2+2)면 주 세트 하나만 착용(applyEchoSets와 동일 정규화).
+  // 나머지 추천 세트는 드롭다운에서 ★로 노출되지만 기본 착용은 아니다.
+  const echoSets = freeTwoPieceSlots(recSets) > 0 ? recSets.slice(0, 1) : recSets;
   const mainEcho = echoSets.length ? pickMainEcho(echoSets, character) : null;
   const costLayout: CostLayout = character.cost_layout;
   const base: AppState = {

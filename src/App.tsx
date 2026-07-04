@@ -22,6 +22,7 @@ import { MainReco } from './components/MainReco';
 import { TwoPieceReco } from './components/TwoPieceReco';
 import { WeaponCompare } from './components/WeaponCompare';
 import { SubstatSwapCompare } from './components/SubstatSwapCompare';
+import { FaqScreen } from './components/FaqScreen';
 import { Dropdown } from './components/Dropdown';
 import { Analytics } from '@vercel/analytics/react';
 import { FiSave, FiRotateCcw, FiTrash2 } from 'react-icons/fi';
@@ -41,6 +42,7 @@ function Layout() {
   const onList = pathname.startsWith('/list');
   const onAnalysis = pathname.startsWith('/analysis');
   const onCompare = pathname.startsWith('/compare');
+  const onFaq = pathname.startsWith('/faq');
   const [menuOpen, setMenuOpen] = useState(false); // 모바일: 햄버거로 네비 토글
   const go = (path: string) => { setMenuOpen(false); navigate(path); };
   return (
@@ -52,6 +54,7 @@ function Layout() {
           <button className={onList ? 'active' : ''} onClick={() => go('/list')}>공명자 목록</button>
           <button className={onAnalysis ? 'active' : ''} onClick={() => go(`/analysis/${lastCharacterId()}`)}>공명자 분석</button>
           <button className={onCompare ? 'active' : ''} onClick={() => go(`/compare/${lastCharacterId()}`)}>비교</button>
+          <button className={onFaq ? 'active' : ''} onClick={() => go('/faq')}>FAQ</button>
         </nav>
       </header>
       <div className="app"><Outlet /></div>
@@ -208,7 +211,7 @@ function CompareScreen({ character }: { character: Character }) {
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
   const saved = loadCharacterState(character);
   const base = saved ? analysisContext(saved) : null;
-  const [openWeapon, setOpenWeapon] = useState(false); // 무기 비교: 전용무기 쓰면 잘 안 봄 → 기본 접힘
+  const [openWeapon, setOpenWeapon] = useState(true); // 무기 비교: 기본 펼침
   const [openSwap, setOpenSwap] = useState(true);       // 에코 교체 비교: 기본 펼침
 
   return (
@@ -251,6 +254,7 @@ const router = createBrowserRouter([
       { path: 'list', element: <ListScreen /> },
       { path: 'analysis/:id', element: <AnalysisRoute /> },
       { path: 'compare/:id', element: <CompareRoute /> },
+      { path: 'faq', element: <FaqScreen /> },
       { path: '*', element: <Navigate to="/list" replace /> },
     ],
   },

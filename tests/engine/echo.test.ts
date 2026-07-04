@@ -45,3 +45,17 @@ describe('기도의 눈 5세트 「강설」 크리 분기(damage_bonus_type 게
     expect(rl - ba).toBeCloseTo(0.25, 10);
   });
 });
+
+describe('구원 공명해방 crit_scale (실제 크리율로 크피 동적 계산)', () => {
+  it('크리율 초과분(50% 기준)만큼 크피 버프 반영, cap 30%', () => {
+    const guwon = loadCharacters().find((c) => c.id === 'qiuyuan')!;
+    const weapon = loadWeapons().find((w) => w.id === 'frostbound_flame')!; // 크리 24.3%
+    const ctx: CalcContext = {
+      character: guwon, weapon, mainEcho: { id: 'x', name: 'x', buffs: [] }, echoSets: [],
+      costLayout: '43311', slots: slotsFrom('43311', [], []),
+      conditionalToggles: {}, manualBuffs: [], ascensionLevel: 1, requiredEnergyRegen: 130,
+    };
+    // 크리율 = 0.05 기본 + 0.08 스킬노드 + 0.20 CHAIN.1 + 0.243 무기 = 0.573 → 초과 7.3% → 크피 +0.02×7.3 = 0.146
+    expect(aggregateBuffs(ctx).critical_damage).toBeCloseTo(0.146, 3);
+  });
+});

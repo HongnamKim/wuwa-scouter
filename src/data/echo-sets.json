@@ -162,5 +162,50 @@
    "main_slot_echoes": [
     { "id": "reactor_husk", "name": "리액터 허스크", "buffs": [ { "type": "energy_regen", "value": 0.10, "always": true, "target": "self", "label":"공명 효율 10% 증가", "short":"공명 효율 +10%", "note": "메인슬롯 패시브: 공명 효율 +10%", "record_only": false, "absolute_score_only": false } ] }
    ]
+  },
+  {
+   "id": "thread_of_severed_fate",
+   "name": "운명을 붕괴시키는 현",
+   "buffs": [
+    { "type": "attack_percent", "value": 0.20, "set_pieces": 3, "always": false, "id": "set_strings_3pc_atk", "label": "「암흑 효과」 추가 시 공격력 +20% (3세트 효과)", "short": "공격력 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "resonance_liberation_bonus", "value": 0.30, "set_pieces": 3, "always": false, "id": "set_strings_3pc_rl", "label": "「암흑 효과」 추가 시 공명해방 피해 +30% (3세트 효과)", "short": "공명해방 피해 +30%", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "reminiscence_threnodian_leviathan", "name": "공명의 메아리 · 명식 · 레비아탄", "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "인멸", "label": "자신의 인멸 피해 보너스 12% 증가", "short": "인멸피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+     { "type": "resonance_liberation_bonus", "value": 0.12, "always": true, "target": "self", "label": "공명 해방 피해 보너스 12% 증가", "short": "공명해방피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] }
+   ]
+  },
+  {
+   "id": "law_of_harmony",
+   "name": "만물의 숨결에 비롯된 울림",
+   "buffs": [
+    { "type": "heavy_attack_bonus", "value": 0.30, "set_pieces": 3, "always": false, "target": "self", "id": "set_breath_heavy", "label": "에코 어빌리티 발동 시 강공격 피해 +{v} (4초, 3세트)", "short": "강공격 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "echo_skill_bonus", "value": 0.16, "set_pieces": 3, "always": false, "target": "party", "id": "set_breath_party_echo", "label": "파티 에코 어빌리티 피해 +{v} (최대 4스택, 30초, 3세트)", "short": "파티 에코피해 +{v}", "note": "스택당 4%, 최대 4스택 → value ×4", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "reminiscence_fenrico", "name": "공명의 메아리 · 펜리코", "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "기류", "label": "자신의 기류 피해 보너스 12% 증가", "short": "기류피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+     { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] }
+   ]
+  },
+  {
+   "id": "rejuvenating_glow",
+   "name": "찬란한 광휘",
+   "buffs": [
+    { "type": "healing_bonus", "value": 0.10, "set_pieces": 2, "always": true, "target": "self", "label": "치료 효과 10% 증가 (2세트)", "short": "치료 효과 +10%", "note": "치료, 딜 무관", "record_only": false, "absolute_score_only": false },
+    { "type": "attack_percent", "value": 0.15, "set_pieces": 5, "always": false, "target": "party", "id": "set_glow_party_atk", "label": "파티원 치료 시 파티 전체 공격력 +15% (5세트)", "short": "파티 공격력 +15%", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "fallacy_of_no_return", "name": "돌아갈 곳이 없는 오류", "buffs": [
+     { "type": "energy_regen", "value": 0.10, "always": false, "target": "self", "id": "echo_fallacy_er", "label": "사용 시 자신의 공명 효율 +10%", "short": "본인 공효 +10%", "record_only": false, "absolute_score_only": false, "default_on": true },
+     { "type": "attack_percent", "value": 0.10, "always": false, "target": "party", "id": "echo_fallacy_party_atk", "label": "사용 시 파티 내 모든 캐릭터 공격력 +10%", "short": "파티 공격력 +10%", "record_only": false, "absolute_score_only": false, "default_on": true }
+    ] },
+    { "id": "bell_borne_geochelone", "name": "타종 거북이", "buffs": [
+     { "type": "all_damage_amplify", "value": 0.10, "always": false, "target": "party", "id": "echo_bell_party_amp", "label": "사용 시 파티 내 캐릭터 피해 +10% 부스트 (피해 감소 50%는 방어형이라 기록 제외)", "short": "파티 피해 +10% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
+    ] }
+   ]
   }
 ]

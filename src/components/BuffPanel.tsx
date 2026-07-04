@@ -5,9 +5,11 @@ import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
 import { defaultBuffChecked } from '../engine/buffs';
+import { loadTwoPieceEffects } from '../engine/loadData';
 import { damageBonusTypeOf } from '../engine/mode';
 import { computeEnergyRegen } from '../engine/build';
-import { energyScaleValue } from '../engine/mechanisms';
+import { energyScaleValue, critScaleValue } from '../engine/mechanisms';
+import { computeDisplaySpec } from '../engine/spec';
 import { PartyTab } from './PartyTab';
 
 const SIMPLE_KEY = 'wuwa-scouter:buff-simple';
@@ -42,12 +44,24 @@ export function BuffPanel({ state, setState }: Props) {
   // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
   type Item = { b: Buff; passive: boolean };
+  // 보조 2세트 효과(3+2 등 자유 슬롯): 선택된 twoPiecePicks를 상시 버프로 표시. 원소피해는 캐릭터 원소로.
+  const twoPiecePool = loadTwoPieceEffects();
+  const twoPieceBuffs: Buff[] = (state.twoPiecePicks ?? [])
+    .map((id) => twoPiecePool.find((p) => p.id === id))
+    .filter((e): e is NonNullable<typeof e> => !!e)
+    .map((e) => ({
+      type: e.type, value: e.value, always: true,
+      element: e.element_from_character ? state.character.element : undefined,
+      label: `${e.element_from_character ? `${state.character.element}피해` : e.label} +${Math.round(e.value * 100)}%`,
+      record_only: false, absolute_score_only: false,
+    }));
   // 무기/메인에코는 미설정(null)일 수 있으므로 설정된 출처만 그룹에 포함
   const condGroups: { source: string; weaponStats: boolean; items: Item[] }[] = [
     { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false, weaponStats: false },
     ...(state.weapon ? [{ source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, withPassive: true, weaponStats: true }] : []),
     ...uniqueSets.map((s) => ({ source: `화음 세트: ${s.name}`, buffs: s.buffs, withPassive: true, weaponStats: false })),
     ...(state.mainEcho ? [{ source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, withPassive: true, weaponStats: false }] : []),
+    ...(twoPieceBuffs.length ? [{ source: '보조 2세트 효과', buffs: twoPieceBuffs, withPassive: true, weaponStats: false }] : []),
   ]
     .map((g) => ({
       source: g.source,
@@ -85,8 +99,10 @@ export function BuffPanel({ state, setState }: Props) {
   const ctx = analysisContext(state);
   const currentER = ctx ? computeEnergyRegen(ctx) : null;
   const scaleNowText = (b: Buff): string | null => {
-    if (!b.energy_scale || currentER == null) return null;
-    return `현재 ${+(energyScaleValue(b.energy_scale, currentER) * 100).toFixed(2)}%`;
+    if (b.energy_scale && currentER != null) return `현재 ${+(energyScaleValue(b.energy_scale, currentER) * 100).toFixed(2)}%`;
+    // 크리율 스케일(구원 공명해방 등): 현재 크리율로 계산
+    if (b.crit_scale && ctx) return `현재 ${+(critScaleValue(b.crit_scale, computeDisplaySpec(ctx).criticalRateRaw) * 100).toFixed(2)}%`;
+    return null;
   };
 
   // {v}를 현재 수치로 치환. 무기 버프는 공진(refinement_values)에 따라 값이 변함.
@@ -158,7 +174,7 @@ export function BuffPanel({ state, setState }: Props) {
   // 카테고리 탭: 고유 스킬 / 무기 / 화음 세트(메인 에코 포함) / 파티·기타. 라벨은 짧게(무기: X → 무기).
   const catOf = (source: string) =>
     source.startsWith('무기') ? '무기'
-      : (source.startsWith('화음 세트') || source.startsWith('메인 에코')) ? '화음 세트'
+      : (source.startsWith('화음 세트') || source.startsWith('메인 에코') || source.startsWith('보조 2세트')) ? '화음 세트'
         : source; // 고유 스킬
   const catMap = new Map<string, typeof condGroups>();
   for (const g of condGroups) {
@@ -176,7 +192,7 @@ export function BuffPanel({ state, setState }: Props) {
     const hasLocked = g.items.some((it) => !it.passive && isLocked(it.b));
     const show = expanded[g.source] ?? defaultShow;
     const vis = show ? g.items : g.items.filter((it) => it.passive || !isLocked(it.b));
-    const label = g.source.split(':')[0].trim();
+    const label = catOf(g.source); // 그룹 소스가 탭 카테고리와 다르면 헤더 표시(보조 2세트 등 콜론 없는 그룹 포함)
     return (
       <div key={g.source}>
         {g.source !== label && <div className="muted" style={{ margin: '2px 0 6px', fontWeight: 'bold' }}>{g.source}</div>}

@@ -38,7 +38,8 @@ export function Selectors({ state, setState }: Props) {
   const applyEchoSets = (echoSets: EchoSet[]) => {
     const sets = freeTwoPieceSlots(echoSets) > 0 ? [echoSets[0]] : echoSets;
     const combined = combinedMainEchoes(sets);
-    const mainEcho = state.mainEcho && combined.some((e) => e.id === state.mainEcho!.id) ? state.mainEcho : null;
+    // 현재 메인 에코가 새 세트에도 있으면 유지, 없으면 새 세트의 첫 메인 에코로 자동 지정(비우지 않음)
+    const mainEcho = state.mainEcho && combined.some((e) => e.id === state.mainEcho!.id) ? state.mainEcho : (combined[0] ?? null);
     const next: AppState = { ...state, echoSets: sets, mainEcho };
     const ctx = analysisContext(next);
     setState({ ...next, twoPiecePicks: ctx ? optimalTwoPiecePicks(ctx) : [] });

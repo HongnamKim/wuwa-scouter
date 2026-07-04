@@ -12,6 +12,7 @@ export interface Buff {
   element?: BuffElement;  // 지정 시 캐릭터 element 일치할 때만. '전체'=전체 속성피해(게이트 없이 모든 원소에 적용)
   set_pieces?: SetPieces; // 에코세트 버프 전용 (1|2|3|5)
   target?: BuffTarget;    // 수혜 대상. 미지정 시 self. next_character는 내 계산에서 제외
+  target_character?: string; // target이 'specific_character'일 때 수혜 캐릭터 id. 그 캐릭터를 볼 때만 표시·활성
   min_ascension?: number; // 돌파(공명 체인) 조건. 지정 시 ascensionLevel >= 값일 때만 활성/노출 (예: 히유키 6돌 2스택)
   refinement_values?: number[]; // 무기 버프 전용. 재련(공진) 1~5별 수치 5개. 지정 시 refinement_values[공진-1]로 value 대체
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
@@ -21,8 +22,11 @@ export interface Buff {
   absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
   default_on?: boolean; // 조건부 버프 체크박스 기본 상태(미지정 시 true). 모든 조건부 버프에 명시
   default_on_from_ascension?: number; // 지정 시 해당 돌파 이상일 때만 기본 체크(미만이면 기본 해제, 잠금 아님). default_on보다 우선
-  // 공명 효율 초과분 스케일 버프(예: 모니에). 실제 공효로 값 계산: min(per_percent × (공효% − 100), cap). value는 무시.
-  energy_scale?: { per_percent: number; cap: number };
+  // 공명 효율 스케일 버프(예: 모니에·수안인). 실제 공효로 값 계산: min(per_percent × (공효% − base), cap). value는 무시.
+  // base 미지정 시 100(초과분). 수안인처럼 총량 비례면 base:0.
+  energy_scale?: { per_percent: number; cap: number; base?: number };
+  // 크리티컬 확률 초과분 스케일 버프(예: 구원 공명해방). 실제 크리율로 값 계산: min(per_percent × (크리% − threshold), cap). value는 무시.
+  crit_scale?: { per_percent: number; threshold: number; cap: number };
   note?: string;
 }
 

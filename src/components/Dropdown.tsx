@@ -26,8 +26,10 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
   // 그룹(아코디언) 모드: 옵션에 group이 하나라도 있으면 활성. 그룹 등장 순서 = 옵션 배열 순서.
   const grouped = options.some((o) => o.group != null);
   const groups = grouped ? [...new Set(options.map((o) => o.group!))] : [];
-  // 기본: 전부 접힘 (헤더만 보이고, 펼쳐서 해당 버전 캐릭터 확인)
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
+  // 기본: 현재 선택값이 속한 그룹만 펼침 (예: 3버전 캐릭터를 보고 있으면 3버전 아코디언 열림)
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    () => new Set(selected?.group != null ? [selected.group] : []),
+  );
   const toggleGroup = (g: string) =>
     setExpandedGroups((prev) => {
       const next = new Set(prev);
