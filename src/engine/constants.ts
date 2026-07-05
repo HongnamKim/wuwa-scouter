@@ -55,6 +55,7 @@ export const MAIN_SECONDARY: Record<Cost, { stat: StatKey; value: number }> = {
 export const COST_LAYOUTS: Record<CostLayout, Cost[]> = {
   '43311': [4, 3, 3, 1, 1],
   '44111': [4, 4, 1, 1, 1],
+  '43111': [4, 3, 1, 1, 1],
 };
 
 // 딜 비교(특히 무기 비교)용 적 가정. 방어력 무시·속성 저항 무시를 상대 배수로 반영.

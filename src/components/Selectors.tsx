@@ -58,7 +58,7 @@ export function Selectors({ state, setState }: Props) {
     .map((s) => ({ value: s.id, label: (char.recommended_echo_sets.includes(s.id) ? '★ ' : '') + s.name, image: `/echo-sets/${s.id}.webp` }));
   const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets), char.recommended_main_echo)
     .map((m) => ({ value: m.id, label: (char.recommended_main_echo.includes(m.id) ? '★ ' : '') + m.name, image: `/echoes/${m.id}.webp` }));
-  const costOptions: DropdownOption[] = [{ value: '43311', label: '43311' }, { value: '44111', label: '44111' }];
+  const costOptions: DropdownOption[] = [{ value: '43311', label: '43311' }, { value: '44111', label: '44111' }, { value: '43111', label: '43111' }];
   // 자유 2세트 효과 풀 (원소피해는 캐릭터 원소명으로 표시)
   const twoPieceOptions: DropdownOption[] = loadTwoPieceEffects().map((e) => ({
     value: e.id,

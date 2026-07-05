@@ -14,11 +14,12 @@ const KKJAK_ENERGY_REGEN = 13.1;
 
 export type ThreeCoMode =
   | 'soksok' | 'sokgong' | 'gonggong' | 'er_sok' | 'er_gong' | 'er_er'  // 43311: 3코 가변
-  | 'four_cc' | 'four_ccr' | 'four_cca' | 'four_crcr' | 'four_cra' | 'four_aa'; // 44111: 4코 가변
+  | 'four_cc' | 'four_ccr' | 'four_cca' | 'four_crcr' | 'four_cra' | 'four_aa' // 44111: 4코 가변
+  | 'sok111' | 'gong111' | 'er111'; // 43111: 3코 한 슬롯만 가변(4코=크피·1코=공% 고정)
 
-// 크크작 조합 모드: 라벨 + 가변 슬롯에 넣을 메인 옵션 페어 + 적용 레이아웃. er=공효 포함(전환형 전용)
-// 43311은 3코 두 슬롯이 가변(4코=크피·1코=공% 고정), 44111은 4코 두 슬롯이 가변(1코=공% 고정).
-const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: [StatKey, StatKey]; layout: CostLayout; er: boolean }> = {
+// 크크작 조합 모드: 라벨 + 가변 슬롯에 넣을 메인 옵션(가변 슬롯 수만큼) + 적용 레이아웃. er=공효 포함(전환형 전용)
+// 43311은 3코 두 슬롯이 가변(4코=크피·1코=공% 고정), 44111은 4코 두 슬롯이 가변(1코=공% 고정), 43111은 3코 한 슬롯만 가변.
+const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: StatKey[]; layout: CostLayout; er: boolean }> = {
   soksok: { label: '속속', pair: ['element_damage_bonus', 'element_damage_bonus'], layout: '43311', er: false },
   sokgong: { label: '속공', pair: ['element_damage_bonus', 'attack_percent'], layout: '43311', er: false },
   gonggong: { label: '공공', pair: ['attack_percent', 'attack_percent'], layout: '43311', er: false },
@@ -31,6 +32,9 @@ const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: [StatKey, StatKey]
   four_crcr: { label: '크리+크리', pair: ['critical_rate', 'critical_rate'], layout: '44111', er: false },
   four_cra: { label: '크리+공%', pair: ['critical_rate', 'attack_percent'], layout: '44111', er: false },
   four_aa: { label: '공%+공%', pair: ['attack_percent', 'attack_percent'], layout: '44111', er: false },
+  sok111: { label: '속', pair: ['element_damage_bonus'], layout: '43111', er: false },
+  gong111: { label: '공', pair: ['attack_percent'], layout: '43111', er: false },
+  er111: { label: '공효', pair: ['energy_regen'], layout: '43111', er: true },
 };
 
 /** 코스트 구성별 선택 가능한 크크작 조합 모드 (43311=3코 조합, 44111=4코 조합; ER 전환형만 공효 모드 노출) */
@@ -232,8 +236,8 @@ export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
   const layout: Cost[] = COST_LAYOUTS[c.costLayout];
   const groups: RecoGroup[] = [];
 
-  if (c.costLayout === '43311') {
-    // 그룹1: 4코 메인 비교 (3코 속속·1코 공% 고정)
+  if (variableCost(c.costLayout) === 3) {
+    // 43311·43111: 4코 메인 비교 + 3코 조합. 그룹1: 4코 메인 비교 (3코 속·1코 공% 고정)
     const g1: [string, MainPrimaryPick[]][] = (['critical_damage', 'critical_rate', 'attack_percent'] as StatKey[])
       .map((t4) => [
         t4 === 'critical_damage' ? '크피' : t4 === 'critical_rate' ? '크리' : '공%',

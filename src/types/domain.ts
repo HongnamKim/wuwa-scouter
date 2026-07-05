@@ -13,7 +13,7 @@ export type DamageBonusType =
 
 export type EnergyRegenMode = 'premise' | 'deal_conversion' | 'buff_conversion';
 
-export type CostLayout = '43311' | '44111';
+export type CostLayout = '43311' | '44111' | '43111';
 export type Cost = 1 | 3 | 4;
 export type SetPieces = 1 | 2 | 3 | 5;
 
