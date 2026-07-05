@@ -160,9 +160,10 @@ export function defaultStateForCharacter(character: Character): AppState {
   const recSets = character.recommended_echo_sets
     .map((id) => sets.find((s) => s.id === id))
     .filter((x): x is EchoSet => !!x);
-  // 자유 2세트 슬롯이 생기는 빌드(3+2, 1+2+2)면 주 세트 하나만 착용(applyEchoSets와 동일 정규화).
-  // 나머지 추천 세트는 드롭다운에서 ★로 노출되지만 기본 착용은 아니다.
-  const echoSets = freeTwoPieceSlots(recSets) > 0 ? recSets.slice(0, 1) : recSets;
+  // 추천 세트가 여러 개여도 기본 착용은 항상 첫 번째 하나만.
+  // 엔진은 echoSets의 모든 세트 버프를 합산하므로, 2개를 넣으면 실제로 동시 착용 불가한 조합이
+  // 과다 계산되어 메인 조합 추천이 틀린 값을 보여준다. 나머지 추천 세트는 드롭다운 ★로만 노출.
+  const echoSets = recSets.slice(0, 1);
   const mainEcho = echoSets.length ? pickMainEcho(echoSets, character) : null;
   const costLayout: CostLayout = character.cost_layout;
   const base: AppState = {
