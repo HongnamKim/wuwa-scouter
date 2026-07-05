@@ -3,10 +3,12 @@ import { analysisContext } from '../state/store';
 import { twoPieceRecommendationGroups, RecoRow } from '../engine/theory';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
+  // 상대 성능 상위 3개만 표시(1+2+2는 조합이 많아 정보 과다 방지)
+  const top = [...rows].sort((a, b) => b.relative - a.relative).slice(0, 3);
   return (
     <table style={{ width: 'auto' }}>
       <tbody>
-        {rows.map((r) => (
+        {top.map((r) => (
           <tr key={r.label} style={r.best ? { fontWeight: 'bold', background: '#eef7ee' } : undefined}>
             <td>{r.label}</td>
             <td>{(r.relative * 100).toFixed(1)}%{r.best ? ' ★' : ''}</td>
