@@ -6,7 +6,9 @@ import type { Element } from '../types/domain';
 import { ELEMENTS } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput } from '../engine/build';
-import { theoryBest, kkjakPerf, optimalThreeCoMode } from '../engine/theory';
+import { theoryBest, kkjakReferencePerf } from '../engine/theory';
+import { isLocked, releaseDateLabel } from '../engine/release';
+import { onImgError } from './imgFallback';
 import { Dropdown } from './Dropdown';
 
 // 속성 → 아이콘 파일명(slug). 아이콘은 public/elements/<slug>.webp (없으면 onError로 숨김)
@@ -29,7 +31,7 @@ function cardScoreLines(character: Character, state: AppState | null): { primary
   const mine = computePerf(buildPerfInput(ctx));
   if (record) return { primary: `딜 ${mine.toFixed(0)}`, secondary: '서포터(기록)' };
   return {
-    primary: `크크작 ${((mine / kkjakPerf(ctx, optimalThreeCoMode(ctx))) * 100).toFixed(1)}%`,
+    primary: `크크작 ${((mine / kkjakReferencePerf(ctx)) * 100).toFixed(1)}%`,
     secondary: `최고점 ${((mine / theoryBest(ctx).perf) * 100).toFixed(1)}%`,
   };
 }
@@ -64,21 +66,25 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
   }
 
   const renderCard = ({ character, state }: Entry) => {
-    const { primary, secondary } = cardScoreLines(character, state);
-    const recorded = !!state;
+    const locked = isLocked(character);
+    const { primary, secondary } = locked
+      ? { primary: releaseDateLabel(character), secondary: '출시 예정' }
+      : cardScoreLines(character, state);
+    const recorded = !!state && !locked;
     return (
-      <div className="char-card" key={character.id} onClick={() => onSelect(character.id)}>
+      <div className={'char-card' + (locked ? ' locked' : '')} key={character.id}
+        onClick={locked ? undefined : () => onSelect(character.id)}
+        aria-disabled={locked || undefined}>
         <span className="card-element" title={character.element}>
           <img className="card-element-icon" src={elementIcon(character.element)} alt={character.element}
             onError={(e) => { const t = e.currentTarget; t.style.display = 'none'; (t.nextElementSibling as HTMLElement).style.display = 'inline'; }} />
           <span className="card-element-text">{character.element}</span>
         </span>
         <img className={recorded ? 'card-image' : 'card-image not-recorded'}
-          src={`/characters/${character.id}.webp`} alt={character.name}
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
+          src={`/characters/${character.id}.webp`} alt={character.name} onError={onImgError} />
         <div className="card-name">{character.name}</div>
         <div className="muted">{character.version}버전{character.version_phase ? ` ${character.version_phase}` : ''}</div>
-        <div className="card-score">{primary}</div>
+        <div className={'card-score' + (locked ? ' card-release' : '')}>{primary}</div>
         <div className="muted">{secondary}</div>
       </div>
     );

@@ -479,5 +479,41 @@
       { "type": "critical_damage", "value": 1.00, "always": false, "target": "self", "id": "guwon_chain6_critdmg", "min_ascension": 6, "label": "대나무숲의 은둔자(공명 스킬) 발동 시 크리티컬 피해 +100% (6초, 6돌)", "short": "크리티컬 피해 +100% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
       { "type": "echo_skill_amplify", "value": 0.50, "always": false, "target": "next_character", "id": "guwon_intro_echoamp", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 에코 어빌리티 +50% 부스트", "short": "다음 캐릭터 에코 어빌리티 +50% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
+  },
+  {
+    "id": "yangyang_xuanling",
+    "name": "양양·현령",
+    "version": 3.5,
+    "version_phase": "전반",
+    "element": "인멸",
+    "weapon_type": "sword",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 425,
+    "base_hp": 11025,
+    "base_defense": 1148,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "heavy_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "heavy_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 125,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["song_of_feathered_trace"],
+    "recommended_main_echo": [],
+    "recommended_weapons": ["azure_oath"],
+    "signature_weapon": null,
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드(크리): 기본공격·변주 트리 크리 1.2%+2.8% ×2트리 = 8%", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드(공격): 공명스킬·공명해방 트리 공격 1.8%+4.2% ×2트리 = 12%", "record_only": false, "absolute_score_only": false },
+      { "type": "energy_regen", "value": 0.20, "always": false, "target": "self", "id": "yy_flowsound_er", "min_ascension": 0, "label": "일반 공격 · 검술 · 푸름/깃털로 피해 시 「흐르는 소리」 미소모 시 공명 효율 +20%", "short": "공명 효율 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 1.60, "always": false, "target": "self", "id": "yy_heavy_critdmg", "min_ascension": 0, "label": "강공격 · 검술 · 푸름/깃털 발동 시 크리티컬 피해 160% 증가", "short": "강공격 크리티컬 피해 +160%", "record_only": false, "absolute_score_only": false, "default_on": false },
+      { "type": "critical_damage", "value": 1.50, "always": false, "target": "self", "id": "yy_feather_oath", "min_ascension": 0, "label": "「암흑 효과」 추가 시 크리티컬 피해 +25%×6스택 = 150%", "short": "암흑 효과 6스택 크리티컬 피해 +150%", "note": "스택당 25%, 최대 6스택 → value ×6", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.66, "always": false, "target": "self", "id": "yy_eternal_oath", "min_ascension": 0, "label": "「암흑 효과」 6스택 시 피해 +66% 부스트 (1~3스택 30% + 4~6스택 36%)", "short": "암흑 효과 6스택 피해 +66% 부스트", "note": "1~3스택당 10%(최대30%) + 4~6스택당 12%(최대36%) = 66%", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "element_damage_amplify", "value": 0.20, "element": "인멸", "always": false, "target": "party_except_self", "id": "yy_intro_havoc", "min_ascension": 0, "label": "반주 바람이 이끄는 대로: 파티(양양 제외) 변조된 악곡 중 「암흑 효과」 추가 시 인멸 피해 +20% 부스트", "short": "파티 인멸 피해 +20% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 1.00, "always": false, "target": "self", "id": "yy_chain2_smv", "min_ascension": 2, "label": "강공격·푸름/공중·깃털/일반·찬란함/회피반격·찬란함 피해 +100% (2돌)", "short": "특정 강공격 피해 +100% (2돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 1.75, "always": false, "target": "self", "id": "yy_chain3_smv", "min_ascension": 3, "label": "공명 해방 만음을 잠재운 깃털 피해 +175% 부스트 (3돌)", "short": "공명해방 피해 +175% (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "yy_chain4_atk", "min_ascension": 4, "label": "변주/공명 스킬 전환·흐름 발동 시 파티 공격력 +20% (4돌)", "short": "파티 공격력 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "target": "self", "id": "yy_chain6_vuln", "min_ascension": 6, "label": "만음이 흐르고 — 목표가 양양에게 받는 강공격 피해 +40% (6돌)", "short": "받는 강공격 피해 +40% (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
+    ]
   }
 ]

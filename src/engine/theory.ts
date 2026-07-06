@@ -2,7 +2,8 @@ import type { StatKey, Cost, CostLayout } from '../types/domain';
 import type { CalcContext, MainPrimaryPick, SubstatLine } from './context';
 import { buildPerfInput, sumEffectiveSubstats } from './build';
 import { computePerf } from './perf';
-import { COST_LAYOUTS, MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
+import { MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
+import { costsOf } from './costLayout';
 import { hasEnergyConversion } from './mechanisms';
 import { loadTwoPieceEffects } from './loadData';
 import { freeTwoPieceSlots, slotsFrom } from './echoSlots';
@@ -14,11 +15,14 @@ const KKJAK_ENERGY_REGEN = 13.1;
 
 export type ThreeCoMode =
   | 'soksok' | 'sokgong' | 'gonggong' | 'er_sok' | 'er_gong' | 'er_er'  // 43311: 3코 가변
-  | 'four_cc' | 'four_ccr' | 'four_cca' | 'four_crcr' | 'four_cra' | 'four_aa' // 44111: 4코 가변
-  | 'sok111' | 'gong111' | 'er111'; // 43111: 3코 한 슬롯만 가변(4코=크피·1코=공% 고정)
+  | 'four_cc' | 'four_ccr' | 'four_cca' | 'four_crcr' | 'four_cra' | 'four_aa'; // 44111: 4코 가변
+
+// 명명 모드 UI를 유지하는 레이아웃. 그 외(직접 입력·41111·43111 등)는 일반형(전수 상위 N) 경로.
+export const NAMED_LAYOUTS = new Set<string>(['43311', '44111']);
+export function hasNamedModes(ctx: CalcContext): boolean { return NAMED_LAYOUTS.has(ctx.costLayout); }
 
 // 크크작 조합 모드: 라벨 + 가변 슬롯에 넣을 메인 옵션(가변 슬롯 수만큼) + 적용 레이아웃. er=공효 포함(전환형 전용)
-// 43311은 3코 두 슬롯이 가변(4코=크피·1코=공% 고정), 44111은 4코 두 슬롯이 가변(1코=공% 고정), 43111은 3코 한 슬롯만 가변.
+// 43311은 3코 두 슬롯이 가변(4코=크피·1코=공% 고정), 44111은 4코 두 슬롯이 가변(1코=공% 고정).
 const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: StatKey[]; layout: CostLayout; er: boolean }> = {
   soksok: { label: '속속', pair: ['element_damage_bonus', 'element_damage_bonus'], layout: '43311', er: false },
   sokgong: { label: '속공', pair: ['element_damage_bonus', 'attack_percent'], layout: '43311', er: false },
@@ -32,9 +36,6 @@ const KKJAK_MODES: Record<ThreeCoMode, { label: string; pair: StatKey[]; layout:
   four_crcr: { label: '크리+크리', pair: ['critical_rate', 'critical_rate'], layout: '44111', er: false },
   four_cra: { label: '크리+공%', pair: ['critical_rate', 'attack_percent'], layout: '44111', er: false },
   four_aa: { label: '공%+공%', pair: ['attack_percent', 'attack_percent'], layout: '44111', er: false },
-  sok111: { label: '속', pair: ['element_damage_bonus'], layout: '43111', er: false },
-  gong111: { label: '공', pair: ['attack_percent'], layout: '43111', er: false },
-  er111: { label: '공효', pair: ['energy_regen'], layout: '43111', er: true },
 };
 
 /** 코스트 구성별 선택 가능한 크크작 조합 모드 (43311=3코 조합, 44111=4코 조합; ER 전환형만 공효 모드 노출) */
@@ -52,7 +53,7 @@ function variableCost(layout: CostLayout): Cost {
 
 /** 모드에 해당하는 전체 메인 옵션 구성 (가변 슬롯=모드 페어, 4코 고정=크피[43311], 1코 고정=공%) */
 function kkjakModePicks(ctx: CalcContext, mode: ThreeCoMode): MainPrimaryPick[] {
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
+  const layout: Cost[] = costsOf(ctx.costLayout);
   const varCost = variableCost(ctx.costLayout);
   const pair = KKJAK_MODES[mode].pair;
   let ti = 0;
@@ -67,7 +68,7 @@ export interface TheoryResult {
   perf: number;
   subAllocation: Partial<Record<StatKey, number>>; // 줄 수
   mainPicks: MainPrimaryPick[];                     // 슬롯별 메인 선택(표시는 UI에서 한글화)
-  threeCoMode: ThreeCoMode;
+  threeCoMode: ThreeCoMode | null;                  // 명명 레이아웃만; 일반형은 null
 }
 
 /** 해당 슬롯 코스트에서 가능한 메인 옵션 키 목록 (딜 관련만) */
@@ -104,10 +105,11 @@ function* subAllocations(keys: StatKey[], totalLines: number): Generator<number[
   yield* rec(0, totalLines, []);
 }
 
-function threeCoModeOf(ctx: CalcContext, picks: MainPrimaryPick[]): ThreeCoMode {
+function threeCoModeOf(ctx: CalcContext, picks: MainPrimaryPick[]): ThreeCoMode | null {
+  const opts = threeCoModeOptions(ctx);
+  if (!opts.length) return null; // 일반형 레이아웃: 명명 모드 없음
   const varCost = variableCost(ctx.costLayout);
   const vars = picks.filter((p) => p.cost === varCost).map((p) => p.type).sort();
-  const opts = threeCoModeOptions(ctx);
   for (const o of opts) {
     const pair = [...KKJAK_MODES[o.value].pair].sort();
     if (vars.length === pair.length && vars.every((t, i) => t === pair[i])) return o.value;
@@ -124,14 +126,19 @@ export function energyRegenLines(ctx: CalcContext): number {
   const req = ctx.requiredEnergyRegen;
   if (req == null) return 0;
   const echoER = req >= 100 ? req - 100 : req;
-  return Math.min(25, Math.max(0, Math.ceil(echoER / substatMaxStage('energy_regen'))));
+  return Math.min(totalSubstatLines(ctx), Math.max(0, Math.ceil(echoER / substatMaxStage('energy_regen'))));
+}
+
+/** 부옵 총 줄 수 예산 = 코스트 개수 × 5 (에코 1개당 부옵 5줄). 가변 슬롯 대응. */
+function totalSubstatLines(ctx: CalcContext): number {
+  return costsOf(ctx.costLayout).length * 5;
 }
 
 export function theoryBest(ctx: CalcContext): TheoryResult {
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
+  const layout: Cost[] = costsOf(ctx.costLayout);
   const keys = effectiveSubstatsOf(ctx);
   // 전제형: 필요 공효 도달 최소 줄 수만큼 딜 슬롯 차감. 유효옵 수×5(각 옵 최대 5줄)로 상한.
-  const totalLines = Math.min(25 - energyRegenLines(ctx), keys.length * 5);
+  const totalLines = Math.min(totalSubstatLines(ctx) - energyRegenLines(ctx), keys.length * 5);
 
   let best: TheoryResult | null = null;
   const combos = [...mainCombos(layout)];
@@ -173,8 +180,26 @@ export function kkjakRatio(ctx: CalcContext, mode: ThreeCoMode): number {
   return computePerf(buildPerfInput(ctx)) / kkjakPerf(ctx, mode);
 }
 
-export function optimalThreeCoMode(ctx: CalcContext): ThreeCoMode {
+export function optimalThreeCoMode(ctx: CalcContext): ThreeCoMode | null {
   return theoryBest(ctx).threeCoMode;
+}
+
+/** 일반형 레이아웃 크크작 기준: 크크작 부옵 고정 + 메인 조합 전수 중 최고 통합 성능. */
+export function kkjakBestPerf(ctx: CalcContext): number {
+  const sub = kkjakSub(ctx);
+  let best = 0;
+  for (const picks of mainCombos(costsOf(ctx.costLayout))) {
+    const p = perfWithMain(ctx, picks, sub);
+    if (p > best) best = p;
+  }
+  return best;
+}
+
+/** 카드/비교용 크크작 기준 perf. 명명 레이아웃(43311/44111)은 기존 모드 기반, 일반형은 전수 최고. */
+export function kkjakReferencePerf(ctx: CalcContext): number {
+  if (!hasNamedModes(ctx)) return kkjakBestPerf(ctx);
+  const mode = optimalThreeCoModeKkjak(ctx);
+  return mode ? kkjakPerf(ctx, mode) : kkjakBestPerf(ctx);
 }
 
 interface ModeGroupArgs { ctx: CalcContext; label: string }
@@ -184,8 +209,8 @@ function modeGroup({ ctx, label }: ModeGroupArgs): RecoGroup {
     .map((o) => [o.label, kkjakModePicks(ctx, o.value)]);
   return {
     label,
-    theory: rows(combos.map(([n, p]) => [n, bestSubAllocationPerf(ctx, p)])),
-    kkjak: rows(combos.map(([n, p]) => [n, perfWithMain(ctx, p, kkjakSub(ctx))])),
+    theory: rows(combos.map(([n, p]) => [n, bestPerfCoOptTwoPiece(ctx, p, bestSubAllocationPerf)])),
+    kkjak: rows(combos.map(([n, p]) => [n, bestPerfCoOptTwoPiece(ctx, p, (c, pp) => perfWithMain(c, pp, kkjakSub(c)))])),
   };
 }
 
@@ -199,7 +224,7 @@ function perfWithMain(ctx: CalcContext, picks: MainPrimaryPick[], sub: SubstatLi
 
 function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): number {
   const keys = effectiveSubstatsOf(ctx);
-  const total = Math.min(25 - energyRegenLines(ctx), keys.length * 5);
+  const total = Math.min(totalSubstatLines(ctx) - energyRegenLines(ctx), keys.length * 5);
   let best = 0;
   for (const alloc of subAllocations(keys, total)) {
     const sub: SubstatLine[][] = keys.map((k, idx) =>
@@ -210,14 +235,33 @@ function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): numb
   return best;
 }
 
+/** 메인 조합 picks 평가 시, 자유 2세트 슬롯(1+2+2·3+2)이 있으면 보조 2세트 조합까지 함께 최적화한 최고 성능.
+ *  → 4코 메인 + 3코 조합 + 보조 2세트 효과를 종합 고려(상호작용 반영). 자유 슬롯 0이면 단일 평가와 동일. */
+function bestPerfCoOptTwoPiece(ctx: CalcContext, picks: MainPrimaryPick[], perOne: (c: CalcContext, p: MainPrimaryPick[]) => number): number {
+  const combos = twoPieceCombos(ctx);
+  if (!combos.length) return perOne(ctx, picks);
+  let best = 0;
+  for (const tp of combos) {
+    const p = perOne({ ...ctx, twoPiecePicks: tp }, picks);
+    if (p > best) best = p;
+  }
+  return best;
+}
+
 function kkjakSub(ctx: CalcContext): SubstatLine[][] {
+  const count = costsOf(ctx.costLayout).length;
   const crit = substatFourthFromBottom('critical_rate') * 5;
   const cd = substatFourthFromBottom('critical_damage') * 5;
   // ER 전환형은 크크작 시 따라오는 평균 공명효율(13.1%)을 분모에 반영
   const erLine: SubstatLine[] = hasEnergyConversion(ctx.character.special_mechanism)
     ? [{ type: 'energy_regen', value: KKJAK_ENERGY_REGEN }]
     : [];
-  return [[{ type: 'critical_rate', value: crit }], [{ type: 'critical_damage', value: cd }], erLine, [], []];
+  // 슬롯 개수만큼: 0=크리, 1=크피, 2=공효(전환형), 나머지 빈 슬롯. 5슬롯이면 기존과 동일.
+  const slots: SubstatLine[][] = Array.from({ length: count }, () => []);
+  if (count >= 1) slots[0] = [{ type: 'critical_rate', value: crit }];
+  if (count >= 2) slots[1] = [{ type: 'critical_damage', value: cd }];
+  if (count >= 3 && erLine.length) slots[2] = erLine;
+  return slots;
 }
 
 function rows(entries: [string, number][]): RecoRow[] {
@@ -228,12 +272,39 @@ function rows(entries: [string, number][]): RecoRow[] {
     .map(([label, v]) => ({ label, relative: v / max, best: Math.abs(v - max) < 1e-6 }));
 }
 
-/** 43311: 4코 메인 그룹 + 3코 조합 그룹. 44111: 4코 조합 그룹. */
+// 일반형 라벨용 메인 옵션 약어
+const MAIN_ABBR: Partial<Record<StatKey, string>> = {
+  critical_damage: '크피', critical_rate: '크리', attack_percent: '공%',
+  element_damage_bonus: '속', energy_regen: '공효', hp_percent: '체%', defense_percent: '방%',
+};
+/** 조합 라벨: 1코 제외, 코스트 내림차순으로 약어 이어붙임. 예: '크피·속·공' */
+function comboLabel(picks: MainPrimaryPick[]): string {
+  return picks.filter((p) => p.cost !== 1)
+    .slice().sort((a, b) => b.cost - a.cost)
+    .map((p) => MAIN_ABBR[p.type] ?? p.type).join('·');
+}
+/** 일반형(직접 입력 등) 메인 조합 추천: 가변 슬롯 메인 전수 → 성능순 상위 3. */
+function genericMainReco(ctx: CalcContext): RecoGroup {
+  // 순서만 다른 동일 조합 제거(성능 동일)
+  const seen = new Set<string>();
+  const uniq = [...mainCombos(costsOf(ctx.costLayout))].filter((p) => {
+    const key = p.map((x) => x.cost + ':' + x.type).sort().join('|');
+    if (seen.has(key)) return false; seen.add(key); return true;
+  });
+  return {
+    label: '메인 조합',
+    theory: rows(uniq.map((p) => [comboLabel(p), bestPerfCoOptTwoPiece(ctx, p, bestSubAllocationPerf)])).slice(0, 3),
+    kkjak: rows(uniq.map((p) => [comboLabel(p), bestPerfCoOptTwoPiece(ctx, p, (c, pp) => perfWithMain(c, pp, kkjakSub(c)))])).slice(0, 3),
+  };
+}
+
+/** 43311: 4코 메인 그룹 + 3코 조합 그룹. 44111: 4코 조합 그룹. 그 외(일반형): 전수 상위 3 단일 그룹. */
 export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
-  // 메인(3코/4코) 추천의 변수는 메인 옵션뿐. 별도로 추천되는 2세트 효과는 입력에서 제외(고정 []).
-  // → 보조 2세트 효과 선택을 바꿔도 메인 조합 추천은 불변.
+  // 자유 2세트 슬롯이 있으면 각 메인 조합을 보조 2세트 조합까지 함께 최적화해 평가(bestPerfCoOptTwoPiece).
+  // → 4코 메인 + 3코 조합 + 보조 2세트 효과를 종합 고려. 항상 최적 보조 기준이라 사용자의 보조 선택과 무관(불변).
   const c: CalcContext = { ...ctx, twoPiecePicks: [] };
-  const layout: Cost[] = COST_LAYOUTS[c.costLayout];
+  if (!hasNamedModes(c)) return [genericMainReco(c)];
+  const layout: Cost[] = costsOf(c.costLayout);
   const groups: RecoGroup[] = [];
 
   if (variableCost(c.costLayout) === 3) {
@@ -245,8 +316,8 @@ export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
       ]);
     groups.push({
       label: '4코 메인',
-      theory: rows(g1.map(([n, p]) => [n, bestSubAllocationPerf(c, p)])),
-      kkjak: rows(g1.map(([n, p]) => [n, perfWithMain(c, p, kkjakSub(c))])),
+      theory: rows(g1.map(([n, p]) => [n, bestPerfCoOptTwoPiece(c, p, bestSubAllocationPerf)])),
+      kkjak: rows(g1.map(([n, p]) => [n, bestPerfCoOptTwoPiece(c, p, (cc, pp) => perfWithMain(cc, pp, kkjakSub(cc)))])),
     });
     // 그룹2: 3코 조합 비교 (ER 전환형은 공효 모드 포함)
     groups.push(modeGroup({ ctx: c, label: '3코 조합' }));
@@ -261,7 +332,7 @@ export function mainRecommendation(ctx: CalcContext): RecoGroup[] {
 
 /** 선택한 화음 세트에서 파생된 자유 슬롯 수만큼 풀에서 중복 허용 멀티셋(조합) 전수 생성. id 배열 목록 */
 function twoPieceCombos(ctx: CalcContext): string[][] {
-  const n = freeTwoPieceSlots(ctx.echoSets);
+  const n = freeTwoPieceSlots(ctx.echoSets, costsOf(ctx.costLayout).length);
   if (!n || n <= 0) return [];
   const pool = loadTwoPieceEffects();
   const out: string[][] = [];
@@ -322,7 +393,7 @@ export function twoPieceRecommendationGroups(ctx: CalcContext): { theory: RecoRo
   });
   const kkjak: [string, number][] = combos.map((c) => {
     const cctx = { ...ctx, twoPiecePicks: c };
-    return [twoPieceComboLabel(ctx, c), kkjakPerf(cctx, optimalThreeCoModeKkjak(cctx))];
+    return [twoPieceComboLabel(ctx, c), kkjakReferencePerf(cctx)];
   });
   return { theory: rows(theory), kkjak: rows(kkjak) };
 }
@@ -343,7 +414,7 @@ export function compareSubstats(
 
 /** 크크작 기준 부옵(크리5+크피5)에서 통합 성능을 최대화하는 메인 옵션 조합(추천) */
 export function recommendedMainPicks(ctx: CalcContext): MainPrimaryPick[] {
-  const layout: Cost[] = COST_LAYOUTS[ctx.costLayout];
+  const layout: Cost[] = costsOf(ctx.costLayout);
   const sub = kkjakSub(ctx);
   let best: { perf: number; picks: MainPrimaryPick[] } | null = null;
   for (const picks of mainCombos(layout)) {
@@ -357,8 +428,9 @@ export function recommendedMainPicks(ctx: CalcContext): MainPrimaryPick[] {
  * 크크작 분모 기준 최적(최고 통합 성능) 조합 모드 (43311=3코, 44111=4코).
  * 추천 표의 조합 그룹과 동일하게 모드별 kkjakPerf로 비교 → 최고 모드.
  */
-export function optimalThreeCoModeKkjak(ctx: CalcContext): ThreeCoMode {
+export function optimalThreeCoModeKkjak(ctx: CalcContext): ThreeCoMode | null {
   const modes = threeCoModeOptions(ctx).map((o) => o.value);
+  if (!modes.length) return null; // 일반형 레이아웃: 명명 모드 없음
   let best = modes[0];
   let bestPerf = -Infinity;
   for (const m of modes) {

@@ -5,6 +5,7 @@ import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
 import { defaultBuffChecked } from '../engine/buffs';
+import { costsOf } from '../engine/costLayout';
 import { loadTwoPieceEffects } from '../engine/loadData';
 import { damageBonusTypeOf } from '../engine/mode';
 import { computeEnergyRegen } from '../engine/build';
@@ -43,7 +44,9 @@ export function BuffPanel({ state, setState }: Props) {
   // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
   // 고유 스킬만 조건부 노출.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
-  type Item = { b: Buff; passive: boolean };
+  // 세트 효과 게이팅: 에코 개수(코스트 개수)보다 큰 set_pieces 효과는 착용 불가 → 잠금 표시.
+  const echoCount = state.costLayout ? costsOf(state.costLayout).length : 5;
+  type Item = { b: Buff; passive: boolean; setLocked?: boolean };
   // 보조 2세트 효과(3+2 등 자유 슬롯): 선택된 twoPiecePicks를 상시 버프로 표시. 원소피해는 캐릭터 원소로.
   const twoPiecePool = loadTwoPieceEffects();
   const twoPieceBuffs: Buff[] = (state.twoPiecePicks ?? [])
@@ -73,6 +76,8 @@ export function BuffPanel({ state, setState }: Props) {
         // next_character(다음 등장 캐릭터 전용)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
         // party(파티 전체, 본인 포함)와 self는 본인도 받으므로 표시.
         .filter((b) => !b.target || b.target === 'self' || b.target === 'party')
+        // element 게이트: 지정 원소가 캐릭터와 다르면 비표시(속성 조건 버프, 예: 서리효과=응결/암흑효과=인멸 분기). '전체'는 통과.
+        .filter((b) => !b.element || b.element === '전체' || b.element === state.character.element)
         // 이상효과·조화도 파괴 등 전용 타입은 패널 비표시(데이터 기록 전용)
         .filter((b) => !SCORE_HIDDEN_TYPES.includes(b.type))
         // record_only(특정 스킬 계수/한정, 계산 제외)는 순수 기록용 → 패널 비표시
@@ -85,7 +90,7 @@ export function BuffPanel({ state, setState }: Props) {
           if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
           return true;
         })
-        .map((b): Item => ({ b, passive: !!b.always })),
+        .map((b): Item => ({ b, passive: !!b.always, setLocked: b.set_pieces != null && b.set_pieces > echoCount })),
     }))
     // 무기 그룹은 버프가 없어도 스탯 줄을 보기 위해 항상 표시. 그 외 그룹은 표시할 버프가 있을 때만.
     .filter((g) => g.items.length > 0 || g.weaponStats);
@@ -197,14 +202,15 @@ export function BuffPanel({ state, setState }: Props) {
       <div key={g.source}>
         {g.source !== label && <div className="muted" style={{ margin: '2px 0 6px', fontWeight: 'bold' }}>{g.source}</div>}
         {g.weaponStats && <div style={{ margin: '0 0 8px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>}
-        {vis.map(({ b, passive }, idx) => {
-          const locked = !passive && isLocked(b);
-          const checked = passive ? true : (!locked && isChecked(b));
+        {vis.map(({ b, passive, setLocked }, idx) => {
+          const locked = (!passive && isLocked(b)) || !!setLocked;
+          const checked = setLocked ? false : (passive ? true : (!locked && isChecked(b)));
           return (
             <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
               <input type="checkbox" disabled={passive || locked} checked={checked}
-                onChange={(e) => { if (passive) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
-              <span>{simple ? shortText(b) : fullText(b)}{passive ? ' (상시)' : ''}
+                onChange={(e) => { if (passive || setLocked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
+              <span>{simple ? shortText(b) : fullText(b)}{passive && !setLocked ? ' (상시)' : ''}
+                {setLocked && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.set_pieces}세트(에코 {b.set_pieces}개↑ 필요)</span>}
                 {scaleNowText(b) && <span className="muted" style={{ marginLeft: 4 }}>· {scaleNowText(b)}</span>}
               </span>
             </label>

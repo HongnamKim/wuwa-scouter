@@ -207,5 +207,24 @@
      { "type": "all_damage_amplify", "value": 0.10, "always": false, "target": "party", "id": "echo_bell_party_amp", "label": "사용 시 파티 내 캐릭터 피해 +10% 부스트 (피해 감소 50%는 방어형이라 기록 제외)", "short": "파티 피해 +10% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ] }
    ]
+  },
+  {
+   "id": "song_of_feathered_trace",
+   "name": "내려앉은 깃털의 노래",
+   "buffs": [
+    { "type": "energy_regen", "value": 0.10, "set_pieces": 2, "always": true, "label": "공명 효율 10% 증가 (2세트)", "short": "공명 효율 +10%", "record_only": false, "absolute_score_only": false },
+    { "type": "critical_rate", "value": 0.20, "set_pieces": 5, "always": false, "element": "인멸", "id": "set_feather_xuanling_crit", "label": "「현령의 깃털」(암흑 효과 추가 시): 크리티컬 +20% (15초, 인멸)", "short": "크리티컬 +20%", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "heavy_attack_bonus", "value": 0.35, "set_pieces": 5, "always": false, "element": "인멸", "id": "set_feather_xuanling_heavy", "label": "「현령의 깃털」(암흑 효과 추가 시): 강공격 피해 보너스 +35% (15초, 인멸)", "short": "강공격 피해 +35%", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "attack_percent", "value": 0, "set_pieces": 5, "always": false, "element": "응결", "target": "party", "id": "set_feather_frost_atk", "energy_scale": { "per_percent": 0.001, "base": 0, "cap": 0.25 }, "label": "「중명조의 깃털」(서리 효과 추가 시): 공명 효율 1%당 파티 공격력 +0.1% (최대 25%, 10초, 응결)", "short": "파티 공격력↑ (공효 스케일)", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "song_feathered_echo_xuanling", "name": "알수없음", "unreleased": true, "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "인멸", "label": "자신의 인멸 피해 보너스 12% 증가", "short": "인멸피해 +12%", "note": "메인슬롯 패시브 (양양 추정, 미공개)", "record_only": false, "absolute_score_only": false },
+     { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] },
+    { "id": "song_feathered_echo_susu", "name": "알수없음", "unreleased": true, "buffs": [
+     { "type": "healing_bonus", "value": 0.10, "always": true, "target": "self", "label": "자신의 치료 효과 보너스 10% 증가", "short": "치료 효과 +10%", "note": "메인슬롯 패시브 (수수 추정, 미공개·딜 무관)", "record_only": false, "absolute_score_only": false }
+    ] }
+   ]
   }
 ]

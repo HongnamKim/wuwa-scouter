@@ -42,7 +42,7 @@ describe('크크작 모드는 코스트 구성에 따라 다르다', () => {
 
   it('44111 기본 모드/추천 그룹은 4코 조합', () => {
     const ctx = { ...hiyukiBaseCtx(), costLayout: '44111' as const };
-    expect(optimalThreeCoModeKkjak(ctx).startsWith('four_')).toBe(true);
+    expect(optimalThreeCoModeKkjak(ctx)!.startsWith('four_')).toBe(true);
     const groups = mainRecommendation(ctx);
     expect(groups.some((g) => g.label === '4코 조합')).toBe(true);
   });

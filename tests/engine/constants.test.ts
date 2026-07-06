@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
-  SUBSTAT_STAGES, MAIN_PRIMARY, MAIN_SECONDARY, COST_LAYOUTS,
+  SUBSTAT_STAGES, MAIN_PRIMARY, MAIN_SECONDARY,
   substatFourthFromBottom, substatMaxStage, BASE_CRIT, BASE_CRIT_DAMAGE,
 } from '../../src/engine/constants';
+import { costsOf } from '../../src/engine/costLayout';
 
 describe('constants', () => {
   it('substat stage tables (실측)', () => {
@@ -33,7 +34,7 @@ describe('constants', () => {
   });
 
   it('layouts + bases', () => {
-    expect(COST_LAYOUTS['43311']).toEqual([4, 3, 3, 1, 1]);
+    expect(costsOf('43311')).toEqual([4, 3, 3, 1, 1]);
     expect(BASE_CRIT).toBe(0.05);
     expect(BASE_CRIT_DAMAGE).toBe(1.5);
   });

@@ -1,4 +1,4 @@
-import type { StatKey, Cost, CostLayout } from '../types/domain';
+import type { StatKey, Cost } from '../types/domain';
 
 export const BASE_CRIT = 0.05;
 export const BASE_CRIT_DAMAGE = 1.5;
@@ -50,12 +50,6 @@ export const MAIN_SECONDARY: Record<Cost, { stat: StatKey; value: number }> = {
   1: { stat: 'flat_hp', value: 2280 },
   3: { stat: 'flat_attack', value: 100 },
   4: { stat: 'flat_attack', value: 150 },
-};
-
-export const COST_LAYOUTS: Record<CostLayout, Cost[]> = {
-  '43311': [4, 3, 3, 1, 1],
-  '44111': [4, 4, 1, 1, 1],
-  '43111': [4, 3, 1, 1, 1],
 };
 
 // 딜 비교(특히 무기 비교)용 적 가정. 방어력 무시·속성 저항 무시를 상대 배수로 반영.

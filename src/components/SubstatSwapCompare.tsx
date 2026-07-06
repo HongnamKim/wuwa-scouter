@@ -5,7 +5,7 @@ import { buildPerfInput, sumEffectiveTotal, computeEnergyRegen } from '../engine
 import { computePerf } from '../engine/perf';
 import { computeDisplaySpec } from '../engine/spec';
 import { mechanismDamageTypeBonus } from '../engine/mechanisms';
-import { theoryBest, kkjakPerf, optimalThreeCoModeKkjak } from '../engine/theory';
+import { theoryBest, kkjakReferencePerf } from '../engine/theory';
 import { effectiveSubstatsOf, damageBonusTypeOf } from '../engine/mode';
 import { DropdownOption } from './Dropdown';
 import { EchoEditor, SUB_LABEL, SUB_OPTION_KEYS, pairScaleSubstats, MAIN_SHORT } from './EchoEditor';
@@ -53,7 +53,7 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
   // 분모(최고점·크크작)는 슬롯 교체와 무관(빌드 고정) → 한 번만 계산
   const { best, kkjak } = useMemo(() => ({
     best: theoryBest(base).perf,
-    kkjak: kkjakPerf(base, optimalThreeCoModeKkjak(base)),
+    kkjak: kkjakReferencePerf(base),
   }), [base]);
 
   const comparedCtx: CalcContext = { ...base, slots: base.slots.map((s, i) => ({ ...s, main: edited[i].main, substats: edited[i].substats })) };

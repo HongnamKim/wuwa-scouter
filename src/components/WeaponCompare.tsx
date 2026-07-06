@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { CalcContext } from '../engine/context';
 import { loadWeapons, getWeapon } from '../engine/loadData';
+import { onImgError } from './imgFallback';
 import { buildPerfInput } from '../engine/build';
 import { computePerf } from '../engine/perf';
 
@@ -67,8 +68,7 @@ export function WeaponCompare({ base }: { base: CalcContext }) {
               <tr key={r.key} style={r.current ? { background: '#eef2ff' } : undefined}>
                 <td style={{ textAlign: 'left' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <img src={`/weapons/${r.id}.webp`} alt={r.name} style={{ width: 24, height: 24, objectFit: 'contain', flex: '0 0 auto' }}
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                    <img src={`/weapons/${r.id}.webp`} alt={r.name} style={{ width: 24, height: 24, objectFit: 'contain', flex: '0 0 auto' }} onError={onImgError} />
                     <span>{r.name} <span className="muted">{r.refinement}공진</span>{r.current ? ' (현재)' : ''}{r.deal === best ? ' ★' : ''}</span>
                   </span>
                 </td>

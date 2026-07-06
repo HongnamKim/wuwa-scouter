@@ -13,13 +13,15 @@ export type DamageBonusType =
 
 export type EnergyRegenMode = 'premise' | 'deal_conversion' | 'buff_conversion';
 
-export type CostLayout = '43311' | '44111' | '43111';
+// 코스트 구성. 검증된 문자열(1~5자, 각 4/3/1, 합≤12). 예: '43311','44111','41111','444'. isValidCostLayout로 검증.
+export type CostLayout = string;
 export type Cost = 1 | 3 | 4;
 export type SetPieces = 1 | 2 | 3 | 5;
 
 /** 버프 수혜 대상. 미지정 시 self로 취급.
+ *  party_except_self: 파티 전체이되 본인 제외(본인 계산엔 미반영, 파티 기능으로 팀원에게 제공). 예: 양양 반주 인멸피해 부스트
  *  specific_character: target_character로 지정한 캐릭터를 볼 때만 표시·활성(예: 파수인→방랑자 공효) */
-export type BuffTarget = 'self' | 'party' | 'next_character' | 'specific_character';
+export type BuffTarget = 'self' | 'party' | 'next_character' | 'specific_character' | 'party_except_self';
 
 /** 버프 type / 부옵 키 / 메인 옵션 키의 통합 어휘 */
 export type StatKey =
@@ -92,4 +94,4 @@ export const BUFF_ELEMENTS: readonly BuffElement[] = [...ELEMENTS, '전체'];
 
 export const WEAPON_TYPES: readonly WeaponType[] = ['broad_blade', 'sword', 'pistols', 'gauntlets', 'rectifier'];
 
-export const BUFF_TARGETS: readonly BuffTarget[] = ['self', 'party', 'next_character', 'specific_character'];
+export const BUFF_TARGETS: readonly BuffTarget[] = ['self', 'party', 'next_character', 'specific_character', 'party_except_self'];

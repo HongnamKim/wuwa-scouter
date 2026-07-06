@@ -5,6 +5,7 @@ import { loadTwoPieceEffects } from './loadData';
 import { damageBonusTypeOf, activeModeId } from './mode';
 import { MAIN_PRIMARY, BASE_CRIT } from './constants';
 import { energyScaleValue, critScaleValue } from './mechanisms';
+import { costsOf } from './costLayout';
 
 export interface BuffTotals {
   critical_rate: number;
@@ -58,7 +59,7 @@ export function memberProvidedBuffs(build: MemberBuild, char: Character): { key:
     ...(build.mainEcho?.buffs ?? []).map((b): { buff: Buff; source: BuffSource } => ({ buff: b, source: '메인 에코' })),
   ];
   return tagged
-    .filter(({ buff: b }) => (b.target === 'party' || b.target === 'next_character' || b.target === 'specific_character') && !b.record_only)
+    .filter(({ buff: b }) => (b.target === 'party' || b.target === 'next_character' || b.target === 'specific_character' || b.target === 'party_except_self') && !b.record_only)
     .filter(({ buff: b }) => b.min_ascension == null || asc >= b.min_ascension)   // 돌파 게이트: 미달 버프 제외
     .filter(({ buff: b }) => !b.mode || b.mode === (build.selectedMode ?? char.modes?.[0]?.id))
     // 피해유형 게이트: 파티원(멤버)의 현재 모드 피해유형 기준 (예: 반주 분기는 공명해방 멤버에겐 미제공)
@@ -126,6 +127,9 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   // 데이터 출처 버프는 isActive로(대상/element/토글), 수동 버프는 마스터 토글로만 판정.
   // 같은 세트가 중복 선택돼도 한 번만 집계
   const uniqueSets = ctx.echoSets.filter((s, i) => ctx.echoSets.findIndex((x) => x.id === s.id) === i);
+  // 세트 효과 게이팅: 에코 개수(코스트 개수)보다 큰 set_pieces 효과는 착용 불가 → 계산 제외.
+  const echoCount = costsOf(ctx.costLayout).length;
+  const setBuffActive = (b: Buff) => b.set_pieces == null || b.set_pieces <= echoCount;
   // 무기 재련(공진 1~5): 버프량은 weapons.json의 refinement_values[공진-1] 데이터에서 조회 (없으면 기본 value)
   const ref = ctx.refinementLevel ?? 1;
   const weaponBuffs: Buff[] = ctx.weapon.buffs.map((b) => ({ ...b, value: b.refinement_values?.[ref - 1] ?? b.value }));
@@ -141,7 +145,7 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     ...ctx.character.skill_node,
     ...ctx.mainEcho.buffs,
     ...weaponBuffs,
-    ...uniqueSets.flatMap((s) => s.buffs),
+    ...uniqueSets.flatMap((s) => s.buffs).filter(setBuffActive),
     ...twoPieceBuffs,
     // 편성 파티원이 제공하는 버프(store가 내 저장 빌드로 해석·주입. element/피해유형 필터는 내 캐릭터 기준).
     ...(ctx.partyProvidedBuffs ?? []),

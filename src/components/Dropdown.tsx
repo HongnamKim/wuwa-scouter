@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { onImgError } from './imgFallback';
 
 export interface DropdownOption {
   value: string;
@@ -48,8 +49,7 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
 
   const img = (src?: string, alt = '') =>
     src ? (
-      <img className="dropdown-img" src={src} alt={alt}
-        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+      <img className="dropdown-img" src={src} alt={alt} onError={onImgError} />
     ) : null;
 
   const renderOption = (o: DropdownOption, inGroup: boolean) => (

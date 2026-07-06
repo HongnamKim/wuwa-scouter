@@ -1,7 +1,8 @@
 import type { Buff, Character, Weapon, EchoSet, TwoPieceEffect } from '../types/data';
 import { STAT_KEYS, BUFF_ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/domain';
 import { MECHANISM_KEYS } from './mechanisms';
-import { COST_LAYOUTS } from './constants';
+import { hasTimezoneOffset } from './release';
+import { isValidCostLayout } from './costLayout';
 import charactersRaw from '../data/characters.json';
 import weaponsRaw from '../data/weapons.json';
 import echoSetsRaw from '../data/echo-sets.json';
@@ -39,14 +40,24 @@ function validateWeaponType(t: any, owner: string): void {
 export function loadCharacters(): Character[] {
   return (charactersRaw as any[]).map((c) => {
     validateWeaponType(c.weapon_type, c.id);
-    if (!(c.cost_layout in COST_LAYOUTS)) {
-      throw new Error(`unknown cost_layout: ${c.cost_layout} (${c.id})`);
+    if (!isValidCostLayout(c.cost_layout)) {
+      throw new Error(`invalid cost_layout: ${c.cost_layout} (${c.id}) — 4/3/1, 1~5개, 합≤12`);
     }
     if (c.version_phase != null && c.version_phase !== '전반' && c.version_phase !== '후반') {
       throw new Error(`unknown version_phase: ${c.version_phase} (${c.id})`);
     }
     if (c.special_mechanism != null && !MECHANISM_KEYS.includes(c.special_mechanism)) {
       throw new Error(`unknown special mechanism: ${c.special_mechanism} (${c.id})`);
+    }
+    // release_at 가드: 파싱 가능 + 반드시 타임존 오프셋 포함(한국 기준이면 +09:00).
+    // 오프셋이 없으면 보는 사람 로컬 시간으로 해석돼 지역마다 다른 시각에 열리는 버그가 생긴다.
+    if (c.release_at != null) {
+      if (typeof c.release_at !== 'string' || Number.isNaN(new Date(c.release_at).getTime())) {
+        throw new Error(`invalid release_at (파싱 불가): ${c.release_at} (${c.id})`);
+      }
+      if (!hasTimezoneOffset(c.release_at)) {
+        throw new Error(`release_at에 타임존 오프셋이 없습니다. 한국 기준이면 '+09:00'을 붙이세요 (예: "2026-07-11T11:00:00+09:00"): ${c.release_at} (${c.id})`);
+      }
     }
     // 무결성: 스킬노드 버프는 min_ascension(돌파 요구치, 0 포함)과 target(self 포함)을 반드시 명시한다
     (c.skill_node as any[]).forEach((b) => {

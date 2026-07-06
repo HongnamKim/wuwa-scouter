@@ -42,7 +42,7 @@ describe('loadData', () => {
   });
 
   it('무결성: 모든 스킬노드 버프가 min_ascension(숫자) + target(self 포함)을 명시한다', () => {
-    const targets = ['self', 'party', 'next_character', 'specific_character'];
+    const targets = ['self', 'party', 'next_character', 'specific_character', 'party_except_self'];
     for (const c of loadCharacters()) {
       for (const b of c.skill_node) {
         const where = `${c.id} / ${b.label ?? b.note ?? b.type}`;

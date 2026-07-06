@@ -55,7 +55,7 @@ describe('시그리카 공효→에코 전환 메커니즘', () => {
   it('크크작 모드 옵션에 공효 모드가 포함되고 기본값이 공효 모드', () => {
     const opts = threeCoModeOptions(sigrikaCtx(0));
     expect(opts.map((o) => o.value)).toContain('er_gong');
-    expect(optimalThreeCoModeKkjak({ ...sigrikaCtx(0), costLayout: '43311' }).startsWith('er_')).toBe(true);
+    expect(optimalThreeCoModeKkjak({ ...sigrikaCtx(0), costLayout: '43311' })!.startsWith('er_')).toBe(true);
   });
 });
 

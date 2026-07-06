@@ -11,6 +11,8 @@ import {
 } from './state/store';
 import { loadCharacters } from './engine/loadData';
 import { freeTwoPieceSlots } from './engine/echoSlots';
+import { costsOf } from './engine/costLayout';
+import { isLocked } from './engine/release';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
@@ -71,7 +73,7 @@ function ListScreen() {
 function AnalysisRoute() {
   const { id } = useParams();
   const character = loadCharacters().find((c) => c.id === id);
-  if (!character) return <Navigate to="/list" replace />;
+  if (!character || isLocked(character)) return <Navigate to="/list" replace />;
   return <AnalysisScreen key={character.id} character={character} />;
 }
 
@@ -94,7 +96,7 @@ function AnalysisScreen({ character }: { character: Character }) {
       <div className="char-select-row">
         <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
           <Dropdown value={character.id}
-            options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
+            options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''), image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c) }))}
             onChange={(cid) => navigate(`/analysis/${cid}`)} />
         </label>
       </div>
@@ -110,7 +112,7 @@ function AnalysisScreen({ character }: { character: Character }) {
           <div className="top-reco">
             <h2>메인 조합 추천</h2>
             <MainReco state={state} />
-            {freeTwoPieceSlots(state.echoSets) > 0 && (
+            {freeTwoPieceSlots(state.echoSets, state.costLayout ? costsOf(state.costLayout).length : 5) > 0 && (
               <>
                 <h3 style={{ marginTop: 12 }}>보조 2세트 효과 추천</h3>
                 <TwoPieceReco state={state} />
@@ -186,7 +188,7 @@ function AnalysisScreen({ character }: { character: Character }) {
 function CompareRoute() {
   const { id } = useParams();
   const character = loadCharacters().find((c) => c.id === id);
-  if (!character) return <Navigate to="/list" replace />;
+  if (!character || isLocked(character)) return <Navigate to="/list" replace />;
   return <CompareScreen key={character.id} character={character} />;
 }
 

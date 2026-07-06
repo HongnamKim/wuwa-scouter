@@ -6,6 +6,7 @@ import { computeEnergyRegen } from '../engine/build';
 import { energyScaleValue } from '../engine/mechanisms';
 import { optimalTwoPiecePicks } from '../engine/theory';
 import { freeTwoPieceSlots, defaultSlots, slotsFrom } from '../engine/echoSlots';
+import { costsOf } from '../engine/costLayout';
 import type { CostLayout } from '../types/domain';
 
 /**
@@ -94,11 +95,14 @@ export interface AppState extends Omit<CalcContext, 'weapon' | 'mainEcho' | 'cos
   costLayout: CostLayout | null;
 }
 
-/** 무기·화음세트·메인에코·코스트가 모두 설정됐을 때만 계산용 CalcContext 반환. 미완이면 null. */
+// 메인에코 미선택(미공개 등) 시 대체할 빈 에코 — 메인에코 버프 기여 0으로 계산 가능하게.
+const EMPTY_MAIN_ECHO: MainSlotEcho = { id: '', name: '(없음)', buffs: [] };
+
+/** 무기·화음세트·코스트가 설정되면 계산용 CalcContext 반환(메인에코는 없어도 됨 — 빈 에코로 대체). 미완이면 null. */
 export function analysisContext(s: AppState, includeParty = true): CalcContext | null {
-  if (!s.weapon || !s.mainEcho || !s.costLayout || s.echoSets.length === 0 || s.slots.length === 0) return null;
+  if (!s.weapon || !s.costLayout || s.echoSets.length === 0 || s.slots.length === 0) return null;
   return {
-    ...s, weapon: s.weapon, mainEcho: s.mainEcho, costLayout: s.costLayout,
+    ...s, weapon: s.weapon, mainEcho: s.mainEcho ?? EMPTY_MAIN_ECHO, costLayout: s.costLayout,
     // includeParty=false: 파티원 빌드 해석 시 재귀/무한루프 방지용(파티원의 파티는 다시 풀지 않음)
     partyProvidedBuffs: includeParty ? resolvePartyProvidedBuffs(s.partyMembers, s.character.id) : [],
   };
@@ -110,20 +114,20 @@ function loadMemberContext(character: Character): CalcContext | null {
   return saved ? analysisContext(saved, false) : null;
 }
 
-/** 착용한 세트들의 메인슬롯 에코를 id 기준으로 합친 목록 */
+/** 착용한 세트들의 메인슬롯 에코를 id 기준으로 합친 목록. 미공개(unreleased) 에코는 제외. */
 export function combinedMainEchoes(echoSets: EchoSet[]): MainSlotEcho[] {
   const seen = new Set<string>();
   const out: MainSlotEcho[] = [];
   for (const s of echoSets) {
     for (const e of s.main_slot_echoes) {
-      if (!seen.has(e.id)) { seen.add(e.id); out.push(e); }
+      if (!e.unreleased && !seen.has(e.id)) { seen.add(e.id); out.push(e); }
     }
   }
   return out;
 }
 
-/** 합쳐진 메인슬롯 에코 중 캐릭터 피해유형에 맞는 패시브를 가진 것(없으면 첫 번째) */
-export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlotEcho {
+/** 합쳐진 메인슬롯 에코 중 캐릭터 피해유형에 맞는 패시브를 가진 것(없으면 첫 번째). 없으면 null. */
+export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlotEcho | null {
   const echoes = combinedMainEchoes(echoSets);
   const rec = character.recommended_main_echo ?? [];
   const recMatch = echoes.find((e) => rec.includes(e.id));
@@ -133,7 +137,7 @@ export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlo
     const match = echoes.find((e) => e.buffs.some((b) => b.type === want));
     if (match) return match;
   }
-  return echoes[0];
+  return echoes[0] ?? null;
 }
 
 /** 목록 정렬 = 출시 시간순. 기본(내림차순)=버전 desc + 같은 버전 내 후반→전반, 오름차순=버전 asc + 전반→후반.
@@ -155,7 +159,11 @@ export function charactersInListOrder(ascending = false): Character[] {
 export function defaultStateForCharacter(character: Character): AppState {
   const weapons = loadWeapons();
   const sets = loadEchoSets();
-  const weaponId = character.signature_weapon ?? character.recommended_weapons[0] ?? null;
+  // 전용·추천 무기 중 공개된(미공개 아님) 첫 번째. 없거나 모두 미공개면 직검 캐릭터는 '천년의 회류'(emerald_of_genesis) 기본값.
+  const released = (id: string) => { const w = weapons.find((x) => x.id === id); return !!w && !w.unreleased; };
+  const candidates = [character.signature_weapon, ...character.recommended_weapons].filter((id): id is string => !!id);
+  let weaponId = candidates.find(released) ?? null;
+  if (!weaponId && character.weapon_type === 'sword') weaponId = 'emerald_of_genesis';
   const weapon = weaponId ? (weapons.find((w) => w.id === weaponId) ?? null) : null;
   const recSets = character.recommended_echo_sets
     .map((id) => sets.find((s) => s.id === id))
@@ -309,7 +317,7 @@ export function loadCharacterState(character: Character): AppState | null {
     // 자유 2세트 효과: 저장값이 유효하면 사용, 아니면(구버전/누락) 계산 가능할 때만 최적 조합으로 보정
     const pool = loadTwoPieceEffects();
     const saved = s.twoPiecePicks;
-    const twoPieceSlotCount = freeTwoPieceSlots(echoSets);
+    const twoPieceSlotCount = freeTwoPieceSlots(echoSets, s.costLayout ? costsOf(s.costLayout).length : 5);
     const valid = Array.isArray(saved) && saved.length === twoPieceSlotCount
       && saved.every((id) => pool.some((p) => p.id === id));
     const ctx = analysisContext(state, false); // twoPiece 최적화엔 파티 버프 불필요 + 재귀 회피

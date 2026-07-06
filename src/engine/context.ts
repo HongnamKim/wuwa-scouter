@@ -35,7 +35,7 @@ export interface CalcContext {
   mainEcho: MainSlotEcho;
   echoSets: EchoSet[]; // 동시에 여러 세트 착용 가능(최대 3)
   costLayout: CostLayout;
-  slots: EchoSlot[]; // 길이 5, 코스트 멀티셋 = COST_LAYOUTS[costLayout]
+  slots: EchoSlot[]; // 길이 = 코스트 개수(가변, 1~5), 코스트 멀티셋 = costsOf(costLayout)
   twoPiecePicks?: string[];       // 자유 2세트 효과 선택(풀 id). 길이 = 선택 세트에서 파생된 자유 슬롯 수. 0이면 빈 배열/미지정
   conditionalToggles: Record<string, boolean>;
   manualBuffs: ManualBuff[];

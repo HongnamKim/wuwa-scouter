@@ -5,7 +5,7 @@ import type { CalcContext } from '../engine/context';
 import type { StatKey } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput, computeEnergyRegen } from '../engine/build';
-import { theoryBest, kkjakPerf, optimalThreeCoModeKkjak, threeCoModeOptions, energyRegenLines, ThreeCoMode } from '../engine/theory';
+import { theoryBest, kkjakPerf, kkjakReferencePerf, optimalThreeCoModeKkjak, threeCoModeOptions, hasNamedModes, energyRegenLines, ThreeCoMode } from '../engine/theory';
 import { effectiveSubstatsOf } from '../engine/mode';
 import { Dropdown } from './Dropdown';
 
@@ -63,12 +63,20 @@ function RecordScore({ ctx }: { ctx: CalcContext | null }) {
 }
 
 function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
-  const [mode, setMode] = useState<ThreeCoMode>(() => (ctx ? optimalThreeCoModeKkjak(ctx) : 'soksok'));
+  const [mode, setMode] = useState<ThreeCoMode | null>(null);
+
+  const named = ctx ? hasNamedModes(ctx) : false;
+  // 현재 레이아웃에서 유효한 명명 모드(레이아웃 변경 시 스테일 방지). 없거나 일반형이면 null → 자동 기준.
+  const opts = ctx && named ? threeCoModeOptions(ctx) : [];
+  const effMode: ThreeCoMode | null = named
+    ? (mode && opts.some((o) => o.value === mode) ? mode : (ctx ? optimalThreeCoModeKkjak(ctx) : null))
+    : null;
 
   const hasSub = hasAnySub(ctx);
   const mine = ctx ? computePerf(buildPerfInput(ctx)) : null;
   const best = ctx ? theoryBest(ctx) : null;
-  const kk = ctx ? kkjakPerf(ctx, mode) : null;
+  // 명명 레이아웃은 선택 모드 기준, 일반형(직접 입력 등)은 전수 최고 기준.
+  const kk = ctx ? (effMode ? kkjakPerf(ctx, effMode) : kkjakReferencePerf(ctx)) : null;
 
   // 딜 상승 수치: 설정+부옵 있어야 계산 가능
   const dealText = ctx && hasSub && mine != null ? mine.toFixed(0) : '-';
@@ -107,9 +115,11 @@ function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
         </div>
         <div>
           <div className="lbl" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>크크작 대비
-            <Dropdown className="dd-narrow" value={mode} disabled={!ctx}
-              options={ctx ? threeCoModeOptions(ctx) : [{ value: 'soksok', label: '속속' }]}
-              onChange={(v) => setMode(v as ThreeCoMode)} />
+            {named && opts.length > 0 && (
+              <Dropdown className="dd-narrow" value={effMode ?? opts[0].value} disabled={!ctx}
+                options={opts}
+                onChange={(v) => setMode(v as ThreeCoMode)} />
+            )}
           </div>
           <div style={BIG}>{pct(kk)}</div>
           {kk != null && <div className="muted">{kk.toFixed(0)}</div>}

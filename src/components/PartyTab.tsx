@@ -5,6 +5,7 @@ import { memberProvidedBuffsFor } from '../state/store';
 import type { PartyMember } from '../engine/context';
 import type { Buff } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
+import { isReleased } from '../engine/release';
 import { ConfirmModal } from './ConfirmModal';
 
 const valText = (b: Buff) => (b.type.startsWith('flat') ? String(b.value) : `${+(b.value * 100).toFixed(1)}%`);
@@ -55,7 +56,7 @@ export function PartyTab({ state, setState, simple }: Props) {
 
   // 선택 가능: 현재 캐릭터·이미 편성된 파티원 제외, 버전 내림차순 → 이름순
   const available = chars
-    .filter((c) => c.id !== state.character.id && !members.some((m) => m.id === c.id))
+    .filter((c) => c.id !== state.character.id && !members.some((m) => m.id === c.id) && isReleased(c))
     .sort((a, b) => b.version - a.version || a.name.localeCompare(b.name));
 
   return (

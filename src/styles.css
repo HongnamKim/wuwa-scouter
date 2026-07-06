@@ -61,6 +61,10 @@ h3 { font-size: 0.95rem; margin: 16px 0 4px; }
 .card-element-icon { width: 33px; height: 33px; object-fit: contain; }
 .card-element-text { display: none; font-size: 0.72rem; font-weight: bold; color: #555; background: #eef1f5; border-radius: 4px; padding: 1px 5px; } /* 아이콘 없을 때 폴백 */
 .char-card:hover { border-color: #2563eb; box-shadow: 0 2px 10px rgba(0,0,0,0.12); }
+.char-card.locked { cursor: default; opacity: 0.7; background: #f5f6f8; }
+.char-card.locked:hover { border-color: #ccc; box-shadow: none; }
+.char-card.locked .card-image { filter: grayscale(100%); opacity: 0.45; }
+.card-score.card-release { font-size: 1rem; color: #c47f17; }
 .card-image { width: 100%; height: 160px; object-fit: contain; }
 .card-image.not-recorded { filter: grayscale(100%); opacity: 0.6; }
 .card-name { font-weight: bold; margin-top: 6px; }

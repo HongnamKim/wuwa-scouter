@@ -42,6 +42,7 @@ export interface MainSlotEcho {
   id: string;
   name: string;
   buffs: Buff[];
+  unreleased?: boolean; // true면 미공개(공식 정보 전) — 선택 드롭다운에서 제외. 데이터는 저장, 플래그 제거 시 노출
 }
 
 export interface Character {
@@ -49,6 +50,7 @@ export interface Character {
   name: string;
   version: number; // 출시 버전 (예: 히유키 = 3.3)
   version_phase?: '전반' | '후반'; // 해당 버전(패치)의 전반/후반. 정렬: 버전 → 전반/후반 → 이름
+  release_at?: string; // 출시 일시(ISO, KST 포함 권장 예 "2026-07-11T11:00:00+09:00"). 이 시각 전이면 잠금(목록엔 보이나 접근·선택 불가). 미지정=이미 출시
   element: Element;
   weapon_type: WeaponType; // 착용 무기 타입
   cost_layout: CostLayout; // 에코 코스트 구성 기본값 (예: '43311'). 신규 진입 시 기본 세팅에 사용
@@ -85,6 +87,7 @@ export interface Weapon {
   weapon_type: WeaponType;
   base_stats: { attack: number } & Partial<Record<StatKey, number>>;
   buffs: Buff[];
+  unreleased?: boolean; // true면 미공개(공식 정보 전) — 선택 드롭다운에서 제외. 데이터는 저장, 플래그 제거 시 노출
 }
 
 export interface EchoSet {

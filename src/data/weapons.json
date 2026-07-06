@@ -430,5 +430,17 @@
    "buffs": [
     { "type": "healing_bonus", "value": 0.16, "always": false, "id": "weapon_abyss_heal", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "공명 해방 발동 시 치료 효과 보너스 +{v} (15초)", "short": "치료 효과 +{v}", "note": "치료, 딜 무관", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
+  },
+  {
+   "id": "azure_oath",
+   "name": "아득히 푸른 하늘",
+   "weapon_type": "sword",
+   "unreleased": true,
+   "base_stats": { "attack": 588, "critical_rate": 0.243 },
+   "buffs": [
+    { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "전체", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성 피해)", "record_only": false, "absolute_score_only": false },
+    { "type": "heavy_attack_amplify", "value": 0.36, "always": false, "id": "weapon_azure_heavy", "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "label": "「암흑 효과」 추가 시 강공격 피해 +{v} 부스트 (8초)", "short": "강공격 피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+    { "type": "defense_ignore", "value": 0.12, "always": false, "id": "weapon_azure_defign", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "「암흑 효과」 추가 시 강공격이 목표 방어력 {v} 무시 (8초)", "short": "강공격 방어력 {v} 무시", "record_only": false, "absolute_score_only": true, "default_on": true }
+   ]
   }
 ]
