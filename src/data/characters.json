@@ -501,7 +501,7 @@
     "recommended_echo_sets": ["song_of_feathered_trace"],
     "recommended_main_echo": [],
     "recommended_weapons": ["azure_oath"],
-    "signature_weapon": null,
+    "signature_weapon": "azure_oath",
     "skill_node": [
       { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드(크리): 기본공격·변주 트리 크리 1.2%+2.8% ×2트리 = 8%", "record_only": false, "absolute_score_only": false },
       { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드(공격): 공명스킬·공명해방 트리 공격 1.8%+4.2% ×2트리 = 12%", "record_only": false, "absolute_score_only": false },
