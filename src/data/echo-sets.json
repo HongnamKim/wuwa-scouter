@@ -218,8 +218,8 @@
     { "type": "attack_percent", "value": 0, "set_pieces": 5, "always": false, "element": "응결", "target": "party", "id": "set_feather_frost_atk", "energy_scale": { "per_percent": 0.001, "base": 0, "cap": 0.25 }, "label": "「중명조의 깃털」(서리 효과 추가 시): 공명 효율 1%당 파티 공격력 +0.1% (최대 25%, 10초, 응결)", "short": "파티 공격력↑ (공효 스케일)", "record_only": false, "absolute_score_only": false, "default_on": true }
    ],
    "main_slot_echoes": [
-    { "id": "song_feathered_echo_xuanling", "name": "알수없음", "unreleased": true, "buffs": [
-     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "인멸", "label": "자신의 인멸 피해 보너스 12% 증가", "short": "인멸피해 +12%", "note": "메인슬롯 패시브 (양양 추정, 미공개)", "record_only": false, "absolute_score_only": false },
+    { "id": "song_feathered_echo_xuanling", "name": "천괴중루", "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "인멸", "label": "자신의 인멸 피해 보너스 12% 증가", "short": "인멸피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
      { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
     ] },
     { "id": "song_feathered_echo_susu", "name": "알수없음", "unreleased": true, "buffs": [

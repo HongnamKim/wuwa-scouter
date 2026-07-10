@@ -499,7 +499,7 @@
     "default_required_energy_regen": 125,
     "special_mechanism": null,
     "recommended_echo_sets": ["song_of_feathered_trace"],
-    "recommended_main_echo": [],
+    "recommended_main_echo": ["song_feathered_echo_xuanling"],
     "recommended_weapons": ["azure_oath"],
     "signature_weapon": "azure_oath",
     "skill_node": [
