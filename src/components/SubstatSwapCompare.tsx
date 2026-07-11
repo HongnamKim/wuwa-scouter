@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import type { CalcContext, SubstatLine } from '../engine/context';
+import type { CalcContext, SubstatLine, EchoSlot } from '../engine/context';
+import { ConfirmModal } from './ConfirmModal';
 import type { StatKey, DamageBonusType, ScaleStat } from '../types/domain';
 import { buildPerfInput, sumEffectiveTotal, computeEnergyRegen } from '../engine/build';
 import { computePerf } from '../engine/perf';
@@ -35,8 +36,17 @@ function ChangeRow({ label, a, b, fmt }: { label: string; a: number; b: number; 
  */
 const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'];
 
-export function SubstatSwapCompare({ base }: { base: CalcContext }) {
+// 부옵을 '집합'으로 비교(순서 무관). 완성된 줄(type+value)만 비교, 빈 줄 무시.
+const subKey = (l: SubstatLine): string | null => (l.type && l.value != null ? `${l.type}|${l.value}` : null);
+function sameSubs(a: SubstatLine[], b: SubstatLine[]): boolean {
+  const ka = a.map(subKey).filter((k): k is string => k != null).sort();
+  const kb = b.map(subKey).filter((k): k is string => k != null).sort();
+  return ka.length === kb.length && ka.every((k, i) => k === kb[i]);
+}
+
+export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApply?: (slots: EchoSlot[]) => void }) {
   const [active, setActive] = useState(0); // 편집 중인 에코 탭
+  const [confirmApply, setConfirmApply] = useState(false); // 내 에코로 적용 확인
   // 슬롯별 교체안(메인/부옵) — 여러 에코를 동시에 교체 비교
   const [edited, setEdited] = useState<{ main: StatKey | ''; substats: SubstatLine[] }[]>(
     () => base.slots.map((s) => ({ main: s.main, substats: s.substats })),
@@ -45,8 +55,13 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
   const updateSub = (li: number, patch: Partial<SubstatLine>) =>
     setEdited((e) => e.map((x, i) => (i === active ? { ...x, substats: x.substats.map((l, idx) => (idx === li ? { ...l, ...patch } : l)) } : x)));
   const resetActive = () => setEdited((e) => e.map((x, i) => (i === active ? { main: base.slots[active].main, substats: base.slots[active].substats } : x)));
+  // 비우기: 이 에코를 통째로 비운 상태로 교체(메인·부옵 없음 → 기여 0). "이 에코를 뺐을 때" 비교용.
+  const emptyActive = () => setEdited((e) => e.map((x, i) => (i === active ? { main: '', substats: x.substats.map((): SubstatLine => ({ type: '', value: null })) } : x)));
+  const activeEmpty = edited[active].main === '' && edited[active].substats.every((l) => !l.type && l.value == null);
   const activeChanged = base.slots[active].main !== edited[active].main
-    || JSON.stringify(base.slots[active].substats) !== JSON.stringify(edited[active].substats);
+    || !sameSubs(base.slots[active].substats, edited[active].substats);
+  // 하나라도 교체안이 원본과 다르면 '내 에코로 적용' 활성
+  const anyChanged = base.slots.some((s, i) => s.main !== edited[i].main || !sameSubs(s.substats, edited[i].substats));
 
   const cost = base.slots[active].cost;
 
@@ -91,7 +106,7 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
     <div>
       <div className="echo-tabs" style={{ margin: '8px 0' }}>
         {base.slots.map((s, i) => {
-          const changed = s.main !== edited[i].main || JSON.stringify(s.substats) !== JSON.stringify(edited[i].substats);
+          const changed = s.main !== edited[i].main || !sameSubs(s.substats, edited[i].substats);
           return (
             <button key={i} type="button" className={i === active ? 'echo-tab active' : 'echo-tab'} onClick={() => setActive(i)}>
               <span>에코 {ROMAN[i]}{changed ? ' *' : ''}</span>
@@ -113,6 +128,7 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
           <div className="swap-echo-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             교체할 에코
             <button type="button" disabled={!activeChanged} onClick={resetActive} style={{ fontSize: '0.78rem', padding: '2px 8px' }}>원래대로</button>
+            <button type="button" disabled={activeEmpty} onClick={emptyActive} style={{ fontSize: '0.78rem', padding: '2px 8px' }}>비우기</button>
           </div>
           <EchoEditor cost={cost} main={edited[active].main} subs={edited[active].substats} optionList={optionList} matrixCost={base.character.matrix_cost} scaleStat={base.character.scale_stat} onMain={setMain} onSub={updateSub} orig={{ main: base.slots[active].main, subs: base.slots[active].substats }} />
         </div>
@@ -139,6 +155,14 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
         </div>
       </div>
 
+      {onApply && (
+        <div style={{ textAlign: 'center', margin: '4px 0 10px' }}>
+          <button type="button" className="save-btn" disabled={!anyChanged} onClick={() => setConfirmApply(true)}>
+            교체할 에코를 내 에코로 적용하기
+          </button>
+        </div>
+      )}
+
       <hr style={{ border: 'none', borderTop: '1px solid #ddd', margin: '12px 0' }} />
 
       {/* 스펙 변화(좌) · 유효옵 총합 변화(우) */}
@@ -164,6 +188,16 @@ export function SubstatSwapCompare({ base }: { base: CalcContext }) {
           })}
         </div>
       </div>
+
+      {confirmApply && (
+        <ConfirmModal
+          message="교체할 에코 구성을 저장된 빌드에 덮어씁니다. 계속하시겠습니까?"
+          confirmLabel="적용"
+          onConfirm={() => { onApply?.(comparedCtx.slots); setConfirmApply(false); }}
+          onCancel={() => setConfirmApply(false)}
+          onDismiss={() => setConfirmApply(false)}
+        />
+      )}
     </div>
   );
 }

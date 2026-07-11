@@ -60,6 +60,7 @@ export function memberProvidedBuffs(build: MemberBuild, char: Character): { key:
   ];
   return tagged
     .filter(({ buff: b }) => (b.target === 'party' || b.target === 'next_character' || b.target === 'specific_character' || b.target === 'party_except_self') && !b.record_only)
+    .filter(({ buff: b }) => !b.provider_element || b.provider_element === char.element) // 제공자 원소 게이트(브랜치 선택). 통과 후엔 수혜자 원소 무관
     .filter(({ buff: b }) => b.min_ascension == null || asc >= b.min_ascension)   // 돌파 게이트: 미달 버프 제외
     .filter(({ buff: b }) => !b.mode || b.mode === (build.selectedMode ?? char.modes?.[0]?.id))
     // 피해유형 게이트: 파티원(멤버)의 현재 모드 피해유형 기준 (예: 반주 분기는 공명해방 멤버에겐 미제공)
@@ -84,12 +85,16 @@ export function defaultBuffChecked(b: Buff, ascensionLevel: number): boolean {
 function isActive(b: Buff, ctx: CalcContext): boolean {
   // record_only(특정 스킬 계수/한정): 계산 완전 제외(기록용). absolute_score_only는 계산 포함(비율에선 자동 약분).
   if (b.record_only) return false;
+  // only_character: 지정 캐릭터가 착용할 때만 적용(예: 푸른 의지 파죽 2스택=구원 전용).
+  if (b.only_character && b.only_character !== ctx.character.id) return false;
   // specific_character: 지정 캐릭터를 볼 때만 적용(자기 데이터에 있는 경우). 다른 캐릭터엔 미적용.
   if (b.target === 'specific_character') { if (ctx.character.id !== b.target_character) return false; }
   // 단일 공명자 분석: 내게 적용되는 버프만(self/party). next_character 등은 제외
   else if (b.target && b.target !== 'self' && b.target !== 'party') return false;
   // element 게이트: 지정 원소가 캐릭터와 다르면 제외. '전체'(전체 속성피해)는 게이트 없이 통과.
   if (b.element && b.element !== '전체' && b.element !== ctx.character.element) return false;
+  // provider_element 게이트: 착용자(자기 분석 시 나) 원소 조건. 파티 제공 버프는 resolve 단계에서 제공자 기준으로 검증되고 이 필드가 제거되므로 수혜자에겐 재적용되지 않음.
+  if (b.provider_element && b.provider_element !== ctx.character.element) return false;
   // 피해유형 게이트(예: 「강설」→공명해방 크리 분기 / 반주 분기). 모드 전환 캐릭터는 현재 모드 피해유형 기준
   const dbt = damageBonusTypeOf(ctx);
   if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;

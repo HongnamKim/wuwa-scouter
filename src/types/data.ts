@@ -9,10 +9,12 @@ export interface Buff {
   id?: string;            // 조건부 토글 식별자
   label?: string;         // 풀 표기(조건부 표시). {v}는 현재 수치로 치환
   short?: string;         // 간략 표기. JSON에서 직접 관리. 미지정 시 label로 폴백. {v} 치환 지원
-  element?: BuffElement;  // 지정 시 캐릭터 element 일치할 때만. '전체'=전체 속성피해(게이트 없이 모든 원소에 적용)
+  element?: BuffElement;  // 지정 시 캐릭터 element 일치할 때만. '전체'=전체 속성피해(게이트 없이 모든 원소에 적용). 파티 제공 시 수혜자 원소로 재검사됨(예: 인멸 방무=인멸 딜러용)
+  provider_element?: BuffElement; // 착용자(제공자) 원소 게이트. element와 달리 파티 제공 시 수혜자 원소는 무관(브랜치 선택·제공자 조건용, 예: 깃털 5세트 응결분기=착용자만 응결이면 파티 전체 공격력↑)
   set_pieces?: SetPieces; // 에코세트 버프 전용 (1|2|3|5)
   target?: BuffTarget;    // 수혜 대상. 미지정 시 self. next_character는 내 계산에서 제외
   target_character?: string; // target이 'specific_character'일 때 수혜 캐릭터 id. 그 캐릭터를 볼 때만 표시·활성
+  only_character?: string; // 지정 시 착용 캐릭터가 이 id일 때만 표시·활성(예: 푸른 의지 파죽 2스택=구원만). 그 외 캐릭터엔 미노출·미적용
   min_ascension?: number; // 돌파(공명 체인) 조건. 지정 시 ascensionLevel >= 값일 때만 활성/노출 (예: 히유키 6돌 2스택)
   refinement_values?: number[]; // 무기 버프 전용. 재련(공진) 1~5별 수치 5개. 지정 시 refinement_values[공진-1]로 value 대체
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
@@ -51,6 +53,8 @@ export interface Character {
   version: number; // 출시 버전 (예: 히유키 = 3.3)
   version_phase?: '전반' | '후반'; // 해당 버전(패치)의 전반/후반. 정렬: 버전 → 전반/후반 → 이름
   release_at?: string; // 출시 일시(ISO, KST 포함 권장 예 "2026-07-11T11:00:00+09:00"). 이 시각 전이면 잠금(목록엔 보이나 접근·선택 불가). 미지정=이미 출시
+  unreleased?: boolean; // true면 미출시(잠금). release_at처럼 목록엔 보이나 접근·선택·파티편성 불가. 출시일 미정일 때 release_at 대신 사용
+  notice?: string; // 주의 문구(비공식/유출 정보 등). 지정 시 분석 화면 상단 배너 + 목록 카드에 ⚠ 표시. 잠금과 무관(접근은 가능)
   element: Element;
   weapon_type: WeaponType; // 착용 무기 타입
   cost_layout: CostLayout; // 에코 코스트 구성 기본값 (예: '43311'). 신규 진입 시 기본 세팅에 사용

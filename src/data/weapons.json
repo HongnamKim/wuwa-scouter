@@ -210,7 +210,8 @@
     "base_stats": { "attack": 587, "critical_rate": 0.243 },
     "buffs": [
       { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
-      { "type": "heavy_attack_bonus", "value": 0.60, "always": false, "id": "weapon_pajuk_stack", "refinement_values": [0.60, 0.75, 0.90, 1.05, 1.20], "label": "「파죽」 2스택 시 강공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_bonus", "value": 0.30, "always": false, "id": "weapon_pajuk_1", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "「파죽」 1스택: 강공격 피해 +{v} (12초)", "short": "파죽 1스택 강공격 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "heavy_attack_bonus", "value": 0.30, "always": false, "id": "weapon_pajuk_2", "only_character": "qiuyuan", "refinement_values": [0.30, 0.375, 0.45, 0.525, 0.60], "label": "「파죽」 2스택: 강공격 피해 +{v} (12초, 구원 전용)", "short": "파죽 2스택 강공격 +{v}", "note": "현재 구원만 2스택 가능", "record_only": false, "absolute_score_only": false, "default_on": true },
       { "type": "echo_skill_bonus", "value": 0.20, "always": false, "target": "party", "id": "weapon_party_echo", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주 스킬 발동 시 파티 에코 어빌리티피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
@@ -440,6 +441,17 @@
     { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "전체", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성 피해)", "record_only": false, "absolute_score_only": false },
     { "type": "heavy_attack_amplify", "value": 0.36, "always": false, "id": "weapon_azure_heavy", "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "label": "「암흑 효과」 추가 시 강공격 피해 +{v} 부스트 (8초)", "short": "강공격 피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
     { "type": "defense_ignore", "value": 0.12, "always": false, "id": "weapon_azure_defign", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "「암흑 효과」 추가 시 강공격이 목표 방어력 {v} 무시 (8초)", "short": "강공격 방어력 {v} 무시", "record_only": false, "absolute_score_only": true, "default_on": true }
+   ]
+  },
+  {
+   "id": "firstlights_herald",
+   "name": "노을에 깃든 이슬",
+   "weapon_type": "rectifier",
+   "unreleased": true,
+   "base_stats": { "attack": 412, "energy_regen": 0.77 },
+   "buffs": [
+    { "type": "hp_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (HP)", "record_only": false, "absolute_score_only": false },
+    { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "weapon_firstlights_party_atk", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "「잔잔한 비취빛」 보유 캐릭터 공격력 +{v} (변주/공명 스킬로 부여, 30초)", "short": "파티 공격력 +{v}", "note": "온필드 시 파티에 부여, 오프필드 시 물들은 하얀 눈+생생한 잔물결 동시 보유로 강제 적용. 순효과=파티 공격력 증가", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   }
 ]

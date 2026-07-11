@@ -1,17 +1,32 @@
 import type { StatKey, Cost, CostLayout } from '../types/domain';
+import type { Buff } from '../types/data';
 import type { CalcContext, MainPrimaryPick, SubstatLine } from './context';
 import { buildPerfInput, sumEffectiveSubstats } from './build';
 import { computePerf } from './perf';
-import { MAIN_PRIMARY, substatMaxStage, substatFourthFromBottom } from './constants';
+import { MAIN_PRIMARY, substatMaxStage } from './constants';
 import { costsOf } from './costLayout';
 import { hasEnergyConversion } from './mechanisms';
 import { loadTwoPieceEffects } from './loadData';
 import { freeTwoPieceSlots, slotsFrom } from './echoSlots';
 import { effectiveSubstatsOf } from './mode';
 
-// 크크작 시 평균적으로 따라오는 공명효율(%). 30만건 시뮬레이션 평균(약 1.37줄 ≈ 13.1%).
-// ER 전환형 캐릭터의 크크작 분모에만 반영한다.
-const KKJAK_ENERGY_REGEN = 13.1;
+// 크크작 부옵 기대 분포 (공식 확률 기반 30만 회 시뮬). 총 25줄 = 에코 5개 × 5줄.
+// 크리·크피는 각 5줄 확정(평균 합). 나머지 15줄은 아래 11종에 균등(각 ~1.36줄, 평균 합).
+const KKJAK_CRIT = 37.65;   // 크리티컬 5줄 평균 합(줄당 7.53%)
+const KKJAK_CRIT_DMG = 75.30; // 크리티컬 피해 5줄 평균 합(줄당 15.06%)
+const KKJAK_BYPRODUCT: { type: StatKey; value: number }[] = [
+  { type: 'attack_percent', value: 11.68 },
+  { type: 'flat_attack', value: 56.4 },
+  { type: 'energy_regen', value: 12.48 },
+  { type: 'resonance_liberation_bonus', value: 11.68 },
+  { type: 'basic_attack_bonus', value: 11.68 },
+  { type: 'heavy_attack_bonus', value: 11.68 },
+  { type: 'resonance_skill_bonus', value: 11.68 },
+  { type: 'hp_percent', value: 11.66 },
+  { type: 'flat_hp', value: 584 },
+  { type: 'defense_percent', value: 14.77 },
+  { type: 'flat_defense', value: 69.9 },
+];
 
 export type ThreeCoMode =
   | 'soksok' | 'sokgong' | 'gonggong' | 'er_sok' | 'er_gong' | 'er_er'  // 43311: 3코 가변
@@ -125,8 +140,32 @@ export function energyRegenLines(ctx: CalcContext): number {
   if (ctx.character.energy_regen_mode !== 'premise') return 0;
   const req = ctx.requiredEnergyRegen;
   if (req == null) return 0;
-  const echoER = req >= 100 ? req - 100 : req;
+  // 필요 공효 중 에코로 채울 몫에서, 부옵이 아닌 '항상 얻는 공효'(세트 2세트·무기·메인에코)를 먼저 차감.
+  const echoER = (req >= 100 ? req - 100 : req) - structuralEnergyRegenPercent(ctx);
   return Math.min(totalSubstatLines(ctx), Math.max(0, Math.ceil(echoER / substatMaxStage('energy_regen'))));
+}
+
+/** 부옵을 제외하고 조건 없이(always) 얻는 공명효율(%). 세트 2세트·무기 베이스/패시브·메인에코 등.
+ * 조건부(스킬 발동 등) 공효는 제외 — 전제형 최소 부옵 줄 수 계산 시 확실히 보장되는 공효만 차감한다. */
+function structuralEnergyRegenPercent(ctx: CalcContext): number {
+  const ref = ctx.refinementLevel ?? 1;
+  const echoCount = costsOf(ctx.costLayout).length;
+  const uniqueSets = ctx.echoSets.filter((s, i) => ctx.echoSets.findIndex((x) => x.id === s.id) === i);
+  const sources: Buff[] = [
+    ...ctx.character.skill_node,
+    ...ctx.mainEcho.buffs,
+    ...ctx.weapon.buffs.map((b) => ({ ...b, value: b.refinement_values?.[ref - 1] ?? b.value })),
+    ...uniqueSets.flatMap((s) => s.buffs),
+  ];
+  let er = (ctx.weapon.base_stats.energy_regen ?? 0) * 100; // 무기 베이스 공효(%)
+  for (const b of sources) {
+    if (b.type !== 'energy_regen' || !b.always) continue;
+    if (b.set_pieces != null && b.set_pieces > echoCount) continue;        // 세트 조각 수 미충족
+    if (b.target && b.target !== 'self' && b.target !== 'party') continue; // 남에게만 주는 버프 제외
+    if (b.element && b.element !== '전체' && b.element !== ctx.character.element) continue;
+    er += b.value * 100;
+  }
+  return er;
 }
 
 /** 부옵 총 줄 수 예산 = 코스트 개수 × 5 (에코 1개당 부옵 5줄). 가변 슬롯 대응. */
@@ -250,17 +289,17 @@ function bestPerfCoOptTwoPiece(ctx: CalcContext, picks: MainPrimaryPick[], perOn
 
 function kkjakSub(ctx: CalcContext): SubstatLine[][] {
   const count = costsOf(ctx.costLayout).length;
-  const crit = substatFourthFromBottom('critical_rate') * 5;
-  const cd = substatFourthFromBottom('critical_damage') * 5;
-  // ER 전환형은 크크작 시 따라오는 평균 공명효율(13.1%)을 분모에 반영
-  const erLine: SubstatLine[] = hasEnergyConversion(ctx.character.special_mechanism)
-    ? [{ type: 'energy_regen', value: KKJAK_ENERGY_REGEN }]
-    : [];
-  // 슬롯 개수만큼: 0=크리, 1=크피, 2=공효(전환형), 나머지 빈 슬롯. 5슬롯이면 기존과 동일.
-  const slots: SubstatLine[][] = Array.from({ length: count }, () => []);
-  if (count >= 1) slots[0] = [{ type: 'critical_rate', value: crit }];
-  if (count >= 2) slots[1] = [{ type: 'critical_damage', value: cd }];
-  if (count >= 3 && erLine.length) slots[2] = erLine;
+  const lines = count * 5;
+  // 크리·크피 각 5줄 확정. 나머지 15줄(부산물)은 에코 수에 비례 스케일(5에코=100%, 2에코=0%).
+  // 슬롯 배치는 계산에 무관(타입별 합산)하므로 전부 슬롯0에 넣는다. 관련 없는 부옵은 딜에 영향 없음.
+  const factor = Math.max(0, Math.min(1, (lines - 10) / 15));
+  const all: SubstatLine[] = [
+    { type: 'critical_rate', value: KKJAK_CRIT },
+    { type: 'critical_damage', value: KKJAK_CRIT_DMG },
+    ...(factor > 0 ? KKJAK_BYPRODUCT.map((s) => ({ type: s.type, value: s.value * factor })) : []),
+  ];
+  const slots: SubstatLine[][] = Array.from({ length: Math.max(1, count) }, () => []);
+  slots[0] = all;
   return slots;
 }
 

@@ -73,6 +73,20 @@ export function EchoEditor({ cost, main, subs, optionList, matrixCost = 1, scale
   orig?: { main: StatKey | ''; subs: SubstatLine[] }; // 지정 시 원본과 달라진 옵션 배경 강조
 }) {
   const mainChanged = !!orig && main !== orig.main;
+  // 원본 대비 부옵 변화: 위치가 아니라 '집합'으로 비교 — 순서만 바뀐 건 변화로 보지 않음.
+  const subKey = (l: SubstatLine): string | null => (l.type && l.value != null ? `${l.type}|${l.value}` : null);
+  const changedLine: boolean[] = (() => {
+    if (!orig) return subs.map(() => false);
+    const pool = new Map<string, number>();
+    for (const l of orig.subs) { const k = subKey(l); if (k) pool.set(k, (pool.get(k) ?? 0) + 1); }
+    return subs.map((l) => {
+      const k = subKey(l);
+      if (!k) return false;                              // 빈 줄은 강조 안 함
+      const n = pool.get(k) ?? 0;
+      if (n > 0) { pool.set(k, n - 1); return false; }   // 원본에 있던 값 → 변화 아님
+      return true;                                       // 원본 어디에도 없는 값 → 변화
+    });
+  })();
   const mainOptions: DropdownOption[] = cost == null
     ? [{ value: '', label: '-' }]
     : mainOptionsFor(cost, matrixCost, scaleStat).map((k) => ({ value: k, label: `${MAIN_LABEL[k] ?? SUB_LABEL[k] ?? k} (${MAIN_PRIMARY[cost][k]}%)` }));
@@ -94,8 +108,7 @@ export function EchoEditor({ cost, main, subs, optionList, matrixCost = 1, scale
         // 같은 에코 내 다른 줄에서 이미 고른 부옵은 제외(중복 선택 방지). 빈값·본인 현재값은 유지.
         const used = new Set(subs.filter((_, idx) => idx !== li).map((l) => l.type).filter(Boolean));
         const lineOptions = optionList.filter((o) => o.value === '' || o.value === line.type || !used.has(o.value as StatKey));
-        const o = orig?.subs[li];
-        const subChanged = !!orig && ((line.type || '') !== (o?.type || '') || (line.value ?? null) !== (o?.value ?? null));
+        const subChanged = changedLine[li];
         return (
           <div className="sub-row" key={li}>
             <Dropdown className={'dd-sub' + (subChanged ? ' dd-changed' : '')} value={line.type} readOnly={readOnly} options={lineOptions}

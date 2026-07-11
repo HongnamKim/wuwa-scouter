@@ -114,9 +114,16 @@ function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
           {best && <div className="muted">{best.perf.toFixed(0)}</div>}
         </div>
         <div>
-          <div className="lbl" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>크크작 대비
+          <div className="lbl" style={{ display: 'flex', alignItems: 'center' }}>크크작 대비
+            <span className="help">
+              <span className="help-icon">?</span>
+              <span className="help-tip">
+                크크작 = 크리 5줄·크피 5줄을 고정하고 나머지 부옵 15줄이 공식 확률대로 붙는 표준 빌드 기준선. 실제 파밍에서 흔히 나오는 현실적 대비 대상입니다.
+                {named && opts.length > 0 && <><br /><br />드롭다운은 분모의 메인 옵션 조합(속=속성피해, 공=공격%)을 선택합니다.</>}
+              </span>
+            </span>
             {named && opts.length > 0 && (
-              <Dropdown className="dd-narrow" value={effMode ?? opts[0].value} disabled={!ctx}
+              <Dropdown className="dd-tiny" value={effMode ?? opts[0].value} disabled={!ctx}
                 options={opts}
                 onChange={(v) => setMode(v as ThreeCoMode)} />
             )}

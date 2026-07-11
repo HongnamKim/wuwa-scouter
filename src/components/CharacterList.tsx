@@ -80,6 +80,7 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
             onError={(e) => { const t = e.currentTarget; t.style.display = 'none'; (t.nextElementSibling as HTMLElement).style.display = 'inline'; }} />
           <span className="card-element-text">{character.element}</span>
         </span>
+        {character.notice && <span className="card-notice" title={character.notice}>⚠</span>}
         <img className={recorded ? 'card-image' : 'card-image not-recorded'}
           src={`/characters/${character.id}.webp`} alt={character.name} onError={onImgError} />
         <div className="card-name">{character.name}</div>

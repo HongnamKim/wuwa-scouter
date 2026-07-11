@@ -4,6 +4,7 @@ import {
   useNavigate, useParams, useLocation, useBlocker,
 } from 'react-router-dom';
 import type { Character } from './types/data';
+import type { EchoSlot } from './engine/context';
 import {
   saveCharacterState, isStateSaved, hasSavedState, deleteCharacterState,
   buildStateForCharacter, defaultStateForCharacter, loadCharacterState, analysisContext, isRecordOnly, isUntouchedDefault,
@@ -100,6 +101,10 @@ function AnalysisScreen({ character }: { character: Character }) {
             onChange={(cid) => navigate(`/analysis/${cid}`)} />
         </label>
       </div>
+
+      {character.notice && (
+        <div className="notice-banner">⚠ {character.notice}</div>
+      )}
 
       <div className="top-row">
         <Selectors state={state} setState={setState} />
@@ -211,10 +216,19 @@ function AccordionSection({ title, open, onToggle, children, topBorder = true }:
 function CompareScreen({ character }: { character: Character }) {
   const navigate = useNavigate();
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
-  const saved = loadCharacterState(character);
+  const [saved, setSaved] = useState(() => loadCharacterState(character));
+  const [swapVer, setSwapVer] = useState(0); // 적용 후 교체 편집기 리셋용 key
   const base = saved ? analysisContext(saved) : null;
   const [openWeapon, setOpenWeapon] = useState(true); // 무기 비교: 기본 펼침
   const [openSwap, setOpenSwap] = useState(true);       // 에코 교체 비교: 기본 펼침
+  // 교체할 에코를 실제 저장 빌드에 반영(덮어쓰기) 후 기준 갱신·편집기 리셋
+  const applyEditedSlots = (slots: EchoSlot[]) => {
+    if (!saved) return;
+    const next = { ...saved, slots };
+    saveCharacterState(next);
+    setSaved(next);
+    setSwapVer((v) => v + 1);
+  };
 
   return (
     <>
@@ -236,7 +250,7 @@ function CompareScreen({ character }: { character: Character }) {
       ) : (
         <>
           <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)} topBorder={false}>
-            <SubstatSwapCompare base={base} />
+            <SubstatSwapCompare key={swapVer} base={base} onApply={applyEditedSlots} />
           </AccordionSection>
           <AccordionSection title="무기 비교" open={openWeapon} onToggle={() => setOpenWeapon((o) => !o)}>
             <WeaponCompare base={base} />

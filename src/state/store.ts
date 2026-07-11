@@ -59,7 +59,13 @@ function loadMemberBuild(character: Character): MemberBuild | null {
 
 /** 파티 탭 표시용: 이 파티원이 (내 저장 빌드 기준) 제공하는 버프 목록. */
 export function memberProvidedBuffsFor(character: Character) {
-  return memberProvidedBuffs(loadMemberBuild(character) ?? {}, character);
+  // energy_scale 버프의 현재 적용량은 파티원(제공자) 공효로 계산. 저장 빌드 없으면 null.
+  const memberCtx = loadMemberContext(character);
+  const memberER = memberCtx ? computeEnergyRegen(memberCtx) : null;
+  return memberProvidedBuffs(loadMemberBuild(character) ?? {}, character).map((p) => ({
+    ...p,
+    scaledValue: p.buff.energy_scale && memberER != null ? energyScaleValue(p.buff.energy_scale, memberER) : null,
+  }));
 }
 
 /** partyMembers를 내 저장 빌드로 해석해 합산용 버프(Buff[])로. disabled 제외, always:true.

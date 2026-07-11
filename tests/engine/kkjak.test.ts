@@ -7,14 +7,14 @@ describe('크크작 대비', () => {
     expect(optimalThreeCoMode(hiyukiBaseCtx())).toBe('soksok');
   });
 
-  // 검증 앵커: 기획서 부록 A.5 worked example은 공공 분모 기준
-  // (분모 메인=내 메인=공공). 분모 10524.9, 비율 125.7%.
-  it('공공 분모 통합 성능 ≈ 10524.9', () => {
-    expect(kkjakPerf(hiyukiBaseCtx(), 'gonggong')).toBeCloseTo(10524.9, -1);
+  // 검증 앵커: 공식 확률 크크작 분포(크리/크피 + 나머지 15줄 부산물) 기준 공공 분모.
+  // 부산물 포함으로 분모 상승(≈11889.1), 비율 하락(≈111.3%).
+  it('공공 분모 통합 성능 ≈ 11889.1', () => {
+    expect(kkjakPerf(hiyukiBaseCtx(), 'gonggong')).toBeCloseTo(11889.1, -1);
   });
 
-  it('크크작 대비(공공 분모) ≈ 125.7%', () => {
-    expect(kkjakRatio(hiyukiBaseCtx(), 'gonggong') * 100).toBeCloseTo(125.7, 0);
+  it('크크작 대비(공공 분모) ≈ 111.3%', () => {
+    expect(kkjakRatio(hiyukiBaseCtx(), 'gonggong') * 100).toBeCloseTo(111.3, 0);
   });
 
   // 새 설계(7.3): 기본 분모는 최적(속속)이라 점수가 더 낮게 나온다(공공 유저 패널티).

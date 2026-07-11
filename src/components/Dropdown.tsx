@@ -16,10 +16,11 @@ interface Props {
   className?: string; // 폭 등 개별 스타일 제어용
   disabled?: boolean; // true면 열 수 없음(회색)
   readOnly?: boolean; // true면 같은 디자인이되 삼각형/상호작용 없는 읽기 전용 표시
+  placeholder?: string; // value가 빈값(미선택)일 때 트리거에 표시할 문구. 미지정 시 '선택'
 }
 
 /** 그림(선택) + 텍스트를 지원하는 커스텀 드롭다운. 그림이 없거나 로드 실패 시 텍스트만 표시. */
-export function Dropdown({ value, options, onChange, className, disabled, readOnly }: Props) {
+export function Dropdown({ value, options, onChange, className, disabled, readOnly, placeholder }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const selected = options.find((o) => o.value === value);
@@ -82,7 +83,7 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
         onClick={(e) => { e.stopPropagation(); if (disabled) return; setOpen((o) => !o); }}>
         <span className="dropdown-item">
           {img(selected?.image, selected?.label)}
-          <span className="dropdown-label">{selected?.label ?? '선택'}</span>
+          <span className="dropdown-label">{selected?.label ?? placeholder ?? '선택'}</span>
         </span>
         <span className="dropdown-arrow">▾</span>
       </button>

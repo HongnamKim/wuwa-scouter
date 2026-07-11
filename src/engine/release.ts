@@ -6,8 +6,9 @@ export function hasTimezoneOffset(iso: string): boolean {
   return /(Z|[+-]\d{2}:?\d{2})$/i.test(iso.trim());
 }
 
-/** 출시 여부. release_at 미지정/파싱 불가면 이미 출시로 간주. now 미지정 시 현재 시각(런타임). */
+/** 출시 여부. unreleased=true면 무조건 미출시. 아니면 release_at 기준(미지정/파싱 불가면 이미 출시). now 미지정 시 현재 시각(런타임). */
 export function isReleased(character: Character, now: Date = new Date()): boolean {
+  if (character.unreleased) return false;
   if (!character.release_at) return true;
   const t = new Date(character.release_at).getTime();
   return Number.isNaN(t) || now.getTime() >= t;
@@ -18,9 +19,9 @@ export function isLocked(character: Character, now: Date = new Date()): boolean 
   return !isReleased(character, now);
 }
 
-/** "7월 11일 출시" (KST 기준 날짜만 표시). release_at 없거나 파싱 불가면 빈 문자열. */
+/** "7월 11일 출시" (KST 기준 날짜만 표시). release_at 없으면 unreleased는 '미출시', 그 외 빈 문자열. */
 export function releaseDateLabel(character: Character): string {
-  if (!character.release_at) return '';
+  if (!character.release_at) return character.unreleased ? '미출시' : '';
   const d = new Date(character.release_at);
   if (Number.isNaN(d.getTime())) return '';
   const md = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'long', day: 'numeric' }).format(d);

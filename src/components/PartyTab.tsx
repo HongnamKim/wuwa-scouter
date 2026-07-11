@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AppState } from '../state/store';
 import { memberProvidedBuffsFor } from '../state/store';
@@ -7,6 +7,7 @@ import type { Buff } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
 import { isReleased } from '../engine/release';
 import { ConfirmModal } from './ConfirmModal';
+import { Dropdown } from './Dropdown';
 
 const valText = (b: Buff) => (b.type.startsWith('flat') ? String(b.value) : `${+(b.value * 100).toFixed(1)}%`);
 // 파티원 제공 버프 설명. label(풀)/short(간략) 우선({v} 치환), 없으면 유형+수치. next_character는 표시로 구분.
@@ -22,27 +23,15 @@ const MAX_PARTY = 2;
 /** 파티 탭: 파티원(최대 2) 편성 + 각 파티원의 party/next 버프 적용 토글. */
 export function PartyTab({ state, setState, simple }: Props) {
   const navigate = useNavigate();
-  const [pickerOpen, setPickerOpen] = useState(false);
   const [moveTo, setMoveTo] = useState<string | null>(null); // 칩 클릭 시 이동 확인 대상
-  const pickerRef = useRef<HTMLDivElement>(null);
   const chars = loadCharacters();
   const members = state.partyMembers ?? [];
   const moveTarget = moveTo ? chars.find((c) => c.id === moveTo) : null;
-
-  useEffect(() => {
-    if (!pickerOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setPickerOpen(false);
-    };
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
-  }, [pickerOpen]);
 
   const setMembers = (pm: PartyMember[]) => setState({ ...state, partyMembers: pm });
   const addMember = (id: string) => {
     if (members.length >= MAX_PARTY || members.some((m) => m.id === id)) return;
     setMembers([...members, { id, disabled: [] }]); // 기본 전부 적용
-    setPickerOpen(false);
   };
   const removeMember = (id: string) => setMembers(members.filter((m) => m.id !== id));
   // 파티원의 특정 제공 버프 on/off (disabled 목록으로 관리)
@@ -61,23 +50,14 @@ export function PartyTab({ state, setState, simple }: Props) {
 
   return (
     <div>
-      <div ref={pickerRef} style={{ position: 'relative', marginBottom: 10 }}>
-        <button type="button" disabled={members.length >= MAX_PARTY} onClick={() => setPickerOpen((o) => !o)}>
-          + 파티원 추가
-        </button>
-        {pickerOpen && (
-          <div className="party-picker">
-            {available.length === 0
-              ? <div className="muted" style={{ fontSize: '0.85rem' }}>추가할 공명자가 없습니다.</div>
-              : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px 8px' }}>
-                  {available.map((c) => (
-                    <button key={c.id} type="button" className="party-pick-item" onClick={() => addMember(c.id)}>{c.name}</button>
-                  ))}
-                </div>
-              )}
-          </div>
-        )}
+      <div style={{ marginBottom: 10 }}>
+        <Dropdown
+          value=""
+          disabled={members.length >= MAX_PARTY || available.length === 0}
+          placeholder={members.length >= MAX_PARTY ? '파티 가득 참(최대 2)' : available.length === 0 ? '추가할 공명자 없음' : '+ 파티원 추가'}
+          options={available.map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
+          onChange={(id) => { if (id) addMember(id); }}
+        />
       </div>
 
       {members.length === 0 ? (
@@ -109,12 +89,15 @@ export function PartyTab({ state, setState, simple }: Props) {
                 {provided.length === 0 && (
                   <div className="muted" style={{ fontSize: '0.85rem' }}>제공하는 파티 버프가 없습니다.</div>
                 )}
-                {provided.map(({ key, buff, source }) => (
+                {provided.map(({ key, buff, source, scaledValue }) => (
                   <label key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
                     <input type="checkbox" checked={!off.has(key)} onChange={(e) => toggleBuff(m.id, key, e.target.checked)} />
                     <span>
                       <span className="muted" style={{ fontSize: '0.78rem', marginRight: 4 }}>[{source}]</span>
                       {buffText(buff, simple)}
+                      {scaledValue != null && (
+                        <span className="muted" style={{ fontSize: '0.78rem', marginLeft: 4 }}>· 현재 {+(scaledValue * 100).toFixed(1)}%</span>
+                      )}
                     </span>
                   </label>
                 ))}

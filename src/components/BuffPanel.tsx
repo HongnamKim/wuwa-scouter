@@ -73,11 +73,15 @@ export function BuffPanel({ state, setState }: Props) {
       // 모드 전환 캐릭터: 다른 모드 전용 버프는 숨김
       items: g.buffs
         .filter((b) => (g.withPassive ? (!!b.id || !!b.always) : (!b.always && !!b.id)))
-        // next_character(다음 등장 캐릭터 전용)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
+        // next_character(다음 등장 캐릭터 전용)·party_except_self(본인 제외 파티)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
         // party(파티 전체, 본인 포함)와 self는 본인도 받으므로 표시.
         .filter((b) => !b.target || b.target === 'self' || b.target === 'party')
         // element 게이트: 지정 원소가 캐릭터와 다르면 비표시(속성 조건 버프, 예: 서리효과=응결/암흑효과=인멸 분기). '전체'는 통과.
         .filter((b) => !b.element || b.element === '전체' || b.element === state.character.element)
+        // provider_element 게이트: 착용자 원소 조건(브랜치 선택). 예: 깃털 5세트 응결분기는 응결 착용자만 표시
+        .filter((b) => !b.provider_element || b.provider_element === state.character.element)
+        // only_character 게이트: 지정 캐릭터가 아닌 착용자에겐 비표시(예: 푸른 의지 파죽 2스택=구원 전용)
+        .filter((b) => !b.only_character || b.only_character === state.character.id)
         // 이상효과·조화도 파괴 등 전용 타입은 패널 비표시(데이터 기록 전용)
         .filter((b) => !SCORE_HIDDEN_TYPES.includes(b.type))
         // record_only(특정 스킬 계수/한정, 계산 제외)는 순수 기록용 → 패널 비표시
