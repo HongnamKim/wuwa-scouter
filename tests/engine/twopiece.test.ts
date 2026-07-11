@@ -3,7 +3,7 @@ import { loadCharacters, loadWeapons, loadEchoSets } from '../../src/engine/load
 import type { CalcContext } from '../../src/engine/context';
 import type { EchoSet } from '../../src/types/data';
 import { aggregateBuffs } from '../../src/engine/buffs';
-import { optimalTwoPiecePicks, twoPieceRecommendation, twoPieceRecommendationGroups, mainRecommendation } from '../../src/engine/theory';
+import { optimalTwoPiecePicks, twoPieceRecommendationGroups, mainRecommendation } from '../../src/engine/theory';
 import { freeTwoPieceSlots, slotsFrom } from '../../src/engine/echoSlots';
 
 /** 루시(회절/강공격) + 지정 세트 기준 컨텍스트. 기본=악몽 1pc(자유 슬롯 2) */
@@ -60,9 +60,9 @@ describe('자유 2세트 효과', () => {
   });
 
   it('추천: 풀 3종(원소피해/공격력/공명효율)의 중복조합 6개, 최고 1개', () => {
-    const recos = twoPieceRecommendation(lucyCtx());
-    expect(recos.length).toBe(6); // C(3+2-1, 2) = 6
-    expect(recos.filter((r) => r.best).length).toBe(1);
+    const g = twoPieceRecommendationGroups(lucyCtx())!;
+    expect(g.theory.length).toBe(6); // C(3+2-1, 2) = 6
+    expect(g.theory.filter((r) => r.best).length).toBe(1);
   });
 
   it('5pc 세트 → 슬롯 0 → 추천/최적 없음', () => {

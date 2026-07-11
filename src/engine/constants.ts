@@ -22,12 +22,6 @@ export const SUBSTAT_STAGES: Partial<Record<StatKey, number[]>> = {
   flat_defense: [40, 50, 60, 70],
 };
 
-export function substatFourthFromBottom(key: StatKey): number {
-  const stages = SUBSTAT_STAGES[key];
-  if (!stages) throw new Error(`no stages for ${key}`);
-  return stages[3];
-}
-
 export function substatMaxStage(key: StatKey): number {
   const stages = SUBSTAT_STAGES[key];
   if (!stages) throw new Error(`no stages for ${key}`);

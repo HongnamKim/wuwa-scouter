@@ -118,7 +118,7 @@ function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
             <span className="help">
               <span className="help-icon">?</span>
               <span className="help-tip">
-                크크작 = 크리 5줄·크피 5줄을 고정하고 나머지 부옵 15줄이 공식 확률대로 붙는 표준 빌드 기준선. 실제 파밍에서 흔히 나오는 현실적 대비 대상입니다.
+                크크작 = 크리 5줄·크피 5줄을 고정하고 나머지 옵션이 평균적으로 붙는 에코작. <br/>실제 파밍에서 흔히 나오는 현실적 대비 대상입니다.
                 {named && opts.length > 0 && <><br /><br />드롭다운은 분모의 메인 옵션 조합(속=속성피해, 공=공격%)을 선택합니다.</>}
               </span>
             </span>

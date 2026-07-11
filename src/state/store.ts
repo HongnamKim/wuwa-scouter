@@ -342,10 +342,3 @@ export function initialState(): AppState {
   const character = loadCharacters().find((c) => c.id === 'hiyuki')!;
   return buildStateForCharacter(character);
 }
-
-/** 저장된(기록된) 공명자들의 상태 목록 */
-export function listSavedStates(): AppState[] {
-  return loadCharacters()
-    .map((c) => loadCharacterState(c))
-    .filter((s): s is AppState => !!s);
-}

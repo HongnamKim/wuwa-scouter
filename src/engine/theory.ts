@@ -1,7 +1,7 @@
 import type { StatKey, Cost, CostLayout } from '../types/domain';
 import type { Buff } from '../types/data';
 import type { CalcContext, MainPrimaryPick, SubstatLine } from './context';
-import { buildPerfInput, sumEffectiveSubstats } from './build';
+import { buildPerfInput } from './build';
 import { computePerf } from './perf';
 import { MAIN_PRIMARY, substatMaxStage } from './constants';
 import { costsOf } from './costLayout';
@@ -408,15 +408,6 @@ export function optimalTwoPiecePicks(ctx: CalcContext): string[] {
   return best;
 }
 
-/** 자유 2세트 효과 조합별 상대 성능 추천 행 (현재 빌드 기준, 최고 ★). 자유 슬롯 0이면 빈 배열 */
-export function twoPieceRecommendation(ctx: CalcContext): RecoRow[] {
-  const combos = twoPieceCombos(ctx);
-  if (!combos.length) return [];
-  const entries: [string, number][] = combos.map((c) =>
-    [twoPieceComboLabel(ctx, c), computePerf(buildPerfInput({ ...ctx, twoPiecePicks: c }))]);
-  return rows(entries);
-}
-
 /**
  * 자유 2세트 효과 조합별 추천을 최고점/크크작 기준으로 분리.
  * 최고점 = 각 조합에서 이론 최고 빌드, 크크작 = 각 조합에서 크크작 기준 빌드(최적 모드). 슬롯 0이면 null.
@@ -437,31 +428,7 @@ export function twoPieceRecommendationGroups(ctx: CalcContext): { theory: RecoRo
   return { theory: rows(theory), kkjak: rows(kkjak) };
 }
 
-export function compareSubstats(
-  ctx: CalcContext,
-  override: Partial<Record<StatKey, number>>,
-): { current: number; compared: number; diffPercent: number } {
-  const current = computePerf(buildPerfInput(ctx));
-  // 현재 유효옵 합을 한 에코에 몰아넣은 동등 컨텍스트 + override 적용
-  const base = sumEffectiveSubstats(ctx);
-  const merged: Partial<Record<StatKey, number>> = { ...base, ...override };
-  const substats: SubstatLine[][] = effectiveSubstatsOf(ctx).map((k) =>
-    merged[k] != null ? [{ type: k, value: merged[k]! }] : []);
-  const compared = computePerf(buildPerfInput({ ...ctx, slots: ctx.slots.map((s, i) => ({ ...s, substats: substats[i] ?? [] })) }));
-  return { current, compared, diffPercent: (compared / current - 1) * 100 };
-}
 
-/** 크크작 기준 부옵(크리5+크피5)에서 통합 성능을 최대화하는 메인 옵션 조합(추천) */
-export function recommendedMainPicks(ctx: CalcContext): MainPrimaryPick[] {
-  const layout: Cost[] = costsOf(ctx.costLayout);
-  const sub = kkjakSub(ctx);
-  let best: { perf: number; picks: MainPrimaryPick[] } | null = null;
-  for (const picks of mainCombos(layout)) {
-    const perf = computePerf(buildPerfInput({ ...ctx, slots: slotsFrom(ctx.costLayout, picks, sub) }));
-    if (!best || perf > best.perf) best = { perf, picks };
-  }
-  return best!.picks;
-}
 
 /**
  * 크크작 분모 기준 최적(최고 통합 성능) 조합 모드 (43311=3코, 44111=4코).
