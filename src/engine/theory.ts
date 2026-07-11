@@ -16,16 +16,16 @@ const KKJAK_CRIT = 37.65;   // 크리티컬 5줄 평균 합(줄당 7.53%)
 const KKJAK_CRIT_DMG = 75.30; // 크리티컬 피해 5줄 평균 합(줄당 15.06%)
 const KKJAK_BYPRODUCT: { type: StatKey; value: number }[] = [
   { type: 'attack_percent', value: 11.68 },
-  { type: 'flat_attack', value: 56.4 },
+  // { type: 'flat_attack', value: 56.4 },
   { type: 'energy_regen', value: 12.48 },
-  { type: 'resonance_liberation_bonus', value: 11.68 },
-  { type: 'basic_attack_bonus', value: 11.68 },
-  { type: 'heavy_attack_bonus', value: 11.68 },
-  { type: 'resonance_skill_bonus', value: 11.68 },
-  { type: 'hp_percent', value: 11.66 },
-  { type: 'flat_hp', value: 584 },
-  { type: 'defense_percent', value: 14.77 },
-  { type: 'flat_defense', value: 69.9 },
+  // { type: 'resonance_liberation_bonus', value: 11.68 },
+  // { type: 'basic_attack_bonus', value: 11.68 },
+  // { type: 'heavy_attack_bonus', value: 11.68 },
+  // { type: 'resonance_skill_bonus', value: 11.68 },
+  // { type: 'hp_percent', value: 11.66 },
+  // { type: 'flat_hp', value: 584 },
+  // { type: 'defense_percent', value: 14.77 },
+  // { type: 'flat_defense', value: 69.9 },
 ];
 
 export type ThreeCoMode =
