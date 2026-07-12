@@ -18,6 +18,7 @@ import { isLocked } from './engine/release';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
+import { ThemeProvider, useTheme, ACCENT } from './theme';
 import { EchoSlots } from './components/EchoSlots';
 import { CharacterSpec } from './components/CharacterSpec';
 import { BuffPanel } from './components/BuffPanel';
@@ -43,26 +44,49 @@ function lastCharacterId(): string {
 function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const onList = pathname.startsWith('/list');
-  const onAnalysis = pathname.startsWith('/analysis');
-  const onCompare = pathname.startsWith('/compare');
-  const onFaq = pathname.startsWith('/faq');
+  const { theme, vars, toggle } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false); // 모바일: 햄버거로 네비 토글
   const go = (path: string) => { setMenuOpen(false); navigate(path); };
+  const items = [
+    { label: '공명자 목록', to: '/list', active: pathname.startsWith('/list') },
+    { label: '공명자 분석', to: `/analysis/${lastCharacterId()}`, active: pathname.startsWith('/analysis') },
+    { label: '비교', to: `/compare/${lastCharacterId()}`, active: pathname.startsWith('/compare') },
+    { label: 'FAQ', to: '/faq', active: pathname.startsWith('/faq') },
+  ];
+  const themeIcon = theme === 'dark' ? '☾' : '☀';
+  const themeLabel = theme === 'dark' ? 'DARK' : 'LIGHT';
   return (
-    <>
-      <header className="app-header">
-        <div className="brand" onClick={() => go('/list')}>명조스카우터</div>
-        <button className="nav-toggle" aria-label="메뉴" onClick={() => setMenuOpen((o) => !o)}>☰</button>
-        <nav className={menuOpen ? 'header-nav open' : 'header-nav'}>
-          <button className={onList ? 'active' : ''} onClick={() => go('/list')}>공명자 목록</button>
-          <button className={onAnalysis ? 'active' : ''} onClick={() => go(`/analysis/${lastCharacterId()}`)}>공명자 분석</button>
-          <button className={onCompare ? 'active' : ''} onClick={() => go(`/compare/${lastCharacterId()}`)}>비교</button>
-          <button className={onFaq ? 'active' : ''} onClick={() => go('/faq')}>FAQ</button>
+    <div style={{ minHeight: '100vh', background: vars.bg, color: vars.fg, transition: 'background .35s ease, color .35s ease' }}>
+      <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, height: 72, display: 'flex', alignItems: 'center', gap: 20, padding: '0 clamp(16px,4vw,48px)', background: 'rgba(13,16,23,0.86)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div onClick={() => go('/list')} style={{ display: 'flex', alignItems: 'center', gap: 11, cursor: 'pointer' }}>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: ACCENT, boxShadow: `0 0 12px ${ACCENT}`, transform: 'rotate(45deg)' }} />
+          <span style={{ fontWeight: 800, fontSize: '1.12rem', letterSpacing: '-0.01em', color: '#f3f5fa' }}>명조<span style={{ color: ACCENT }}>스카우터</span></span>
+        </div>
+        <nav className="dc-nav-d" style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+          {items.map((it) => (
+            <button key={it.to} onClick={() => go(it.to)} style={{
+              padding: '9px 16px', borderRadius: 8, fontSize: '0.9rem', fontWeight: it.active ? 700 : 500, cursor: 'pointer', border: 'none',
+              color: it.active ? '#0d1017' : '#b9c0cf', background: it.active ? ACCENT : 'transparent',
+              boxShadow: it.active ? `0 4px 16px -6px ${ACCENT}` : undefined,
+            }}>{it.label}</button>
+          ))}
         </nav>
+        <button onClick={() => setMenuOpen((o) => !o)} className="dc-burger" aria-label="메뉴" style={{ marginLeft: 'auto', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, borderRadius: 9, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.04)', color: '#cfd5e2', fontSize: '1.25rem', lineHeight: 1, cursor: 'pointer' }}>☰</button>
+        <nav className={'dc-nav-m' + (menuOpen ? ' open' : '')} style={{ position: 'absolute', top: '100%', right: 12, marginTop: 8, flexDirection: 'column', gap: 4, minWidth: 160, background: '#12161f', padding: 8, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 14px 34px rgba(0,0,0,0.45)', zIndex: 60 }}>
+          {items.map((it) => (
+            <button key={it.to} onClick={() => go(it.to)} style={{ padding: '10px 14px', borderRadius: 8, fontSize: '0.95rem', fontWeight: it.active ? 700 : 500, cursor: 'pointer', border: 'none', textAlign: 'left', color: it.active ? '#0d1017' : '#cfd5e2', background: it.active ? ACCENT : 'transparent' }}>{it.label}</button>
+          ))}
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 6px' }} />
+          <button onClick={toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 14px', borderRadius: 8, border: 'none', background: 'transparent', color: '#cfd5e2', fontSize: '0.95rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
+            <span>테마</span><span style={{ fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>{themeIcon} {themeLabel}</span>
+          </button>
+        </nav>
+        <button onClick={toggle} aria-label="테마 전환" className="dc-theme-d" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, height: 38, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.04)', color: '#cfd5e2', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--mono)' }}>
+          <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>{themeIcon}</span>{themeLabel}
+        </button>
       </header>
       <div className="app"><Outlet /></div>
-    </>
+    </div>
   );
 }
 
@@ -283,9 +307,9 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <>
+    <ThemeProvider>
       <RouterProvider router={router} />
       <Analytics />
-    </>
+    </ThemeProvider>
   );
 }
