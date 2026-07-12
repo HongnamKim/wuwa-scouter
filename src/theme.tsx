@@ -7,6 +7,7 @@ export interface ThemeVars {
   card: string; cardBorder: string; portrait: string;
   chipBase: string; stat: string; ghost: string;
   ctrl: string; ctrlBorder: string; menu: string; hover: string;
+  code: string; codebg: string;
 }
 
 const THEMES: Record<Theme, ThemeVars> = {
@@ -15,12 +16,14 @@ const THEMES: Record<Theme, ThemeVars> = {
     card: '#121620', cardBorder: 'rgba(255,255,255,0.07)', portrait: '#0e1118',
     chipBase: '#12151d', stat: 'rgba(255,255,255,0.04)', ghost: '#5c6577',
     ctrl: '#141924', ctrlBorder: 'rgba(255,255,255,0.11)', menu: '#161b26', hover: 'rgba(255,255,255,0.06)',
+    code: '#e6c46b', codebg: 'rgba(199,155,59,0.12)',
   },
   light: {
     bg: '#eef1f7', fg: '#182130', muted: '#6c7688', rule: '#d7dde7',
     card: '#ffffff', cardBorder: '#e5e9f1', portrait: '#f5f7fb',
     chipBase: '#ffffff', stat: '#f3f5f9', ghost: '#aab2c0',
     ctrl: '#ffffff', ctrlBorder: '#d8dee8', menu: '#ffffff', hover: '#eef2f8',
+    code: '#8a6d1e', codebg: '#faf4e4',
   },
 };
 
