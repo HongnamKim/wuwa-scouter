@@ -20,6 +20,7 @@
       {
         "id": "glommoth",
         "name": "글로모스",
+        "cost": 3,
         "buffs": [
           { "type": "element_damage_bonus", "value": 0.12, "always": false, "target": "next_character", "element": "응결", "label":"다음 변주 스킬로 등장하는 캐릭터의 응결 피해 보너스 +12%", "short":"다음 캐릭터 응결피해 +12%","note": "다음 변주 등장 캐릭터에게 제공", "record_only": false, "absolute_score_only": false }
         ]
@@ -92,6 +93,7 @@
       {
         "id": "twin_nova_nebulous_cannon",
         "name": "트윈 노바 · 네뷸러스 캐논",
+        "cost": 3,
         "buffs": [
           { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "회절", "target": "self", "label":"회절 피해 보너스 12.00% 증가", "short":"회절피해 +12%","note": "메인슬롯 패시브 (회절피해 +12%)", "record_only": false, "absolute_score_only": false },
           { "type": "basic_attack_bonus", "value": 0.12, "always": true, "target": "self","label":"일반 공격 피해 보너스 12.00% 증가", "short":"일반공격피해 +12%", "note": "메인슬롯 패시브 (일반공격피해 +12%)", "record_only": false, "absolute_score_only": false }
@@ -222,7 +224,7 @@
      { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "인멸", "label": "자신의 인멸 피해 보너스 12% 증가", "short": "인멸피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
      { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
     ] },
-    { "id": "forbidden_bastion", "name": "봉정계유", "unreleased": true, "buffs": [
+    { "id": "forbidden_bastion", "name": "봉정계유", "cost": 3, "buffs": [
      { "type": "healing_bonus", "value": 0.10, "always": true, "target": "self", "label": "자신의 치료 효과 보너스 10% 증가", "short": "치료 효과 +10%", "note": "메인슬롯 패시브 (수수, 딜 무관)", "record_only": false, "absolute_score_only": false }
     ] }
    ]
