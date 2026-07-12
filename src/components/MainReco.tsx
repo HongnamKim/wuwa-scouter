@@ -1,16 +1,26 @@
+import type { CSSProperties } from 'react';
 import type { AppState } from '../state/store';
 import { analysisContext } from '../state/store';
 import { mainRecommendation, RecoRow } from '../engine/theory';
+import { WarnTip } from './WarnTip';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
   return (
     <table style={{ width: 'auto' }}>
       <tbody>
-        {rows.map((r) => (
-          <tr key={r.label} style={r.best ? { fontWeight: 'bold', background: '#eef7ee' } : undefined}>
-            <td>{r.label}</td><td>{(r.relative * 100).toFixed(1)}%{r.best ? ' ★' : ''}</td>
-          </tr>
-        ))}
+        {rows.map((r) => {
+          const warn = r.reached === false; // 요구 공효 미도달
+          const rowStyle: CSSProperties | undefined = r.best ? { fontWeight: 'bold', background: '#eef7ee' } : undefined;
+          return (
+            <tr key={r.label} style={rowStyle}>
+              <td>{r.label}</td>
+              <td style={warn ? { color: '#b00' } : undefined}>
+                {(r.relative * 100).toFixed(1)}%{r.best && !warn ? ' ★' : ''}
+                {warn && <WarnTip />}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

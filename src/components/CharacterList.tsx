@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
-import { loadCharacterState, analysisContext, isRecordOnly, charactersInListOrder } from '../state/store';
+import { loadCharacterState, analysisContext, charactersInListOrder } from '../state/store';
 import type { Character } from '../types/data';
 import type { Element } from '../types/domain';
 import { ELEMENTS } from '../types/domain';
@@ -21,15 +21,13 @@ function hasSubstats(state: AppState): boolean {
   return state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
 }
 
-// 카드 하단 점수 두 줄. 기록 전용(서포터)은 상대 점수가 없으므로 딜 상승 수치만.
-function cardScoreLines(character: Character, state: AppState | null): { primary: string; secondary: string } {
-  const record = isRecordOnly(character);
+// 카드 하단 점수 두 줄. 모든 캐릭터가 크크작/최고점 상대 점수를 표시(역할 무관).
+function cardScoreLines(_character: Character, state: AppState | null): { primary: string; secondary: string } {
   const ctx = state ? analysisContext(state) : null;
   if (!state || !ctx || !hasSubstats(state)) {
-    return record ? { primary: '딜 -', secondary: '서포터(기록)' } : { primary: '크크작 -', secondary: '최고점 -' };
+    return { primary: '크크작 -', secondary: '최고점 -' };
   }
   const mine = computePerf(buildPerfInput(ctx));
-  if (record) return { primary: `딜 ${mine.toFixed(0)}`, secondary: '서포터(기록)' };
   return {
     primary: `크크작 ${((mine / kkjakReferencePerf(ctx)) * 100).toFixed(1)}%`,
     secondary: `최고점 ${((mine / theoryBest(ctx).perf) * 100).toFixed(1)}%`,

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { AppState } from '../state/store';
 import { analysisContext, isRecordOnly } from '../state/store';
 import type { CalcContext } from '../engine/context';
+import type { Character } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput, computeEnergyRegen } from '../engine/build';
-import { theoryBest, kkjakPerf, kkjakReferencePerf, optimalThreeCoModeKkjak, threeCoModeOptions, hasNamedModes, energyRegenLines, ThreeCoMode } from '../engine/theory';
+import { theoryBest, kkjakPerf, kkjakReferencePerf, optimalThreeCoModeKkjak, threeCoModeOptions, hasNamedModes, energyRegenLines, ThreeCoMode, erConstrained } from '../engine/theory';
 import { effectiveSubstatsOf } from '../engine/mode';
 import { Dropdown } from './Dropdown';
 
@@ -20,11 +21,53 @@ const STAT_LABEL: Partial<Record<StatKey, string>> = {
 const lab = (k: StatKey) => STAT_LABEL[k] ?? k;
 const BIG = { fontSize: '2.4rem', fontWeight: 'bold', lineHeight: 1.1 } as const;
 
+const DEAL_TIP = '현재 무기, 에코 등으로 얻는 상승 수치입니다. 절대 데미지가 아니라 같은 캐릭터의 빌드 비교용 상대 지표입니다.';
+
+/** "딜 상승 수치" 라벨 + 도움말(?) — 최고점/크크작 라벨과 동일한 툴팁 패턴. */
+function DealLabel() {
+  return (
+    <div className="lbl">딜 상승 수치
+      <span className="help">
+        <span className="help-icon">?</span>
+        <span className="help-tip">{DEAL_TIP}</span>
+      </span>
+    </div>
+  );
+}
+
 // 설정 미완성(ctx=null) 시에도 점수 영역 레이아웃은 유지하고, 계산 불가 값만 "-"로 표기한다.
 export function Scores({ state }: { state: AppState }) {
   const ctx = analysisContext(state); // null이면 미완성
-  if (isRecordOnly(state.character)) return <RecordScore ctx={ctx} />;
+  // 요구 공효 있는 서포터: 3열 점수 + 작은 공효 도달 배지(하이브리드).
+  if (ctx && erConstrained(ctx)) {
+    return (
+      <>
+        <ScoresInner ctx={ctx} dealSubline={<ErReachBadge ctx={ctx} />} />
+        {ctx.character.scale_stat !== 'attack' && (
+          <p className="muted" style={{ fontSize: '0.8rem', marginTop: 6 }}>
+            ※ 공격력을 사용하지 않는 서포터 캐릭터의 딜 상승 수치는 주요 스탯(체력·방어력)을 사용하는 주력 스킬의 피해량을 나타냅니다.
+          </p>
+        )}
+      </>
+    );
+  }
+  if (isRecordOnly(state.character)) return <RecordScore ctx={ctx} character={state.character} />;
   return <ScoresInner ctx={ctx} />;
+}
+
+/** 서포터 하이브리드용 작은 공효 도달 배지. */
+function ErReachBadge({ ctx }: { ctx: CalcContext }) {
+  const target = ctx.requiredEnergyRegen ?? ctx.character.default_required_energy_regen;
+  const er = computeEnergyRegen(ctx) * 100;
+  if (target == null) return null;
+  const ok = er >= target - 1e-9;
+  return (
+    <div className="muted" style={{ marginTop: 2 }}>
+      목표 공명 효율 {target}% 도달{' '}
+      <span style={{ fontWeight: 'bold', color: ok ? '#2a7d2a' : '#b00' }}>{ok ? '✓' : '✗'}</span>
+      <span style={{ marginLeft: 6 }}>(현재 {er.toFixed(1)}%)</span>
+    </div>
+  );
 }
 
 /** 부옵을 하나라도 입력했는지 (없으면 딜 상승 수치는 "-") */
@@ -33,7 +76,7 @@ function hasAnySub(ctx: CalcContext | null): boolean {
 }
 
 /** 기록 전용 캐릭터: 딜 상승 수치(개인 딜 근사) + 공효 도달만 표시. 최고점/크크작 상대 점수는 없음. */
-function RecordScore({ ctx }: { ctx: CalcContext | null }) {
+function RecordScore({ ctx, character }: { ctx: CalcContext | null; character: Character }) {
   const hasSub = hasAnySub(ctx);
   const deal = ctx && hasSub ? computePerf(buildPerfInput(ctx)).toFixed(0) : '-';
   // 공효 도달 목표: 사용자가 입력한 필요 공명 효율(requiredEnergyRegen)이 목표.
@@ -57,12 +100,15 @@ function RecordScore({ ctx }: { ctx: CalcContext | null }) {
       )}
       <p className="muted" style={{ fontSize: '0.8rem', marginTop: 6, flexBasis: '100%' }}>
         ※ 서포터(기록 전용) — 최고점/크크작 상대 점수와 메인 조합 추천은 제공하지 않습니다.
+        {character.scale_stat !== 'attack' && (
+          <><br />※ 공격력을 사용하지 않는 서포터 캐릭터의 딜 상승 수치는 주요 스탯(체력·방어력)을 사용하는 주력 스킬의 피해량을 나타냅니다.</>
+        )}
       </p>
     </div>
   );
 }
 
-function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
+function ScoresInner({ ctx, dealSubline }: { ctx: CalcContext | null; dealSubline?: ReactNode }) {
   const [mode, setMode] = useState<ThreeCoMode | null>(null);
 
   const named = ctx ? hasNamedModes(ctx) : false;
@@ -94,8 +140,9 @@ function ScoresInner({ ctx }: { ctx: CalcContext | null }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, margin: '8px 0' }}>
         <div>
-          <div className="lbl">딜 상승 수치</div>
+          <DealLabel />
           <div style={BIG}>{dealText}</div>
+          {dealSubline}
         </div>
         <div>
           <div className="lbl">최고점 대비

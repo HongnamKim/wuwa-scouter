@@ -13,6 +13,7 @@ import {
 import { loadCharacters } from './engine/loadData';
 import { freeTwoPieceSlots } from './engine/echoSlots';
 import { costsOf } from './engine/costLayout';
+import { erConstrained } from './engine/theory';
 import { isLocked } from './engine/release';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
@@ -108,7 +109,7 @@ function AnalysisScreen({ character }: { character: Character }) {
 
       <div className="top-row">
         <Selectors state={state} setState={setState} />
-        {isRecordOnly(character) ? (
+        {isRecordOnly(character) && !(analysisContext(state) && erConstrained(analysisContext(state)!)) ? (
           <div className="top-reco">
             <h2>기록 전용 (서포터)</h2>
             <p className="muted">개인 딜 최적화(메인 조합 추천·상대 점수)는 제공하지 않고, 스펙·버프·딜 상승 수치만 기록용으로 표시합니다.</p>
@@ -221,6 +222,7 @@ function CompareScreen({ character }: { character: Character }) {
   const base = saved ? analysisContext(saved) : null;
   const [openWeapon, setOpenWeapon] = useState(true); // 무기 비교: 기본 펼침
   const [openSwap, setOpenSwap] = useState(true);       // 에코 교체 비교: 기본 펼침
+  const [openBuild, setOpenBuild] = useState(true);     // 빌드 수정(추가 버프): 기본 펼침
   // 교체할 에코를 실제 저장 빌드에 반영(덮어쓰기) 후 기준 갱신·편집기 리셋
   const applyEditedSlots = (slots: EchoSlot[]) => {
     if (!saved) return;
@@ -249,7 +251,10 @@ function CompareScreen({ character }: { character: Character }) {
         </div>
       ) : (
         <>
-          <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)} topBorder={false}>
+          <AccordionSection title="빌드 수정" open={openBuild} onToggle={() => setOpenBuild((o) => !o)} topBorder={false}>
+            <BuffPanel state={saved!} setState={setSaved} />
+          </AccordionSection>
+          <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)}>
             <SubstatSwapCompare key={swapVer} base={base} onApply={applyEditedSlots} />
           </AccordionSection>
           <AccordionSection title="무기 비교" open={openWeapon} onToggle={() => setOpenWeapon((o) => !o)}>

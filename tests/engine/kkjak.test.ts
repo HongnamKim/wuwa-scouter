@@ -8,13 +8,13 @@ describe('크크작 대비', () => {
   });
 
   // 검증 앵커: 공식 확률 크크작 분포(크리/크피 + 나머지 15줄 부산물) 기준 공공 분모.
-  // 부산물 포함으로 분모 상승(≈11889.1), 비율 하락(≈111.3%).
-  it('공공 분모 통합 성능 ≈ 11889.1', () => {
-    expect(kkjakPerf(hiyukiBaseCtx(), 'gonggong')).toBeCloseTo(11889.1, -1);
+  // 부산물 포함으로 분모 상승(≈10778.5), 비율 하락(≈122.7%).
+  it('공공 분모 통합 성능 ≈ 10778.5', () => {
+    expect(kkjakPerf(hiyukiBaseCtx(), 'gonggong')).toBeCloseTo(10778.5, -1);
   });
 
-  it('크크작 대비(공공 분모) ≈ 111.3%', () => {
-    expect(kkjakRatio(hiyukiBaseCtx(), 'gonggong') * 100).toBeCloseTo(111.3, 0);
+  it('크크작 대비(공공 분모) ≈ 122.7%', () => {
+    expect(kkjakRatio(hiyukiBaseCtx(), 'gonggong') * 100).toBeCloseTo(122.7, 0);
   });
 
   // 새 설계(7.3): 기본 분모는 최적(속속)이라 점수가 더 낮게 나온다(공공 유저 패널티).
@@ -37,7 +37,7 @@ describe('크크작 모드는 코스트 구성에 따라 다르다', () => {
     const co43 = threeCoModeOptions(hiyukiBaseCtx()).map((o) => o.label);
     expect(co43).toEqual(['속속', '속공', '공공']);
     const co44 = threeCoModeOptions({ ...hiyukiBaseCtx(), costLayout: '44111' }).map((o) => o.label);
-    expect(co44).toEqual(['크피+크피', '크피+크리', '크피+공%', '크리+크리', '크리+공%', '공%+공%']);
+    expect(co44).toEqual(['크피+크피', '크피+크리', '크피+공', '크리+크리', '크리+공', '공+공']);
   });
 
   it('44111 기본 모드/추천 그룹은 4코 조합', () => {
