@@ -34,22 +34,25 @@ h3 { font-size: 0.95rem; margin: 16px 0 4px; }
 .nav button { padding: 8px 16px; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; cursor: pointer; font-size: 0.95rem; }
 .nav button.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: bold; }
 /* FAQ 마크다운 본문 */
-.markdown-body { max-width: 760px; line-height: 1.7; color: #222; }
-.markdown-body h1 { font-size: 1.6rem; margin: 0 0 12px; }
-.markdown-body h2 { font-size: 1.25rem; margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #ddd; }
-.markdown-body h3 { font-size: 1.05rem; margin: 20px 0 8px; }
-.markdown-body p { margin: 10px 0; }
-.markdown-body ul, .markdown-body ol { margin: 10px 0; padding-left: 22px; }
+/* FAQ 마크다운(테마 인식 · 디자인 스타일). 색상은 FaqScreen이 --faq-* 변수로 주입. */
+.markdown-body { line-height: 1.75; color: var(--faq-fg); counter-reset: faqsec; }
+.markdown-body h2 { display: flex; align-items: center; gap: 12px; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; margin: 56px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--faq-rule); scroll-margin-top: 96px; }
+.markdown-body h2:first-of-type { margin-top: 0; }
+.markdown-body h2::before { counter-increment: faqsec; content: counter(faqsec, decimal-leading-zero); font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: #c79b3b; }
+.markdown-body h3 { font-size: 1.08rem; font-weight: 700; margin: 26px 0 10px; border-left: 3px solid #c79b3b; padding-left: 12px; color: var(--faq-fg); }
+.markdown-body p { margin: 0 0 10px; }
+.markdown-body ul, .markdown-body ol { margin: 0 0 10px; padding-left: 20px; line-height: 1.8; }
 .markdown-body li { margin: 4px 0; }
-.markdown-body a { color: #2563eb; }
-.markdown-body code { background: #f1f2f5; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
-.markdown-body pre { background: #1f2430; color: #eee; padding: 12px 14px; border-radius: 8px; overflow-x: auto; }
+.markdown-body strong { font-weight: 700; }
+.markdown-body a { color: #c79b3b; }
+.markdown-body code { font-family: var(--mono); font-size: 0.85em; background: var(--faq-codebg); color: var(--faq-code); padding: 2px 7px; border-radius: 5px; }
+.markdown-body pre { background: #12161f; color: #e7ebf3; padding: 12px 14px; border-radius: 8px; overflow-x: auto; }
 .markdown-body pre code { background: none; padding: 0; color: inherit; }
-.markdown-body blockquote { margin: 12px 0; padding: 6px 14px; border-left: 3px solid #cbd5e1; color: #555; background: #f8fafc; }
-.markdown-body hr { border: none; border-top: 1px solid #e2e5ea; margin: 24px 0; }
+.markdown-body blockquote { margin: 12px 0; padding: 6px 14px; border-left: 3px solid var(--faq-rule); color: var(--faq-muted); }
+.markdown-body hr { display: none; }
 .markdown-body table { border-collapse: collapse; margin: 12px 0; }
-.markdown-body th, .markdown-body td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
-.markdown-body th { background: #f3f4f6; }
+.markdown-body th, .markdown-body td { border: 1px solid var(--faq-rule); padding: 6px 10px; text-align: left; }
+.faq-pill:hover { border-color: #c79b3b !important; color: #c79b3b !important; }
 
 .card-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0; }
 /* 버전별 그룹: "N버전" 헤더 + 구분선 */
