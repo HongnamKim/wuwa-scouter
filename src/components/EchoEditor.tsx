@@ -93,7 +93,7 @@ export function EchoEditor({ cost, main, subs, optionList, matrixCost = 1, scale
   return (
     <>
       <div className="sub-row">
-        <span className="muted" style={{ minWidth: 44 }}>메인</span>
+        <span className="muted" style={{ minWidth: 40, fontSize: '0.8rem' }}>메인</span>
         <Dropdown className={'dd-grow' + (mainChanged ? ' dd-changed' : '')} value={main} readOnly={readOnly || cost == null}
           options={mainOptions}
           onChange={(v) => onMain?.(v as StatKey)} />

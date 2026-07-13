@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { AppState } from '../state/store';
-import { combinedMainEchoes, analysisContext } from '../state/store';
+import { combinedMainEchoes, mainEchoEquippable, analysisContext } from '../state/store';
 import { loadWeapons, loadEchoSets, getWeapon, getEchoSet, loadTwoPieceEffects } from '../engine/loadData';
 import { freeTwoPieceSlots, defaultSlots } from '../engine/echoSlots';
 import { costsOf, isValidCostLayout, normalizeCostLayout } from '../engine/costLayout';
@@ -43,7 +43,7 @@ export function Selectors({ state, setState }: Props) {
   // 자유 2세트 효과는 슬롯 수가 바뀌므로 (설정 완성 시) 최적 조합으로 재설정, 아니면 비움.
   const applyEchoSets = (echoSets: EchoSet[]) => {
     const sets = freeTwoPieceSlots(echoSets, echoCount(state.costLayout)) > 0 ? [echoSets[0]] : echoSets;
-    const combined = combinedMainEchoes(sets);
+    const combined = combinedMainEchoes(sets, state.costLayout);
     // 현재 메인 에코가 새 세트에도 있으면 유지, 없으면 새 세트의 첫 메인 에코로 자동 지정(비우지 않음)
     const mainEcho = state.mainEcho && combined.some((e) => e.id === state.mainEcho!.id) ? state.mainEcho : (combined[0] ?? null);
     const next: AppState = { ...state, echoSets: sets, mainEcho };
@@ -59,11 +59,11 @@ export function Selectors({ state, setState }: Props) {
   // 무기 드롭다운: 캐릭터 무기 타입 전체 중 선택. 추천무기(recommended_weapons)는 상단·★ 표시(화음세트와 동일).
   const typeWeapons = weapons.filter((w) => w.weapon_type === char.weapon_type && !w.unreleased);
   const weaponOptions: DropdownOption[] = recFirst(typeWeapons, char.recommended_weapons)
-    .map((w) => ({ value: w.id, label: (char.recommended_weapons.includes(w.id) ? '★ ' : '') + w.name, image: `/weapons/${w.id}.webp` }));
+    .map((w) => ({ value: w.id, label: w.name, image: `/weapons/${w.id}.webp`, badge: char.recommended_weapons.includes(w.id) ? '추천' : undefined }));
   const setOptions: DropdownOption[] = recFirst(allSets, char.recommended_echo_sets)
-    .map((s) => ({ value: s.id, label: (char.recommended_echo_sets.includes(s.id) ? '★ ' : '') + s.name, image: `/echo-sets/${s.id}.webp` }));
-  const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets), char.recommended_main_echo)
-    .map((m) => ({ value: m.id, label: (char.recommended_main_echo.includes(m.id) ? '★ ' : '') + m.name, image: `/echoes/${m.id}.webp` }));
+    .map((s) => ({ value: s.id, label: s.name, image: `/echo-sets/${s.id}.webp`, badge: char.recommended_echo_sets.includes(s.id) ? '추천' : undefined }));
+  const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets, state.costLayout), char.recommended_main_echo)
+    .map((m) => ({ value: m.id, label: m.name, image: `/echoes/${m.id}.webp`, badge: char.recommended_main_echo.includes(m.id) ? '추천' : undefined }));
   // 코스트 구성: 프리셋(43311/44111) + 직접 입력. 현재값이 프리셋이 아니면 직접 입력 모드로 취급.
   const CUSTOM = '__custom__';
   const isPreset = state.costLayout === '43311' || state.costLayout === '44111';
@@ -77,9 +77,12 @@ export function Selectors({ state, setState }: Props) {
   const costDropdownValue = isPreset ? (state.costLayout ?? '') : (state.costLayout ? CUSTOM : '');
   // 입력칸은 편집 중이거나 현재 커스텀 값이 적용돼 있을 때 계속 노출(확정 후에도 유지 → 재수정 편의).
   const showCustom = customMode || (!isPreset && !!state.costLayout);
+  // 새 코스트 구성에서 현재 메인 에코가 장착 불가(예: 33111에 4코 에코)면 해제
+  const mainEchoUnder = (layout: CostLayout) =>
+    state.mainEcho && mainEchoEquippable(state.mainEcho, layout) ? state.mainEcho : null;
   const applyCost = (raw: string) => {
     const norm = normalizeCostLayout(raw.trim());
-    if (isValidCostLayout(norm)) { commit({ ...state, costLayout: norm, slots: defaultSlots(norm) }); setCustomMode(false); }
+    if (isValidCostLayout(norm)) { commit({ ...state, costLayout: norm, slots: defaultSlots(norm), mainEcho: mainEchoUnder(norm) }); setCustomMode(false); }
   };
   // 자유 2세트 효과 풀 (원소피해는 캐릭터 원소명으로 표시)
   const twoPieceOptions: DropdownOption[] = loadTwoPieceEffects().map((e) => ({
@@ -98,7 +101,9 @@ export function Selectors({ state, setState }: Props) {
   return (
     <div className="char-config">
       <div className="char-left">
-        <img className="char-image" src={`/characters/${char.id}.webp`} alt={char.name} onError={onImgError} />
+        <div className="char-portrait">
+          <img className="char-image" src={`/characters/${char.id}.webp`} alt={char.name} onError={onImgError} />
+        </div>
         {char.modes && char.modes.length > 0 && (
           <div className="mode-toggle">
             {char.modes.map((m) => (
@@ -117,7 +122,7 @@ export function Selectors({ state, setState }: Props) {
             <input type="range" min={0} max={6} step={1} style={{ flex: 1, minWidth: 120 }}
               value={state.ascensionLevel ?? 0}
               onChange={(e) => setState({ ...state, ascensionLevel: Number(e.target.value) })} />
-            <span style={{ fontWeight: 'bold', minWidth: 36, textAlign: 'right' }}>
+            <span style={{ fontWeight: 700, fontSize: '0.86rem', minWidth: 36, textAlign: 'right', color: (state.ascensionLevel ?? 0) === 6 ? 'var(--accent)' : undefined }}>
               {(() => { const a = state.ascensionLevel ?? 0; return a === 0 ? '명함' : a === 6 ? '풀돌' : a + '돌'; })()}
             </span>
           </div>
@@ -135,7 +140,7 @@ export function Selectors({ state, setState }: Props) {
             <input type="range" min={1} max={5} step={1} style={{ flex: 1, minWidth: 120 }}
               value={state.refinementLevel ?? 1}
               onChange={(e) => setState({ ...state, refinementLevel: Number(e.target.value) })} />
-            <span style={{ fontWeight: 'bold', minWidth: 36, textAlign: 'right' }}>{state.refinementLevel ?? 1}공진</span>
+            <span style={{ fontWeight: 700, fontSize: '0.86rem', minWidth: 36, textAlign: 'right' }}>{state.refinementLevel ?? 1}공진</span>
           </div>
         </div>
 
@@ -171,19 +176,19 @@ export function Selectors({ state, setState }: Props) {
         <div className="setting">
           <div className="setting-label">메인 에코</div>
           <Dropdown value={state.mainEcho?.id ?? ''} options={mainEchoOptions}
-            onChange={(id) => commit({ ...state, mainEcho: combinedMainEchoes(state.echoSets).find((m) => m.id === id) ?? null })} />
+            onChange={(id) => commit({ ...state, mainEcho: combinedMainEchoes(state.echoSets, state.costLayout).find((m) => m.id === id) ?? null })} />
         </div>
 
         <div className="setting">
           <div className="setting-label">코스트 구성</div>
-          <Dropdown value={costDropdownValue} options={costOptions}
+          <Dropdown className="dd-cost" value={costDropdownValue} options={costOptions}
             onChange={(v) => {
               if (v === CUSTOM) { setCustomMode(true); setCustomInput(isPreset ? '' : (state.costLayout ?? '')); }
-              else { setCustomMode(false); commit({ ...state, costLayout: v as CostLayout, slots: defaultSlots(v as CostLayout) }); }
+              else { setCustomMode(false); commit({ ...state, costLayout: v as CostLayout, slots: defaultSlots(v as CostLayout), mainEcho: mainEchoUnder(v as CostLayout) }); }
             }} />
           {showCustom && (() => {
             const valid = isValidCostLayout(normalizeCostLayout(customInput.trim()));
-            const cell = { height: 31, padding: '0 10px', fontSize: '0.9rem', border: '1px solid #bbb', borderRadius: 6, boxSizing: 'border-box' as const };
+            const cell = { height: 36, padding: '0 10px', fontSize: '0.9rem', border: '1px solid var(--ctrlBorder)', background: 'var(--ctrl)', color: 'var(--fg)', borderRadius: 9, boxSizing: 'border-box' as const };
             return (
               <div style={{ marginTop: 4 }}>
                 <div style={{ display: 'flex', alignItems: 'stretch', gap: 4, width: 220 }}>
@@ -208,7 +213,8 @@ export function Selectors({ state, setState }: Props) {
               <span className="help-tip">100% 미만 입력 → 에코로 늘리는 공효 증가분으로 해석. 100% 이상 입력 → 총 공효(기본 100% 포함)로 해석(에코 기여 = 값 − 100).</span>
             </span>
           </div>
-          <input type="number" min={0} step={0.1} style={{ width: 80 }}
+          <input type="number" min={0} step={0.1}
+            style={{ width: 88, height: 38, padding: '0 12px', borderRadius: 9, border: '1px solid var(--ctrlBorder)', background: 'var(--ctrl)', color: 'var(--fg)', fontFamily: 'var(--mono)', fontWeight: 600, fontSize: '0.9rem', boxSizing: 'border-box' }}
             value={state.requiredEnergyRegen ?? ''}
             onChange={(e) => {
               const n = parseFloat(e.target.value);

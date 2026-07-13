@@ -61,11 +61,11 @@ export function EchoSlots({ state, setState }: Props) {
 
   return (
     <div className="echo-slots">
-      {/* 제목 바로 아래: 전체 에코 유효옵 합 */}
-      <table style={{ marginBottom: 14 }}>
-        <thead><tr>{eff.map((k) => <th key={k}>{sumLabel(k)}</th>)}</tr></thead>
-        <tbody><tr>{eff.map((k) => <td key={k}>{(sum[k] ?? 0).toFixed(k.startsWith('flat') ? 0 : 1)}</td>)}</tr></tbody>
-      </table>
+      {/* 제목 바로 아래: 전체 에코 유효옵 합 (그리드 카드) */}
+      <div className="sum-grid" style={{ gridTemplateColumns: `repeat(${eff.length}, 1fr)` }}>
+        {eff.map((k) => <div key={'h' + k} className="sum-h">{sumLabel(k)}</div>)}
+        {eff.map((k) => <div key={'v' + k} className="sum-v">{(sum[k] ?? 0).toFixed(k.startsWith('flat') ? 0 : 1)}</div>)}
+      </div>
 
       {/* 아래: 에코 슬롯 편집 (탭 → 코스트 → 메인 → 부옵) */}
       <div className="echo-tabs">
@@ -77,12 +77,14 @@ export function EchoSlots({ state, setState }: Props) {
         ))}
       </div>
 
-      {/* 선택한 에코의 코스트 → 메인 → 부옵 */}
-      <div className="sub-row">
-        <span className="muted" style={{ minWidth: 44 }}>코스트</span>
-        <Dropdown className="dd-grow" value={slot.cost != null ? String(slot.cost) : ''} options={costOptions} onChange={onCostChange} />
+      {/* 선택한 에코의 코스트 → 메인 → 부옵 (카드) */}
+      <div className="echo-edit">
+        <div className="sub-row">
+          <span className="muted" style={{ minWidth: 40, fontSize: '0.8rem' }}>코스트</span>
+          <Dropdown className="dd-grow" value={slot.cost != null ? String(slot.cost) : ''} options={costOptions} onChange={onCostChange} />
+        </div>
+        <EchoEditor cost={slot.cost} main={slot.main} subs={slot.substats} optionList={optionList} matrixCost={state.character.matrix_cost} scaleStat={state.character.scale_stat} onMain={onMainChange} onSub={onSubChange} />
       </div>
-      <EchoEditor cost={slot.cost} main={slot.main} subs={slot.substats} optionList={optionList} matrixCost={state.character.matrix_cost} scaleStat={state.character.scale_stat} onMain={onMainChange} onSub={onSubChange} />
     </div>
   );
 }

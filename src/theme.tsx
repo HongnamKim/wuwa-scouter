@@ -8,22 +8,25 @@ export interface ThemeVars {
   chipBase: string; stat: string; ghost: string;
   ctrl: string; ctrlBorder: string; menu: string; hover: string;
   code: string; codebg: string;
+  bestbg: string; bestfg: string; good: string;
 }
 
 const THEMES: Record<Theme, ThemeVars> = {
   dark: {
-    bg: '#0b0e15', fg: '#e7ebf3', muted: '#828b9f', rule: 'rgba(255,255,255,0.09)',
-    card: '#121620', cardBorder: 'rgba(255,255,255,0.07)', portrait: '#0e1118',
+    bg: '#0b0e15', fg: '#dbe0ea', muted: '#828b9f', rule: 'rgba(255,255,255,0.09)',
+    card: '#121620', cardBorder: 'rgba(255,255,255,0.08)', portrait: '#0e1118',
     chipBase: '#12151d', stat: 'rgba(255,255,255,0.04)', ghost: '#5c6577',
-    ctrl: '#141924', ctrlBorder: 'rgba(255,255,255,0.11)', menu: '#161b26', hover: 'rgba(255,255,255,0.06)',
+    ctrl: '#171c27', ctrlBorder: 'rgba(255,255,255,0.12)', menu: '#161b26', hover: 'rgba(255,255,255,0.06)',
     code: '#e6c46b', codebg: 'rgba(199,155,59,0.12)',
+    bestbg: 'rgba(199,155,59,0.16)', bestfg: '#e6c46b', good: '#5fce7a',
   },
   light: {
-    bg: '#eef1f7', fg: '#182130', muted: '#6c7688', rule: '#d7dde7',
-    card: '#ffffff', cardBorder: '#e5e9f1', portrait: '#f5f7fb',
+    bg: '#eef1f7', fg: '#232d3b', muted: '#6c7688', rule: '#e2e7ef',
+    card: '#ffffff', cardBorder: '#e5e9f1', portrait: '#f0f3f8',
     chipBase: '#ffffff', stat: '#f3f5f9', ghost: '#aab2c0',
-    ctrl: '#ffffff', ctrlBorder: '#d8dee8', menu: '#ffffff', hover: '#eef2f8',
+    ctrl: '#f6f8fc', ctrlBorder: '#d8dee8', menu: '#ffffff', hover: '#eef2f8',
     code: '#8a6d1e', codebg: '#faf4e4',
+    bestbg: '#f4ecd6', bestfg: '#7a5e12', good: '#2a7d2a',
   },
 };
 
