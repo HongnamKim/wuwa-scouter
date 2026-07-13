@@ -247,20 +247,31 @@ th { background: var(--stat); color: var(--muted); }
 .sub-row { display: flex; gap: 8px; margin: 8px 0; align-items: center; }
 .echo-subs { margin-top: 12px; }
 .cmp-result { font-weight: bold; margin: 8px 0; }
+/* 에코 교체 비교: 내 에코 | → | 교체할 에코 (카드 2열) */
 /* 기본(좁은 화면): 세로 스택 + 아래 화살표 */
-.swap-cols { display: flex; flex-direction: column; gap: 8px; align-items: stretch; margin: 8px auto; max-width: 760px; }
-.swap-echo { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; }
-.swap-echo-title { font-weight: bold; margin-bottom: 6px; }
-.swap-arrow { align-self: center; font-size: 1.6rem; color: #555; line-height: 1; }
+.swap-cols { display: flex; flex-direction: column; gap: 16px; align-items: stretch; margin: 8px 0; }
+.swap-echo { flex: 1; min-width: 0; border: 1px solid var(--cardBorder); border-radius: 14px; background: var(--card); padding: 14px; }
+.swap-echo-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; }
+.swap-echo .dropdown-trigger.dropdown-readonly { background: var(--stat); }
+.swap-arrow { align-self: center; font-size: 1.4rem; color: var(--accent); line-height: 1; }
 .swap-arrow .arrow-h { display: none; }
 /* 넓은 화면: 가로 배치 + 오른쪽 화살표 */
 @media (min-width: 600px) {
   .swap-cols { flex-direction: row; align-items: stretch; justify-content: center; }
-  .swap-echo { flex: 1; }
-  .swap-arrow { margin: 0 24px; }
+  .swap-arrow { margin: 0 4px; }
   .swap-arrow .arrow-h { display: inline; }
   .swap-arrow .arrow-v { display: none; }
 }
+/* 점수 비교 3열 카드 (a → b + 변화량) */
+.cmp-score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+.cmp-score-grid .score-card { padding: 14px 16px; }
+.cmp-lbl { font-size: 0.8rem; color: var(--muted); }
+.cmp-ab { font-family: var(--mono); font-size: 1.35rem; font-weight: 700; margin-top: 4px; }
+.cmp-delta { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
+@media (max-width: 760px) { .cmp-score-grid { grid-template-columns: 1fr; } }
+/* 무기 비교 그리드 카드 */
+.wc-h { padding: 9px 12px; font-size: 0.76rem; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--rule); }
+.wc-cell { padding: 9px 12px; border-bottom: 1px solid var(--rule); }
 .swap-results { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
 .swap-results .swap-res-lbl { display: inline-block; min-width: 96px; color: #555; font-size: 0.9rem; }
 @media (max-width: 720px) { .two-col { flex-direction: column; } }
@@ -280,7 +291,7 @@ th { background: var(--stat); color: var(--muted); }
   --card: #121620; --cardBorder: rgba(255,255,255,0.08); --portrait: #0e1118;
   --ctrl: #171c27; --ctrlBorder: rgba(255,255,255,0.12); --stat: rgba(255,255,255,0.04);
   --menu: #161b26; --hover: rgba(255,255,255,0.06);
-  --bestbg: rgba(199,155,59,0.16); --bestfg: #e6c46b; --good: #5fce7a;
+  --bestbg: rgba(199,155,59,0.16); --bestfg: #e6c46b; --good: #5fce7a; --bad: #e5787d;
   --accent: #c79b3b; --el: #c79b3b;
   --faq-fg: #dbe0ea; --faq-muted: #828b9f; --faq-rule: rgba(255,255,255,0.09);
   --faq-code: #e6c46b; --faq-codebg: rgba(199,155,59,0.12);
