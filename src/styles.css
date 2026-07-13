@@ -272,7 +272,19 @@ th { background: var(--stat); color: var(--muted); }
 .party-chip button:hover { color: #e5646a; }
 
 /* ===== 재디자인: 테마 헤더 반응형 + 모노 폰트 ===== */
-:root { --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace; }
+/* 아래 커스텀 프로퍼티는 런타임에 App.tsx/theme.tsx가 .app(및 일부 래퍼)에 주입한다.
+   여기 :root 기본값은 폴백 겸 정적 분석기(IntelliJ 등)가 var(--x)를 해석하도록 하는 선언이다. */
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --fg: #dbe0ea; --muted: #828b9f; --rule: rgba(255,255,255,0.09);
+  --card: #121620; --cardBorder: rgba(255,255,255,0.08); --portrait: #0e1118;
+  --ctrl: #171c27; --ctrlBorder: rgba(255,255,255,0.12); --stat: rgba(255,255,255,0.04);
+  --menu: #161b26; --hover: rgba(255,255,255,0.06);
+  --bestbg: rgba(199,155,59,0.16); --bestfg: #e6c46b; --good: #5fce7a;
+  --accent: #c79b3b; --el: #c79b3b;
+  --faq-fg: #dbe0ea; --faq-muted: #828b9f; --faq-rule: rgba(255,255,255,0.09);
+  --faq-code: #e6c46b; --faq-codebg: rgba(199,155,59,0.12);
+}
 .dc-burger { display: none; }
 .dc-nav-m { display: none; }
 @media (max-width: 720px) {
@@ -281,7 +293,6 @@ th { background: var(--stat); color: var(--muted); }
   .dc-burger { display: inline-flex !important; }
   .dc-nav-m.open { display: flex !important; }
 }
-@keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .dc-card:hover { transform: translateY(-5px); border-color: var(--el); box-shadow: 0 18px 42px -18px color-mix(in srgb, var(--el) 65%, transparent); }
 
 /* 폼 요소 테마 (분석 화면) */

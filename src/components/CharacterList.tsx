@@ -114,7 +114,7 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
       border: `1px solid ${vars.cardBorder}`, background: vars.card, overflow: 'hidden',
       cursor: locked ? 'default' : 'pointer', textDecoration: 'none', color: vars.fg,
       transition: 'transform .22s ease, border-color .22s ease, box-shadow .22s ease',
-      animation: 'cardIn .4s ease both', opacity: locked ? 0.62 : 1,
+      opacity: locked ? 0.62 : 1,
     };
     return (
       <a key={character.id} className={locked ? undefined : 'dc-card'} style={cardStyle}
