@@ -26,9 +26,9 @@ const BUFF_TYPES: { key: StatKey; label: string }[] = [
   { key: 'defense_ignore', label: '방어력 무시%' }, { key: 'element_resistance_ignore', label: '속성 저항 무시%' },
 ];
 
-interface Props { state: AppState; setState: (s: AppState) => void; }
+interface Props { state: AppState; setState: (s: AppState) => void; hideTitle?: boolean }
 
-export function BuffPanel({ state, setState }: Props) {
+export function BuffPanel({ state, setState, hideTitle }: Props) {
   // 라벨 표기: 간략(유형+수치) ⇄ 풀(label). 선택은 localStorage에 저장.
   const [simple, setSimple] = useState<boolean>(() => {
     try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
@@ -234,8 +234,8 @@ export function BuffPanel({ state, setState }: Props) {
 
   return (
     <div>
-      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        추가 버프
+      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: hideTitle ? 'flex-end' : 'space-between', gap: 8, marginTop: hideTitle ? 8 : undefined }}>
+        {!hideTitle && '추가 버프'}
         <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.78rem', fontWeight: 'normal' }}>
           <label style={{ display: 'flex', gap: 5, alignItems: 'center', color: 'var(--muted)' }}>
             <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략 설명

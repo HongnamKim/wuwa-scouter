@@ -8,7 +8,7 @@ export interface ThemeVars {
   chipBase: string; stat: string; ghost: string;
   ctrl: string; ctrlBorder: string; menu: string; hover: string;
   code: string; codebg: string;
-  bestbg: string; bestfg: string; good: string;
+  bestbg: string; bestfg: string; good: string; bad: string;
 }
 
 const THEMES: Record<Theme, ThemeVars> = {
@@ -18,7 +18,7 @@ const THEMES: Record<Theme, ThemeVars> = {
     chipBase: '#12151d', stat: 'rgba(255,255,255,0.04)', ghost: '#5c6577',
     ctrl: '#171c27', ctrlBorder: 'rgba(255,255,255,0.12)', menu: '#161b26', hover: 'rgba(255,255,255,0.06)',
     code: '#e6c46b', codebg: 'rgba(199,155,59,0.12)',
-    bestbg: 'rgba(199,155,59,0.16)', bestfg: '#e6c46b', good: '#5fce7a',
+    bestbg: 'rgba(199,155,59,0.16)', bestfg: '#e6c46b', good: '#5fce7a', bad: '#e5787d',
   },
   light: {
     bg: '#eef1f7', fg: '#232d3b', muted: '#6c7688', rule: '#e2e7ef',
@@ -26,7 +26,7 @@ const THEMES: Record<Theme, ThemeVars> = {
     chipBase: '#ffffff', stat: '#f3f5f9', ghost: '#aab2c0',
     ctrl: '#f6f8fc', ctrlBorder: '#d8dee8', menu: '#ffffff', hover: '#eef2f8',
     code: '#8a6d1e', codebg: '#faf4e4',
-    bestbg: '#f4ecd6', bestfg: '#7a5e12', good: '#2a7d2a',
+    bestbg: '#f4ecd6', bestfg: '#7a5e12', good: '#1f8a3b', bad: '#c0392b',
   },
 };
 

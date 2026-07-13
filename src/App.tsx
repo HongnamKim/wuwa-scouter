@@ -61,7 +61,7 @@ function Layout() {
     '--card': vars.card, '--cardBorder': vars.cardBorder,
     '--ctrl': vars.ctrl, '--ctrlBorder': vars.ctrlBorder,
     '--stat': vars.stat, '--portrait': vars.portrait, '--menu': vars.menu, '--hover': vars.hover,
-    '--bestbg': vars.bestbg, '--bestfg': vars.bestfg, '--good': vars.good,
+    '--bestbg': vars.bestbg, '--bestfg': vars.bestfg, '--good': vars.good, '--bad': vars.bad,
     '--accent': ACCENT, '--el': ACCENT,
   } as CSSProperties;
   return (
@@ -240,11 +240,12 @@ function CompareRoute() {
  * 비교 로직은 추후 구현 — 지금은 레이아웃/진입/빈 상태만.
  */
 /** 접이식 섹션(아코디언). 헤더 클릭으로 토글. */
-function AccordionSection({ title, open, onToggle, children, topBorder = true }: { title: string; open: boolean; onToggle: () => void; children: ReactNode; topBorder?: boolean }) {
+function AccordionSection({ title, subtitle, open, onToggle, children, topBorder = true }: { title: string; subtitle?: string; open: boolean; onToggle: () => void; children: ReactNode; topBorder?: boolean }) {
   return (
-    <div style={{ borderTop: topBorder ? '1px solid #ddd' : undefined, margin: '4px 0' }}>
-      <h3 style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 8px' }} onClick={onToggle}>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>{open ? '▾' : '▸'}</span>{title}
+    <div style={{ borderTop: topBorder ? '1px solid var(--rule)' : undefined, margin: '4px 0' }}>
+      <h3 style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 9, margin: '14px 0 8px', fontSize: '1.05rem', fontWeight: 800 }} onClick={onToggle}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{open ? '▾' : '▸'}</span>{title}
+        {subtitle && <span style={{ fontSize: '0.78rem', fontWeight: 400, color: 'var(--muted)' }}>{subtitle}</span>}
       </h3>
       {open && <div style={{ marginBottom: 12 }}>{children}</div>}
     </div>
@@ -269,17 +270,22 @@ function CompareScreen({ character }: { character: Character }) {
     setSwapVer((v) => v + 1);
   };
 
+  const elColor = ELEMENT_COLOR[character.element] ?? ACCENT;
   return (
-    <>
-      <label style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8 }}>캐릭터:
-        <Dropdown value={character.id}
-          options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
+    <div style={{ '--el': elColor } as CSSProperties}>
+      <div className="char-select-row">
+        <Dropdown className="dd-char" value={character.id}
+          options={charactersInListOrder().map((c) => ({
+            value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''),
+            image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c),
+            meta: `v${c.version}`, chip: { text: `${c.element} · v${c.version}`, color: ELEMENT_COLOR[c.element] ?? ACCENT },
+          }))}
           onChange={(id) => navigate(`/compare/${id}`)} />
-      </label>
-      <h2>
-        {character.name} 비교
-        {base && <span className="muted" style={{ fontSize: '0.85rem', fontWeight: 'normal', marginLeft: 8 }}>저장된 빌드 기준</span>}
-      </h2>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, margin: '0 0 24px', flexWrap: 'wrap' }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--fg)' }}>{character.name} 비교</h1>
+        {base && <span style={{ fontSize: '0.82rem', color: 'var(--muted)', border: '1px solid var(--ctrlBorder)', borderRadius: 999, padding: '3px 10px' }}>저장된 빌드 기준</span>}
+      </div>
 
       {!base ? (
         <div style={{ margin: '16px 0' }}>
@@ -288,8 +294,8 @@ function CompareScreen({ character }: { character: Character }) {
         </div>
       ) : (
         <>
-          <AccordionSection title="빌드 수정" open={openBuild} onToggle={() => setOpenBuild((o) => !o)} topBorder={false}>
-            <BuffPanel state={saved!} setState={setSaved} />
+          <AccordionSection title="버프 수정" open={openBuild} onToggle={() => setOpenBuild((o) => !o)} topBorder={false}>
+            <BuffPanel state={saved!} setState={setSaved} hideTitle />
           </AccordionSection>
           <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)}>
             <SubstatSwapCompare key={swapVer} base={base} onApply={applyEditedSlots} />
@@ -299,7 +305,7 @@ function CompareScreen({ character }: { character: Character }) {
           </AccordionSection>
         </>
       )}
-    </>
+    </div>
   );
 }
 

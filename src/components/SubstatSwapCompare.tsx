@@ -16,16 +16,16 @@ const DMG_TYPE_LABEL: Record<DamageBonusType, string> = {
   resonance_liberation: '공명해방 피해', echo_skill: '에코 피해',
 };
 const SCALE_LABEL: Record<ScaleStat, string> = { attack: '공격력', hp: '체력', defense: '방어력' };
-const CMP = { fontSize: '1.5rem', lineHeight: 1.2 } as const; // 현재 → 교체후 표시 크기
+const comma = (n: number) => Math.round(n).toLocaleString('en-US');
 
 /** 변화 한 줄: 현재 → 교체 후. 값이 다르면 방향 색상. */
 function ChangeRow({ label, a, b, fmt }: { label: string; a: number; b: number; fmt: (v: number) => string }) {
   const diff = b - a;
-  const color = Math.abs(diff) < 1e-9 ? '#888' : diff > 0 ? '#15803d' : '#b91c1c';
+  const color = Math.abs(diff) < 1e-9 ? 'var(--muted)' : diff > 0 ? 'var(--good)' : 'var(--bad)';
   return (
-    <div style={{ display: 'flex', gap: 10, fontSize: '1.05rem', padding: '3px 0' }}>
-      <span style={{ minWidth: 110, color: '#555' }}>{label}</span>
-      <span>{fmt(a)} → <b style={{ color }}>{fmt(b)}</b></span>
+    <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', fontSize: '0.92rem', padding: '4px 0' }}>
+      <span style={{ minWidth: 104, color: 'var(--muted)' }}>{label}</span>
+      <span style={{ whiteSpace: 'nowrap' }}>{fmt(a)} → <b style={{ color, fontFamily: 'var(--mono)' }}>{fmt(b)}</b></span>
     </div>
   );
 }
@@ -98,9 +98,8 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
   // 최고점/크크작 대비의 %p 변화(교체 후 − 현재)
   const bestPp = (compared - current) / best * 100;
   const kkPp = (compared - current) / kkjak * 100;
-  const ppColor = (pp: number) => (pp > 0 ? '#15803d' : pp < 0 ? '#b91c1c' : '#888');
+  const ppColor = (pp: number) => (pp > 0 ? 'var(--good)' : pp < 0 ? 'var(--bad)' : 'var(--muted)');
   const fmtPp = (pp: number) => `${pp >= 0 ? '+' : ''}${pp.toFixed(1)}%p`;
-  const DELTA = { fontWeight: 'bold', fontSize: '1.1rem' } as const;
 
   return (
     <div>
@@ -118,57 +117,57 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
 
       <div className="swap-cols">
         <div className="swap-echo">
-          <div className="swap-echo-title">내 에코</div>
+          <div className="swap-echo-title" style={{ color: 'var(--muted)' }}>내 에코</div>
           <EchoEditor cost={cost} main={base.slots[active].main} subs={base.slots[active].substats} optionList={optionList} matrixCost={base.character.matrix_cost} scaleStat={base.character.scale_stat} readOnly />
         </div>
 
         <div className="swap-arrow"><span className="arrow-h">→</span><span className="arrow-v">↓</span></div>
 
         <div className="swap-echo">
-          <div className="swap-echo-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="swap-echo-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, color: 'var(--accent)' }}>
             교체할 에코
-            <button type="button" disabled={!activeChanged} onClick={resetActive} style={{ fontSize: '0.78rem', padding: '2px 8px' }}>원래대로</button>
-            <button type="button" disabled={activeEmpty} onClick={emptyActive} style={{ fontSize: '0.78rem', padding: '2px 8px' }}>비우기</button>
+            <span style={{ display: 'flex', gap: 6 }}>
+              <button type="button" disabled={!activeChanged} onClick={resetActive} style={{ fontSize: '0.74rem', padding: '0 9px', height: 26 }}>원래대로</button>
+              <button type="button" disabled={activeEmpty} onClick={emptyActive} style={{ fontSize: '0.74rem', padding: '0 9px', height: 26 }}>비우기</button>
+            </span>
           </div>
           <EchoEditor cost={cost} main={edited[active].main} subs={edited[active].substats} optionList={optionList} matrixCost={base.character.matrix_cost} scaleStat={base.character.scale_stat} onMain={setMain} onSub={updateSub} orig={{ main: base.slots[active].main, subs: base.slots[active].substats }} />
         </div>
       </div>
 
-      {/* 점수: 분석 화면 점수와 동일한 3열 가로 레이아웃 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, margin: '10px 0' }}>
-        <div>
-          <div className="lbl">딜 상승 수치</div>
-          <div style={CMP}>{current.toFixed(0)} → <b>{compared.toFixed(0)}</b></div>
-          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: diff > 0 ? '#15803d' : diff < 0 ? '#b91c1c' : '#888' }}>
-            {diff >= 0 ? '+' : ''}{diff.toFixed(2)}%
-          </div>
+      {/* 점수: 3열 카드 (a → b + 변화량) */}
+      <div className="cmp-score-grid">
+        <div className="score-card">
+          <div className="cmp-lbl">딜 상승 수치</div>
+          <div className="cmp-ab">{comma(current)} → <span>{comma(compared)}</span></div>
+          <div className="cmp-delta" style={{ color: diff > 0 ? 'var(--good)' : diff < 0 ? 'var(--bad)' : 'var(--muted)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(2)}%</div>
         </div>
-        <div>
-          <div className="lbl">최고점 대비</div>
-          <div style={CMP}>{pct(current, best)} → <b>{pct(compared, best)}</b></div>
-          <div style={{ ...DELTA, color: ppColor(bestPp) }}>{fmtPp(bestPp)}</div>
+        <div className="score-card">
+          <div className="cmp-lbl">최고점 대비</div>
+          <div className="cmp-ab">{pct(current, best)} → <span>{pct(compared, best)}</span></div>
+          <div className="cmp-delta" style={{ color: ppColor(bestPp) }}>{fmtPp(bestPp)}</div>
         </div>
-        <div>
-          <div className="lbl">크크작 대비</div>
-          <div style={CMP}>{pct(current, kkjak)} → <b>{pct(compared, kkjak)}</b></div>
-          <div style={{ ...DELTA, color: ppColor(kkPp) }}>{fmtPp(kkPp)}</div>
+        <div className="score-card">
+          <div className="cmp-lbl">크크작 대비</div>
+          <div className="cmp-ab">{pct(current, kkjak)} → <span>{pct(compared, kkjak)}</span></div>
+          <div className="cmp-delta" style={{ color: ppColor(kkPp) }}>{fmtPp(kkPp)}</div>
         </div>
       </div>
 
       {onApply && (
-        <div style={{ textAlign: 'center', margin: '4px 0 10px' }}>
+        <div style={{ textAlign: 'center', margin: '6px 0 18px' }}>
           <button type="button" className="save-btn" disabled={!anyChanged} onClick={() => setConfirmApply(true)}>
             교체할 에코를 내 에코로 적용하기
           </button>
         </div>
       )}
 
-      <hr style={{ border: 'none', borderTop: '1px solid #ddd', margin: '12px 0' }} />
+      <div style={{ height: 1, background: 'var(--rule)', margin: '14px 0' }} />
 
       {/* 스펙 변화(좌) · 유효옵 총합 변화(우) */}
-      <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 240 }}>
-          <div style={{ fontWeight: 'bold', fontSize: '1.15rem', margin: '0 0 6px' }}>스펙 변화</div>
+          <div style={{ fontWeight: 800, fontSize: '1rem', margin: '0 0 10px' }}>스펙 변화</div>
           <ChangeRow label={SCALE_LABEL[base.character.scale_stat]} a={specA.attack} b={specB.attack} fmt={(v) => v.toFixed(0)} />
           <ChangeRow label="크리티컬" a={specA.criticalRateRaw} b={specB.criticalRateRaw} fmt={pctv} />
           <ChangeRow label="크리티컬 피해" a={specA.criticalDamage} b={specB.criticalDamage} fmt={pctv} />
@@ -179,7 +178,7 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
           {mechKey && <ChangeRow label="공효→에코 보너스" a={mechA} b={mechB} fmt={pctv} />}
         </div>
         <div style={{ flex: 1, minWidth: 240 }}>
-          <div style={{ fontWeight: 'bold', fontSize: '1.15rem', margin: '0 0 6px' }}>유효옵 총합 변화</div>
+          <div style={{ fontWeight: 800, fontSize: '1rem', margin: '0 0 10px' }}>유효옵 총합 변화</div>
           {eff.map((k) => {
             const a = subA[k] ?? 0; const b = subB[k] ?? 0;
             if (a === 0 && b === 0) return null;
