@@ -23,7 +23,7 @@ export function CharacterSpec({ state }: { state: AppState }) {
   return (
     <table className="spec-table">
       <tbody>
-        <tr><th>{SCALE_LABEL[state.character.scale_stat]}</th><td>{s.attack.toFixed(0)}</td></tr>
+        <tr><th>{SCALE_LABEL[state.character.scale_stat]}</th><td>{Math.round(s.attack).toLocaleString('en-US')}</td></tr>
         <tr><th>크리티컬</th><td>{(s.criticalRateRaw * 100).toFixed(1)}%{s.criticalRateRaw > 1 ? ' (캡 100)' : ''}</td></tr>
         <tr><th>크리티컬 피해</th><td>{(s.criticalDamage * 100).toFixed(1)}%</td></tr>
         <tr><th>속성 피해</th><td>{(s.elementBonus * 100).toFixed(1)}%{s.amplifyElement > 0 ? ` (부스트 +${(s.amplifyElement * 100).toFixed(0)}%)` : ''}</td></tr>

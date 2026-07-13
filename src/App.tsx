@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode, type CSSProperties } from 'react';
 import {
   createBrowserRouter, RouterProvider, Outlet, Navigate,
   useNavigate, useParams, useLocation, useBlocker,
@@ -18,6 +18,7 @@ import { isLocked } from './engine/release';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
+import { ThemeProvider, useTheme, ACCENT, ELEMENT_COLOR } from './theme';
 import { EchoSlots } from './components/EchoSlots';
 import { CharacterSpec } from './components/CharacterSpec';
 import { BuffPanel } from './components/BuffPanel';
@@ -43,26 +44,58 @@ function lastCharacterId(): string {
 function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const onList = pathname.startsWith('/list');
-  const onAnalysis = pathname.startsWith('/analysis');
-  const onCompare = pathname.startsWith('/compare');
-  const onFaq = pathname.startsWith('/faq');
+  const { theme, vars, toggle } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false); // 모바일: 햄버거로 네비 토글
   const go = (path: string) => { setMenuOpen(false); navigate(path); };
+  const items = [
+    { label: '공명자 목록', to: '/list', active: pathname.startsWith('/list') },
+    { label: '공명자 분석', to: `/analysis/${lastCharacterId()}`, active: pathname.startsWith('/analysis') },
+    { label: '비교', to: `/compare/${lastCharacterId()}`, active: pathname.startsWith('/compare') },
+    { label: 'FAQ', to: '/faq', active: pathname.startsWith('/faq') },
+  ];
+  const themeIcon = theme === 'dark' ? '☾' : '☀';
+  const themeLabel = theme === 'dark' ? 'DARK' : 'LIGHT';
+  // 테마 CSS 변수를 .app에 주입 → styles.css 클래스와 컴포넌트 인라인 스타일 모두 참조.
+  const cssVars = {
+    '--fg': vars.fg, '--muted': vars.muted, '--rule': vars.rule,
+    '--card': vars.card, '--cardBorder': vars.cardBorder,
+    '--ctrl': vars.ctrl, '--ctrlBorder': vars.ctrlBorder,
+    '--stat': vars.stat, '--portrait': vars.portrait, '--menu': vars.menu, '--hover': vars.hover,
+    '--bestbg': vars.bestbg, '--bestfg': vars.bestfg, '--good': vars.good, '--bad': vars.bad,
+    '--accent': ACCENT, '--el': ACCENT,
+  } as CSSProperties;
   return (
-    <>
-      <header className="app-header">
-        <div className="brand" onClick={() => go('/list')}>명조스카우터</div>
-        <button className="nav-toggle" aria-label="메뉴" onClick={() => setMenuOpen((o) => !o)}>☰</button>
-        <nav className={menuOpen ? 'header-nav open' : 'header-nav'}>
-          <button className={onList ? 'active' : ''} onClick={() => go('/list')}>공명자 목록</button>
-          <button className={onAnalysis ? 'active' : ''} onClick={() => go(`/analysis/${lastCharacterId()}`)}>공명자 분석</button>
-          <button className={onCompare ? 'active' : ''} onClick={() => go(`/compare/${lastCharacterId()}`)}>비교</button>
-          <button className={onFaq ? 'active' : ''} onClick={() => go('/faq')}>FAQ</button>
+    <div style={{ minHeight: '100vh', background: vars.bg, color: vars.fg, transition: 'background .35s ease, color .35s ease' }}>
+      <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, height: 72, display: 'flex', alignItems: 'center', gap: 20, padding: '0 clamp(16px,4vw,48px)', background: 'rgba(13,16,23,0.86)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div onClick={() => go('/list')} style={{ display: 'flex', alignItems: 'center', gap: 11, cursor: 'pointer' }}>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: ACCENT, boxShadow: `0 0 12px ${ACCENT}`, transform: 'rotate(45deg)' }} />
+          <span style={{ fontWeight: 800, fontSize: '1.12rem', letterSpacing: '-0.01em', color: '#f3f5fa' }}>명조<span style={{ color: ACCENT }}>스카우터</span></span>
+        </div>
+        <nav className="dc-nav-d" style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+          {items.map((it) => (
+            <button key={it.to} onClick={() => go(it.to)} style={{
+              padding: '9px 16px', borderRadius: 8, fontSize: '0.9rem', fontWeight: it.active ? 700 : 500, cursor: 'pointer', border: 'none',
+              color: it.active ? '#0d1017' : '#b9c0cf', background: it.active ? ACCENT : 'transparent',
+              boxShadow: it.active ? `0 4px 16px -6px ${ACCENT}` : undefined,
+            }}>{it.label}</button>
+          ))}
         </nav>
+        <button onClick={() => setMenuOpen((o) => !o)} className="dc-burger" aria-label="메뉴" style={{ marginLeft: 'auto', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, borderRadius: 9, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.04)', color: '#cfd5e2', fontSize: '1.25rem', lineHeight: 1, cursor: 'pointer' }}>☰</button>
+        <nav className={'dc-nav-m' + (menuOpen ? ' open' : '')} style={{ position: 'absolute', top: '100%', right: 12, marginTop: 8, flexDirection: 'column', gap: 4, minWidth: 160, background: '#12161f', padding: 8, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 14px 34px rgba(0,0,0,0.45)', zIndex: 60 }}>
+          {items.map((it) => (
+            <button key={it.to} onClick={() => go(it.to)} style={{ padding: '10px 14px', borderRadius: 8, fontSize: '0.95rem', fontWeight: it.active ? 700 : 500, cursor: 'pointer', border: 'none', textAlign: 'left', color: it.active ? '#0d1017' : '#cfd5e2', background: it.active ? ACCENT : 'transparent' }}>{it.label}</button>
+          ))}
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 6px' }} />
+          <button onClick={toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 14px', borderRadius: 8, border: 'none', background: 'transparent', color: '#cfd5e2', fontSize: '0.95rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
+            <span>테마</span><span style={{ fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>{themeIcon} {themeLabel}</span>
+          </button>
+        </nav>
+        <button onClick={toggle} aria-label="테마 전환" className="dc-theme-d" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, height: 38, padding: '0 14px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.04)', color: '#cfd5e2', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--mono)' }}>
+          <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>{themeIcon}</span>{themeLabel}
+        </button>
       </header>
-      <div className="app"><Outlet /></div>
-    </>
+      <div className="app" style={cssVars}><Outlet /></div>
+    </div>
   );
 }
 
@@ -93,14 +126,17 @@ function AnalysisScreen({ character }: { character: Character }) {
 
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
 
+  const elColor = ELEMENT_COLOR[character.element] ?? ACCENT;
   return (
-    <>
+    <div style={{ '--el': elColor } as CSSProperties}>
       <div className="char-select-row">
-        <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
-          <Dropdown value={character.id}
-            options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''), image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c) }))}
-            onChange={(cid) => navigate(`/analysis/${cid}`)} />
-        </label>
+        <Dropdown className="dd-char" value={character.id}
+          options={charactersInListOrder().map((c) => ({
+            value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''),
+            image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c),
+            meta: `v${c.version}`, chip: { text: `${c.element} · v${c.version}`, color: ELEMENT_COLOR[c.element] ?? ACCENT },
+          }))}
+          onChange={(cid) => navigate(`/analysis/${cid}`)} />
       </div>
 
       {character.notice && (
@@ -116,6 +152,7 @@ function AnalysisScreen({ character }: { character: Character }) {
           </div>
         ) : (
           <div className="top-reco">
+            <div className="reco-eyebrow">RECOMMENDED</div>
             <h2>메인 조합 추천</h2>
             <MainReco state={state} />
             {freeTwoPieceSlots(state.echoSets, state.costLayout ? costsOf(state.costLayout).length : 5) > 0 && (
@@ -186,7 +223,7 @@ function AnalysisScreen({ character }: { character: Character }) {
           onDismiss={() => setDeleting(false)}
         />
       )}
-    </>
+    </div>
   );
 }
 
@@ -203,11 +240,12 @@ function CompareRoute() {
  * 비교 로직은 추후 구현 — 지금은 레이아웃/진입/빈 상태만.
  */
 /** 접이식 섹션(아코디언). 헤더 클릭으로 토글. */
-function AccordionSection({ title, open, onToggle, children, topBorder = true }: { title: string; open: boolean; onToggle: () => void; children: ReactNode; topBorder?: boolean }) {
+function AccordionSection({ title, subtitle, open, onToggle, children, topBorder = true }: { title: string; subtitle?: string; open: boolean; onToggle: () => void; children: ReactNode; topBorder?: boolean }) {
   return (
-    <div style={{ borderTop: topBorder ? '1px solid #ddd' : undefined, margin: '4px 0' }}>
-      <h3 style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 8px' }} onClick={onToggle}>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>{open ? '▾' : '▸'}</span>{title}
+    <div style={{ borderTop: topBorder ? '1px solid var(--rule)' : undefined, margin: '4px 0' }}>
+      <h3 style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 9, margin: '14px 0 8px', fontSize: '1.05rem', fontWeight: 800 }} onClick={onToggle}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{open ? '▾' : '▸'}</span>{title}
+        {subtitle && <span style={{ fontSize: '0.78rem', fontWeight: 400, color: 'var(--muted)' }}>{subtitle}</span>}
       </h3>
       {open && <div style={{ marginBottom: 12 }}>{children}</div>}
     </div>
@@ -232,17 +270,22 @@ function CompareScreen({ character }: { character: Character }) {
     setSwapVer((v) => v + 1);
   };
 
+  const elColor = ELEMENT_COLOR[character.element] ?? ACCENT;
   return (
-    <>
-      <label style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8 }}>캐릭터:
-        <Dropdown value={character.id}
-          options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name, image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전` }))}
+    <div style={{ '--el': elColor } as CSSProperties}>
+      <div className="char-select-row">
+        <Dropdown className="dd-char" value={character.id}
+          options={charactersInListOrder().map((c) => ({
+            value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''),
+            image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c),
+            meta: `v${c.version}`, chip: { text: `${c.element} · v${c.version}`, color: ELEMENT_COLOR[c.element] ?? ACCENT },
+          }))}
           onChange={(id) => navigate(`/compare/${id}`)} />
-      </label>
-      <h2>
-        {character.name} 비교
-        {base && <span className="muted" style={{ fontSize: '0.85rem', fontWeight: 'normal', marginLeft: 8 }}>저장된 빌드 기준</span>}
-      </h2>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, margin: '0 0 24px', flexWrap: 'wrap' }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--fg)' }}>{character.name} 비교</h1>
+        {base && <span style={{ fontSize: '0.82rem', color: 'var(--muted)', border: '1px solid var(--ctrlBorder)', borderRadius: 999, padding: '3px 10px' }}>저장된 빌드 기준</span>}
+      </div>
 
       {!base ? (
         <div style={{ margin: '16px 0' }}>
@@ -251,8 +294,8 @@ function CompareScreen({ character }: { character: Character }) {
         </div>
       ) : (
         <>
-          <AccordionSection title="빌드 수정" open={openBuild} onToggle={() => setOpenBuild((o) => !o)} topBorder={false}>
-            <BuffPanel state={saved!} setState={setSaved} />
+          <AccordionSection title="버프 수정" open={openBuild} onToggle={() => setOpenBuild((o) => !o)} topBorder={false}>
+            <BuffPanel state={saved!} setState={setSaved} hideTitle />
           </AccordionSection>
           <AccordionSection title="에코 교체 비교" open={openSwap} onToggle={() => setOpenSwap((o) => !o)}>
             <SubstatSwapCompare key={swapVer} base={base} onApply={applyEditedSlots} />
@@ -262,7 +305,7 @@ function CompareScreen({ character }: { character: Character }) {
           </AccordionSection>
         </>
       )}
-    </>
+    </div>
   );
 }
 
@@ -283,9 +326,9 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <>
+    <ThemeProvider>
       <RouterProvider router={router} />
       <Analytics />
-    </>
+    </ThemeProvider>
   );
 }

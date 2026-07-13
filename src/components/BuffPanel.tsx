@@ -26,9 +26,9 @@ const BUFF_TYPES: { key: StatKey; label: string }[] = [
   { key: 'defense_ignore', label: '방어력 무시%' }, { key: 'element_resistance_ignore', label: '속성 저항 무시%' },
 ];
 
-interface Props { state: AppState; setState: (s: AppState) => void; }
+interface Props { state: AppState; setState: (s: AppState) => void; hideTitle?: boolean }
 
-export function BuffPanel({ state, setState }: Props) {
+export function BuffPanel({ state, setState, hideTitle }: Props) {
   // 라벨 표기: 간략(유형+수치) ⇄ 풀(label). 선택은 localStorage에 저장.
   const [simple, setSimple] = useState<boolean>(() => {
     try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
@@ -204,16 +204,16 @@ export function BuffPanel({ state, setState }: Props) {
     const label = catOf(g.source); // 그룹 소스가 탭 카테고리와 다르면 헤더 표시(보조 2세트 등 콜론 없는 그룹 포함)
     return (
       <div key={g.source}>
-        {g.source !== label && <div className="muted" style={{ margin: '2px 0 6px', fontWeight: 'bold' }}>{g.source}</div>}
-        {g.weaponStats && <div style={{ margin: '0 0 8px', fontSize: '0.8rem', color: '#333' }}>스탯: {weaponStatLine()}</div>}
+        {g.source !== label && <div style={{ margin: '9px 0 5px', fontSize: '0.74rem', fontWeight: 700, color: 'var(--muted)' }}>{g.source}</div>}
+        {g.weaponStats && <div style={{ margin: '0 0 10px', paddingBottom: 10, borderBottom: '1px solid var(--rule)', fontSize: '0.8rem', color: 'var(--muted)' }}>스탯: {weaponStatLine()}</div>}
         {vis.map(({ b, passive, setLocked }, idx) => {
           const locked = (!passive && isLocked(b)) || !!setLocked;
           const checked = setLocked ? false : (passive ? true : (!locked && isChecked(b)));
           return (
-            <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, width: 'fit-content', color: locked ? '#aaa' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
-              <input type="checkbox" disabled={passive || locked} checked={checked}
+            <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: 12, width: 'fit-content', color: locked ? 'var(--muted)' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
+              <input type="checkbox" disabled={passive || locked} checked={checked} style={{ marginTop: 2 }}
                 onChange={(e) => { if (passive || setLocked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
-              <span>{simple ? shortText(b) : fullText(b)}{passive && !setLocked ? ' (상시)' : ''}
+              <span style={{ fontSize: '0.86rem', lineHeight: 1.45 }}>{simple ? shortText(b) : fullText(b)}{passive && !setLocked ? ' (상시)' : ''}
                 {setLocked && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.set_pieces}세트(에코 {b.set_pieces}개↑ 필요)</span>}
                 {scaleNowText(b) && <span className="muted" style={{ marginLeft: 4 }}>· {scaleNowText(b)}</span>}
               </span>
@@ -234,13 +234,13 @@ export function BuffPanel({ state, setState }: Props) {
 
   return (
     <div>
-      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        추가 버프
-        <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.8rem', fontWeight: 'normal' }}>
-          <label style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: hideTitle ? 'flex-end' : 'space-between', gap: 8, marginTop: hideTitle ? 8 : undefined }}>
+        {!hideTitle && '추가 버프'}
+        <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.78rem', fontWeight: 'normal' }}>
+          <label style={{ display: 'flex', gap: 5, alignItems: 'center', color: 'var(--muted)' }}>
             <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략 설명
           </label>
-          <button type="button" disabled={toggleCount === 0} onClick={() => setAll(!allOn)}>
+          <button type="button" disabled={toggleCount === 0} onClick={() => setAll(!allOn)} style={{ height: 30, padding: '0 12px', fontSize: '0.78rem' }}>
             {allOn ? '전체 미적용' : '전체 적용'}
           </button>
         </span>
@@ -252,6 +252,7 @@ export function BuffPanel({ state, setState }: Props) {
         ))}
       </div>
 
+      <div className="buff-body">
       {activeTab ? (
         <div>{activeTab.groups.map(renderGroup)}</div>
       ) : activeIdx === buffTabs.length ? (
@@ -281,6 +282,7 @@ export function BuffPanel({ state, setState }: Props) {
           <button onClick={() => setState({ ...state, manualBuffs: [...state.manualBuffs, { type: '', value: null, enabled: true }] })}>+ 버프 추가</button>
         </div>
       )}
+      </div>
     </div>
   );
 }

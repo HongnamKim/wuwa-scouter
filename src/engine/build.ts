@@ -143,5 +143,6 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
   return {
     baseAttack, attackPercent, flatAttack, criticalRate, criticalDamage,
     increaseBonus, amplify: buffs.amplify, defResFactor,
+    skillCoefficient: ctx.character.skill_damage_coefficient,
   };
 }

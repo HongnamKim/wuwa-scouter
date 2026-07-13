@@ -7,6 +7,9 @@ export interface DropdownOption {
   image?: string;    // 없으면 텍스트만 표시
   disabled?: boolean; // 선택 불가(이미 다른 곳에서 선택 등)
   group?: string;    // 지정 시 드롭다운을 그룹(아코디언)으로 렌더. 같은 group끼리 묶임(옵션 순서대로 그룹 등장)
+  badge?: string;    // 라벨 앞 금색 배지(예: '추천')
+  meta?: string;     // 메뉴 항목 우측 모노 보조 텍스트(예: 'v3.5')
+  chip?: { text: string; color: string }; // 트리거에만 표시하는 색상 칩(예: 원소·버전)
 }
 
 interface Props {
@@ -53,12 +56,18 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
       <img className="dropdown-img" src={src} alt={alt} onError={onImgError} />
     ) : null;
 
+  const badge = (text?: string) => (text ? <span className="dropdown-badge">{text}</span> : null);
+  const chip = (c?: DropdownOption['chip']) =>
+    c ? <span className="dropdown-chip" style={{ color: c.color, borderColor: `color-mix(in srgb, ${c.color} 40%, transparent)` }}>{c.text}</span> : null;
+
   const renderOption = (o: DropdownOption, inGroup: boolean) => (
     <li key={o.value}
       className={'dropdown-option' + (inGroup ? ' grouped' : '') + (o.value === value ? ' selected' : '') + (o.disabled ? ' disabled' : '')}
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (o.disabled) return; onChange(o.value); setOpen(false); }}>
       {img(o.image, o.label)}
+      {badge(o.badge)}
       <span className="dropdown-label">{o.label}</span>
+      {o.meta && <span className="dropdown-meta">{o.meta}</span>}
     </li>
   );
 
@@ -69,7 +78,9 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
         <button type="button" className="dropdown-trigger dropdown-readonly" tabIndex={-1}>
           <span className="dropdown-item">
             {img(selected?.image, selected?.label)}
+            {badge(selected?.badge)}
             <span className="dropdown-label">{selected?.label ?? '-'}</span>
+            {chip(selected?.chip)}
           </span>
           <span className="dropdown-arrow" aria-hidden style={{ visibility: 'hidden' }}>▾</span>
         </button>
@@ -83,7 +94,9 @@ export function Dropdown({ value, options, onChange, className, disabled, readOn
         onClick={(e) => { e.stopPropagation(); if (disabled) return; setOpen((o) => !o); }}>
         <span className="dropdown-item">
           {img(selected?.image, selected?.label)}
+          {badge(selected?.badge)}
           <span className="dropdown-label">{selected?.label ?? placeholder ?? '선택'}</span>
+          {chip(selected?.chip)}
         </span>
         <span className="dropdown-arrow">▾</span>
       </button>
