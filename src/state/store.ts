@@ -45,7 +45,7 @@ function loadMemberBuild(character: Character): MemberBuild | null {
     const echoSets = (s.echoSetIds ?? [])
       .map((id) => loadEchoSets().find((x) => x.id === id))
       .filter((x): x is EchoSet => !!x);
-    const mainEcho = s.mainEchoId ? (combinedMainEchoes(echoSets).find((m) => m.id === s.mainEchoId) ?? null) : null;
+    const mainEcho = s.mainEchoId ? (combinedMainEchoes(echoSets, s.costLayout ?? null).find((m) => m.id === s.mainEchoId) ?? null) : null;
     return {
       ascensionLevel: s.ascensionLevel ?? 0,
       refinementLevel: Math.max(1, Math.min(5, s.refinementLevel ?? 1)),
@@ -120,21 +120,27 @@ function loadMemberContext(character: Character): CalcContext | null {
   return saved ? analysisContext(saved, false) : null;
 }
 
-/** 착용한 세트들의 메인슬롯 에코를 id 기준으로 합친 목록. 미공개(unreleased) 에코는 제외. */
-export function combinedMainEchoes(echoSets: EchoSet[]): MainSlotEcho[] {
+/** 메인 에코가 이 코스트 구성에서 장착 가능한지(구성에 에코 코스트 슬롯이 존재). 구성 미선택(null)이면 제한 없음. */
+export function mainEchoEquippable(echo: MainSlotEcho, costLayout: CostLayout | null): boolean {
+  return costLayout == null || costsOf(costLayout).includes(echo.cost ?? 4);
+}
+
+/** 착용한 세트들의 메인슬롯 에코를 id 기준으로 합친 목록. 미공개(unreleased) 에코는 제외.
+ *  costLayout 지정 시 그 구성에서 장착 불가한 코스트의 에코(예: 33111에 4코 에코)도 제외. */
+export function combinedMainEchoes(echoSets: EchoSet[], costLayout: CostLayout | null = null): MainSlotEcho[] {
   const seen = new Set<string>();
   const out: MainSlotEcho[] = [];
   for (const s of echoSets) {
     for (const e of s.main_slot_echoes) {
-      if (!e.unreleased && !seen.has(e.id)) { seen.add(e.id); out.push(e); }
+      if (!e.unreleased && mainEchoEquippable(e, costLayout) && !seen.has(e.id)) { seen.add(e.id); out.push(e); }
     }
   }
   return out;
 }
 
 /** 합쳐진 메인슬롯 에코 중 캐릭터 피해유형에 맞는 패시브를 가진 것(없으면 첫 번째). 없으면 null. */
-export function pickMainEcho(echoSets: EchoSet[], character: Character): MainSlotEcho | null {
-  const echoes = combinedMainEchoes(echoSets);
+export function pickMainEcho(echoSets: EchoSet[], character: Character, costLayout: CostLayout | null = character.cost_layout): MainSlotEcho | null {
+  const echoes = combinedMainEchoes(echoSets, costLayout);
   const rec = character.recommended_main_echo ?? [];
   const recMatch = echoes.find((e) => rec.includes(e.id));
   if (recMatch) return recMatch;
@@ -288,9 +294,10 @@ export function loadCharacterState(character: Character): AppState | null {
     const echoSets = (s.echoSetIds ?? [])
       .map((id) => sets.find((x) => x.id === id))
       .filter((x): x is EchoSet => !!x);
-    const combined = combinedMainEchoes(echoSets);
-    const mainEcho = s.mainEchoId ? (combined.find((m) => m.id === s.mainEchoId) ?? null) : null;
     const layout: CostLayout | null = s.costLayout ?? null;
+    // 저장 당시엔 가능했어도 데이터 변경(에코 코스트 지정 등)으로 현 구성에서 장착 불가면 해제
+    const combined = combinedMainEchoes(echoSets, layout);
+    const mainEcho = s.mainEchoId ? (combined.find((m) => m.id === s.mainEchoId) ?? null) : null;
     // 신형 slots: 길이 5 + 각 요소 형태 검증(손상/구포맷 저장분이 malformed slots로 로드돼 렌더 시 크래시하는 것 방지)
     const validSlot = (x: unknown): x is EchoSlot => {
       const o = x as EchoSlot | undefined;

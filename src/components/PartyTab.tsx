@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AppState } from '../state/store';
 import { memberProvidedBuffsFor } from '../state/store';
+import type { BuffSource } from '../engine/buffs';
 import type { PartyMember } from '../engine/context';
 import type { Buff } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
@@ -19,6 +20,8 @@ const buffText = (b: Buff, simple: boolean) =>
 interface Props { state: AppState; setState: (s: AppState) => void; simple: boolean; }
 
 const MAX_PARTY = 2;
+// 파티원 제공 버프 카테고리(출처) 표시 순서
+const SOURCE_ORDER: BuffSource[] = ['고유 스킬', '무기', '화음 세트', '메인 에코'];
 
 /** 파티 탭: 파티원(최대 2) 편성 + 각 파티원의 party/next 버프 적용 토글. */
 export function PartyTab({ state, setState, simple }: Props) {
@@ -84,23 +87,31 @@ export function PartyTab({ state, setState, simple }: Props) {
               .filter(({ buff }) => buff.target !== 'specific_character' || buff.target_character === state.character.id);
             const off = new Set(m.disabled ?? []);
             return (
-              <div key={m.id} style={{ marginBottom: 12 }}>
-                <div className="muted" style={{ fontWeight: 'bold', margin: '2px 0 4px' }}>{c.name}</div>
+              <div key={m.id} style={{ marginBottom: 14 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem', margin: '2px 0 6px' }}>{c.name}</div>
                 {provided.length === 0 && (
                   <div className="muted" style={{ fontSize: '0.85rem' }}>제공하는 파티 버프가 없습니다.</div>
                 )}
-                {provided.map(({ key, buff, source, scaledValue }) => (
-                  <label key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
-                    <input type="checkbox" checked={!off.has(key)} onChange={(e) => toggleBuff(m.id, key, e.target.checked)} />
-                    <span>
-                      <span className="muted" style={{ fontSize: '0.78rem', marginRight: 4 }}>[{source}]</span>
-                      {buffText(buff, simple)}
-                      {scaledValue != null && (
-                        <span className="muted" style={{ fontSize: '0.78rem', marginLeft: 4 }}>· 현재 {+(scaledValue * 100).toFixed(1)}%</span>
-                      )}
-                    </span>
-                  </label>
-                ))}
+                {SOURCE_ORDER.map((src) => {
+                  const items = provided.filter((p) => p.source === src);
+                  if (!items.length) return null;
+                  return (
+                    <div key={src} style={{ marginBottom: 6 }}>
+                      <div className="muted" style={{ fontSize: '0.74rem', fontWeight: 700, margin: '9px 0 5px' }}>{src}</div>
+                      {items.map(({ key, buff, scaledValue }) => (
+                        <label key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: 7, paddingLeft: 10 }}>
+                          <input type="checkbox" checked={!off.has(key)} onChange={(e) => toggleBuff(m.id, key, e.target.checked)} style={{ marginTop: 2 }} />
+                          <span style={{ fontSize: '0.85rem', lineHeight: 1.45 }}>
+                            {buffText(buff, simple)}
+                            {scaledValue != null && (
+                              <span className="muted" style={{ fontSize: '0.78rem', marginLeft: 4 }}>· 현재 {+(scaledValue * 100).toFixed(1)}%</span>
+                            )}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

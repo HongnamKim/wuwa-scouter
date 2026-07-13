@@ -43,6 +43,7 @@ export interface CharacterMode {
 export interface MainSlotEcho {
   id: string;
   name: string;
+  cost?: 3 | 4; // 이 에코의 장착 코스트. 미지정 시 4. 코스트 구성에 이 코스트가 없으면(예: 33111에 4코 에코) 장착 불가 → 드롭다운 제외·자동 해제
   buffs: Buff[];
   unreleased?: boolean; // true면 미공개(공식 정보 전) — 선택 드롭다운에서 제외. 데이터는 저장, 플래그 제거 시 노출
 }
@@ -59,6 +60,7 @@ export interface Character {
   weapon_type: WeaponType; // 착용 무기 타입
   cost_layout: CostLayout; // 에코 코스트 구성 기본값 (예: '43311'). 신규 진입 시 기본 세팅에 사용
   scale_stat: ScaleStat;
+  skill_damage_coefficient?: number; // 주력 스킬 피해 계수(소수, 예: 수수 0.2863 = 변주·공명 스킬 28.63%HP). 딜 상승 수치에 곱함 — 상수라 상대 점수엔 약분. HP/방어 계수 캐릭터의 딜 자릿수 정규화용. 미지정 시 1
   matrix_cost: number; // 매트릭스(파티 편성) 코스트. 현재 전원 1, 신규 기본 1 (향후 매트릭스 파티 구성 기능용)
   base_attack: number;
   base_hp?: number;       // scale_stat이 hp인 캐릭터용 기초 스탯 (attack 스케일이면 불필요)

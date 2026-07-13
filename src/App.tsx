@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode, type CSSProperties } from 'react';
 import {
   createBrowserRouter, RouterProvider, Outlet, Navigate,
   useNavigate, useParams, useLocation, useBlocker,
@@ -18,7 +18,7 @@ import { isLocked } from './engine/release';
 import { Selectors } from './components/Selectors';
 import { ConfirmModal } from './components/ConfirmModal';
 import { CharacterList } from './components/CharacterList';
-import { ThemeProvider, useTheme, ACCENT } from './theme';
+import { ThemeProvider, useTheme, ACCENT, ELEMENT_COLOR } from './theme';
 import { EchoSlots } from './components/EchoSlots';
 import { CharacterSpec } from './components/CharacterSpec';
 import { BuffPanel } from './components/BuffPanel';
@@ -55,6 +55,15 @@ function Layout() {
   ];
   const themeIcon = theme === 'dark' ? '☾' : '☀';
   const themeLabel = theme === 'dark' ? 'DARK' : 'LIGHT';
+  // 테마 CSS 변수를 .app에 주입 → styles.css 클래스와 컴포넌트 인라인 스타일 모두 참조.
+  const cssVars = {
+    '--fg': vars.fg, '--muted': vars.muted, '--rule': vars.rule,
+    '--card': vars.card, '--cardBorder': vars.cardBorder,
+    '--ctrl': vars.ctrl, '--ctrlBorder': vars.ctrlBorder,
+    '--stat': vars.stat, '--portrait': vars.portrait, '--menu': vars.menu, '--hover': vars.hover,
+    '--bestbg': vars.bestbg, '--bestfg': vars.bestfg, '--good': vars.good,
+    '--accent': ACCENT, '--el': ACCENT,
+  } as CSSProperties;
   return (
     <div style={{ minHeight: '100vh', background: vars.bg, color: vars.fg, transition: 'background .35s ease, color .35s ease' }}>
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, height: 72, display: 'flex', alignItems: 'center', gap: 20, padding: '0 clamp(16px,4vw,48px)', background: 'rgba(13,16,23,0.86)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
@@ -85,7 +94,7 @@ function Layout() {
           <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>{themeIcon}</span>{themeLabel}
         </button>
       </header>
-      <div className="app"><Outlet /></div>
+      <div className="app" style={cssVars}><Outlet /></div>
     </div>
   );
 }
@@ -117,14 +126,17 @@ function AnalysisScreen({ character }: { character: Character }) {
 
   useEffect(() => { localStorage.setItem(LAST_KEY, character.id); }, [character.id]);
 
+  const elColor = ELEMENT_COLOR[character.element] ?? ACCENT;
   return (
-    <>
+    <div style={{ '--el': elColor } as CSSProperties}>
       <div className="char-select-row">
-        <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>캐릭터:
-          <Dropdown value={character.id}
-            options={charactersInListOrder().map((c) => ({ value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''), image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c) }))}
-            onChange={(cid) => navigate(`/analysis/${cid}`)} />
-        </label>
+        <Dropdown className="dd-char" value={character.id}
+          options={charactersInListOrder().map((c) => ({
+            value: c.id, label: c.name + (isLocked(c) ? ' · 출시 예정' : ''),
+            image: `/characters/${c.id}.webp`, group: `${Math.floor(c.version)}버전`, disabled: isLocked(c),
+            meta: `v${c.version}`, chip: { text: `${c.element} · v${c.version}`, color: ELEMENT_COLOR[c.element] ?? ACCENT },
+          }))}
+          onChange={(cid) => navigate(`/analysis/${cid}`)} />
       </div>
 
       {character.notice && (
@@ -140,6 +152,7 @@ function AnalysisScreen({ character }: { character: Character }) {
           </div>
         ) : (
           <div className="top-reco">
+            <div className="reco-eyebrow">RECOMMENDED</div>
             <h2>메인 조합 추천</h2>
             <MainReco state={state} />
             {freeTwoPieceSlots(state.echoSets, state.costLayout ? costsOf(state.costLayout).length : 5) > 0 && (
@@ -210,7 +223,7 @@ function AnalysisScreen({ character }: { character: Character }) {
           onDismiss={() => setDeleting(false)}
         />
       )}
-    </>
+    </div>
   );
 }
 
