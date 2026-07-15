@@ -1,9 +1,9 @@
 import type { StatKey } from '../types/domain';
 import type { CalcContext } from './context';
 import type { PerfInput } from './perf';
-import { aggregateBuffs } from './buffs';
+import { aggregateBuffs, damageTypeIncrease } from './buffs';
 import { mechanismDamageTypeBonus } from './mechanisms';
-import { damageBonusTypeOf, effectiveSubstatsOf } from './mode';
+import { effectiveSubstatsOf } from './mode';
 import {
   BASE_CRIT, BASE_CRIT_DAMAGE, MAIN_PRIMARY, MAIN_SECONDARY,
   ENEMY_DEF_RATIO, BASE_ENEMY_RESISTANCE,
@@ -89,8 +89,6 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
   const buffs = aggregateBuffs(ctx);
   const sub = sumEffectiveSubstats(ctx);
   const main = sumMainPrimary(ctx);
-  const dmgType = damageBonusTypeOf(ctx);
-  const dmgTypeBonusKey = dmgType ? (`${dmgType}_bonus` as StatKey) : null;
 
   // 스케일 스탯(공격/체력/방어) 기준으로 기초·%·깡을 계산. scale_stat이 attack이면 기존과 완전히 동일한 값.
   // PerfInput 필드명은 baseAttack/attackPercent/flatAttack이지만 실제로는 "스케일 스탯"을 담는다.
@@ -127,15 +125,13 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
     (sub.critical_damage ?? 0) / 100 +
     (main.critical_damage ?? 0);
 
-  const subDmgTypeBonus = dmgTypeBonusKey ? (sub[dmgTypeBonusKey] ?? 0) / 100 : 0;
   // 특별 메커니즘(예: 시그리카 공효→에코 전환)으로 얻는 추가 피해유형 보너스
   const mechKey = ctx.character.special_mechanism;
   const mechanismBonus = mechKey ? mechanismDamageTypeBonus(mechKey, computeEnergyRegen(ctx)) : 0;
-  // 피해유형 보너스 배수 버프(곱연산, 예: 레베카 6돌 일반공격 피해보너스 +40% → ×1.4)
-  const dmgTypeFactor = 1 + buffs.damage_type_bonus_factor;
+  // 피해유형 증가항: 단일유형=(주 유형 버프+부옵)×factor / 가중 이중유형=Σ share×(유형 버프+부옵)×factor
   const increaseBonus =
     buffs.element_bonus + (main.element_damage_bonus ?? 0) +
-    (buffs.damage_type_bonus + subDmgTypeBonus) * dmgTypeFactor + mechanismBonus;
+    damageTypeIncrease(ctx, buffs, sub) + mechanismBonus;
 
   // 방무·저무를 딜에 반영 (무기 비교용). 둘 다 0이면 배수 1.
   const defResFactor = defenseResistanceFactor(buffs.defense_ignore, buffs.element_resistance_ignore);

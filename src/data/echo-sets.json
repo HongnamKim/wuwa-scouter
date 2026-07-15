@@ -228,5 +228,19 @@
      { "type": "healing_bonus", "value": 0.10, "always": true, "target": "self", "label": "자신의 치료 효과 보너스 10% 증가", "short": "치료 효과 +10%", "note": "메인슬롯 패시브 (수수, 딜 무관)", "record_only": false, "absolute_score_only": false }
     ] }
    ]
+  },
+  {
+   "id": "flamewings_shadow",
+   "name": "불타는 깃털을 펼친 사냥꾼의 그림자",
+   "buffs": [
+    { "type": "critical_rate", "value": 0.20, "set_pieces": 3, "always": false, "id": "flamewings_crit", "label": "에코↔강공격 상호: 강공격/에코 어빌리티 피해 크리티컬 +{v} (3세트 효과)", "short": "크리티컬 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "element_damage_bonus", "value": 0.16, "set_pieces": 3, "always": false, "element": "용융", "id": "flamewings_fusion", "label": "두 크리 효과 동시 보유 시 용융 피해 +{v} (3세트 효과)", "short": "용융 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "corrosaurus", "name": "코로사우르스", "cost": 3, "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "용융", "label": "자신의 용융 피해 보너스 12% 증가", "short": "용융피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+     { "type": "echo_skill_bonus", "value": 0.20, "always": true, "target": "self", "label": "에코 어빌리티 피해 보너스 20% 증가", "short": "에코피해 +20%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] }
+   ]
   }
 ]

@@ -1,5 +1,5 @@
 import type { Buff, Character, Weapon, EchoSet, MainSlotEcho } from '../types/data';
-import type { StatKey } from '../types/domain';
+import type { StatKey, DamageBonusType } from '../types/domain';
 import type { CalcContext } from './context';
 import { loadTwoPieceEffects } from './loadData';
 import { damageBonusTypeOf, activeModeId } from './mode';
@@ -14,10 +14,12 @@ export interface BuffTotals {
   hp_percent: number;         // 스케일 스탯이 hp인 캐릭터용
   defense_percent: number;    // 스케일 스탯이 defense인 캐릭터용
   element_bonus: number;      // element_damage_bonus (일치)
-  damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus
+  damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus (단일유형 하위호환)
+  damage_type_bonus_by: Partial<Record<DamageBonusType, number>>;   // 피해유형별 *_bonus 합 (가중 이중유형용)
   amplify: number;            // 부스트 곱연산 합 (계산용 총합)
   amplify_element: number;    // 표시용: 속성 피해 부스트분
-  amplify_damage_type: number;// 표시용: 캐릭터 피해유형 부스트분
+  amplify_damage_type: number;// 표시용: 캐릭터 피해유형 부스트분(가중 반영)
+  amplify_damage_type_by: Partial<Record<DamageBonusType, number>>; // 피해유형별 *_amplify 합
   amplify_all: number;        // 표시용: 전체 피해 부스트분
   damage_type_bonus_factor: number; // 피해유형 보너스 합계에 더해지는 배수분(0.4 → ×1.4). 곱연산
   energy_regen: number;       // 공명효율(딜 무영향, 표시용)
@@ -30,6 +32,18 @@ const AMPLIFY_KEYS: StatKey[] = [
   'heavy_attack_amplify', 'resonance_skill_amplify', 'resonance_liberation_amplify',
   'echo_skill_amplify',
 ];
+
+// 피해유형 *_bonus / *_amplify 부옵·버프 키 → DamageBonusType (가중 이중유형 집계용)
+const BONUS_KEY_TO_TYPE: Partial<Record<StatKey, DamageBonusType>> = {
+  basic_attack_bonus: 'basic_attack', heavy_attack_bonus: 'heavy_attack',
+  resonance_skill_bonus: 'resonance_skill', resonance_liberation_bonus: 'resonance_liberation',
+  echo_skill_bonus: 'echo_skill',
+};
+const AMP_KEY_TO_TYPE: Partial<Record<StatKey, DamageBonusType>> = {
+  basic_attack_amplify: 'basic_attack', heavy_attack_amplify: 'heavy_attack',
+  resonance_skill_amplify: 'resonance_skill', resonance_liberation_amplify: 'resonance_liberation',
+  echo_skill_amplify: 'echo_skill',
+};
 
 /** 파티원의 빌드(내가 저장한 그 캐릭터 데이터). memberProvidedBuffs에 넘긴다. */
 export interface MemberBuild {
@@ -115,19 +129,13 @@ function damageTypeBonusKey(ctx: CalcContext): StatKey | null {
   return t ? (`${t}_bonus` as StatKey) : null;
 }
 
-function damageTypeAmplifyKey(ctx: CalcContext): StatKey | null {
-  const t = damageBonusTypeOf(ctx);
-  return t ? (`${t}_amplify` as StatKey) : null;
-}
-
 export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   const t: BuffTotals = {
     critical_rate: 0, critical_damage: 0, attack_percent: 0, hp_percent: 0, defense_percent: 0,
-    element_bonus: 0, damage_type_bonus: 0, amplify: 0, amplify_element: 0, amplify_damage_type: 0, amplify_all: 0, damage_type_bonus_factor: 0, energy_regen: 0,
+    element_bonus: 0, damage_type_bonus: 0, damage_type_bonus_by: {}, amplify: 0, amplify_element: 0, amplify_damage_type: 0, amplify_damage_type_by: {}, amplify_all: 0, damage_type_bonus_factor: 0, energy_regen: 0,
     defense_ignore: 0, element_resistance_ignore: 0,
   };
   const dmgTypeBonus = damageTypeBonusKey(ctx);
-  const dmgTypeAmp = damageTypeAmplifyKey(ctx);
 
   // 데이터 출처 버프는 isActive로(대상/element/토글), 수동 버프는 마스터 토글로만 판정.
   // 같은 세트가 중복 선택돼도 한 번만 집계
@@ -177,13 +185,21 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     else if (b.type === 'hp_percent') t.hp_percent += b.value;
     else if (b.type === 'defense_percent') t.defense_percent += b.value;
     else if (b.type === 'element_damage_bonus') t.element_bonus += b.value;
-    else if (dmgTypeBonus && b.type === dmgTypeBonus) t.damage_type_bonus += b.value;
+    else if (BONUS_KEY_TO_TYPE[b.type]) {
+      // 피해유형 증가(*_bonus): 유형별 맵에 집계(가중 이중유형용). 단일유형 하위호환분도 함께 유지.
+      const dt = BONUS_KEY_TO_TYPE[b.type]!;
+      t.damage_type_bonus_by[dt] = (t.damage_type_bonus_by[dt] ?? 0) + b.value;
+      if (dmgTypeBonus && b.type === dmgTypeBonus) t.damage_type_bonus += b.value;
+    }
     else if (AMPLIFY_KEYS.includes(b.type)) {
-      // 부스트: 속성/전체/캐릭터 피해유형 amplify만 계산 총합에 반영. 표시용으로 속성·유형·전체 분리 집계.
-      // 속성 부스트·전체 부스트는 유형 무관하게 항상 반영. 유형 부스트는 캐릭터 피해유형과 일치할 때만(null 유형이면 무시).
+      // 부스트: 속성/전체는 유형 무관하게 항상 총합 반영. 피해유형 부스트는 유형별 맵에 집계 후
+      // 루프 종료 뒤 단일/가중으로 총합·표시분에 반영(아래 참조).
       if (b.type === 'element_damage_amplify') { t.amplify += b.value; t.amplify_element += b.value; }
       else if (b.type === 'all_damage_amplify') { t.amplify += b.value; t.amplify_all += b.value; }
-      else if (dmgTypeAmp && b.type === dmgTypeAmp) { t.amplify += b.value; t.amplify_damage_type += b.value; }
+      else if (AMP_KEY_TO_TYPE[b.type]) {
+        const dt = AMP_KEY_TO_TYPE[b.type]!;
+        t.amplify_damage_type_by[dt] = (t.amplify_damage_type_by[dt] ?? 0) + b.value;
+      }
     }
     else if (b.type === 'damage_type_bonus_factor') t.damage_type_bonus_factor += b.value; // 피해유형 보너스 ×(1+합)
     else if (b.type === 'energy_regen') t.energy_regen += b.value; // 딜 무영향, 표시용 집계
@@ -226,5 +242,38 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
       if (b.type === 'critical_damage') t.critical_damage += v;
     }
   }
+
+  // 피해유형 부스트(*_amplify) 총합·표시분: 가중 이중유형이면 Σ share×유형, 아니면 주 유형분만.
+  // (단일유형은 기존 동작과 동일 — amp_by[primary] == 이전 amplify_damage_type)
+  const mix = ctx.character.damage_type_mix;
+  let typeAmp = 0;
+  if (mix && mix.length) {
+    for (const { type, share } of mix) typeAmp += share * (t.amplify_damage_type_by[type] ?? 0);
+  } else {
+    const primary = damageBonusTypeOf(ctx);
+    typeAmp = primary ? (t.amplify_damage_type_by[primary] ?? 0) : 0;
+  }
+  t.amplify += typeAmp;
+  t.amplify_damage_type = typeAmp;
+
   return t;
+}
+
+/** 피해유형 증가(*_bonus) 항 = 부옵+버프의 유형별 합에 (가중 이중유형이면) 비중을 곱해 합산.
+ *  단일유형 캐릭터는 기존과 동일: (주 유형 버프 + 주 유형 부옵) × factor. mech 보너스는 호출측에서 별도 가산. */
+export function damageTypeIncrease(ctx: CalcContext, buffs: BuffTotals, sub: Partial<Record<StatKey, number>>): number {
+  const factor = 1 + buffs.damage_type_bonus_factor;
+  const mix = ctx.character.damage_type_mix;
+  if (mix && mix.length) {
+    let s = 0;
+    for (const { type, share } of mix) {
+      const subv = (sub[`${type}_bonus` as StatKey] ?? 0) / 100;
+      const buffv = buffs.damage_type_bonus_by[type] ?? 0;
+      s += share * (buffv + subv);
+    }
+    return s * factor;
+  }
+  const key = damageTypeBonusKey(ctx);
+  const subv = key ? (sub[key] ?? 0) / 100 : 0;
+  return (buffs.damage_type_bonus + subv) * factor;
 }
