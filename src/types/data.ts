@@ -67,6 +67,10 @@ export interface Character {
   base_defense?: number;  // scale_stat이 defense인 캐릭터용 기초 스탯 (예: 모니에)
   effective_substats: StatKey[];
   damage_bonus_type: DamageBonusType | null;
+  // 피해유형이 둘 이상 섞인 딜러(예: 갈브레나 = 에코 어빌리티 + 강공격). 유형별 딜 비중(share, 소수).
+  // 지정 시 피해유형 보너스 = Σ share×(유형별 버프 + 유형별 부옵). 합<1이면 잔여분(무유형 스킬, 예: 반주)은 유형 보너스 없음.
+  // damage_bonus_type/effective_substats는 그대로 둔다 — 부옵 마킹·버프 게이팅·스펙 라벨용 주(主) 유형.
+  damage_type_mix?: { type: DamageBonusType; share: number }[];
   modes?: CharacterMode[]; // 모드 전환 캐릭터(루실라 등). 지정 시 선택 모드의 damage_bonus_type/effective_substats 사용
   energy_regen_mode: EnergyRegenMode;
   default_required_energy_regen: number; // 필요 공효 기본값(%)

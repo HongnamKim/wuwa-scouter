@@ -558,5 +558,38 @@
       { "type": "skill_motion_value_amplify", "value": 1.00, "always": false, "target": "self", "id": "suisui_chain5_smv", "min_ascension": 5, "label": "일반·강공격(비에 젖어들 무렵) 피해 배율 +100% (5돌)", "short": "일반/강공격 배율 +100% (5돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
       { "type": "critical_damage", "value": 5.00, "always": false, "target": "self", "id": "suisui_chain6_critdmg", "min_ascension": 6, "label": "공명 스킬 깨어난 봄기운, 변주 스킬 크리티컬 피해 +500% (6돌)", "short": "변주/공명 스킬 크리티컬 피해 +500% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": false }
     ]
+  },
+  {
+    "id": "galbrena",
+    "name": "갈브레나",
+    "version": 2.7,
+    "version_phase": "전반",
+    "element": "용융",
+    "weapon_type": "pistols",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 462,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "heavy_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "heavy_attack",
+    "damage_type_mix": [{ "type": "echo_skill", "share": 0.571 }, { "type": "heavy_attack", "share": 0.321 }],
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 125,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["flamewings_shadow"],
+    "recommended_main_echo": ["corrosaurus"],
+    "recommended_weapons": ["lux_and_umbra", "phasic_homogenizer", "static_mist", "solar_flame"],
+    "signature_weapon": "lux_and_umbra",
+    "skill_node": [
+      { "type": "critical_damage", "value": 0.16, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "self", "id": "galbrena_inner_burn", "min_ascension": 0, "label": "내부 연소 · 변주/공격 중 회피/일반 공격 4단/공명 스킬 발동 시 공격력 +20%", "short": "공격력 +20% (내부 연소)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "self", "id": "galbrena_death_mark", "min_ascension": 0, "label": "정해진 죽음(공격 명중) 4스택 · 갈브레나가 입히는 피해 +20% 부스트", "short": "전체 피해 +20% 부스트 (정해진 죽음)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.60, "always": false, "target": "self", "id": "galbrena_devil_vuln", "min_ascension": 0, "label": "악마의 자격: 남은 불꽃 1pt당 목표가 받는 피해 +1.5%, 최대 +60% (기록 전용)", "short": "받는 피해 +60% (악마의 자격)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.80, "always": false, "target": "self", "id": "galbrena_chain1_critdmg", "min_ascension": 1, "label": "변신 후  남은 불꽃 게이지 1pt당 크리티컬 피해 +2%, 최대 +80% (1돌)", "short": "크리티컬 피해 +80% (1돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.70, "always": false, "target": "self", "id": "galbrena_inner_burn_c2", "min_ascension": 2, "label": "내부 연소가 제공하는 공격력 보너스 +350% (2돌, 추가 +70%)", "short": "공격력 +70% (2돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.20, "element": "전체", "always": false, "target": "party", "id": "galbrena_chain4_team", "min_ascension": 4, "label": "파티 내 캐릭터가 에코 어빌리티 발동 시 파티 전체 속성 피해 +20% 증가 (4돌, 20초)", "short": "파티 전속성 피해 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_amplify", "value": 0.35, "element": "용융", "always": false, "target": "self", "id": "galbrena_chain6_amp", "min_ascension": 6, "label": "불멸의 자격: 남은 불꽃 1pt당 용융 피해 +0.875% 부스트, 최대 +35% (6돌)", "short": "용융 피해 +35% 부스트 (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
+    ]
   }
 ]
