@@ -141,7 +141,7 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
               {([['크크작', primary], ['최고점', secondary]] as const).map(([lbl, val]) => (
                 <div key={lbl} style={{ flex: 1, padding: '7px 9px', borderRadius: 8, background: vars.stat }}>
                   <div style={{ fontSize: '0.64rem', color: vars.muted, letterSpacing: '0.02em' }}>{lbl}</div>
-                  <div style={{ fontFamily: 'var(--mono)', fontSize: '0.98rem', fontWeight: 700, color: vars.ghost, marginTop: 1 }}>{val}</div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: '0.98rem', fontWeight: 700, color: val === '—' ? vars.ghost : vars.fg, marginTop: 1 }}>{val}</div>
                 </div>
               ))}
             </div>
