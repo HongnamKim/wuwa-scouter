@@ -59,7 +59,7 @@ export function Selectors({ state, setState }: Props) {
   // 무기 드롭다운: 캐릭터 무기 타입 전체 중 선택. 추천무기(recommended_weapons)는 상단·★ 표시(화음세트와 동일).
   const typeWeapons = weapons.filter((w) => w.weapon_type === char.weapon_type && !w.unreleased);
   const weaponOptions: DropdownOption[] = recFirst(typeWeapons, char.recommended_weapons)
-    .map((w) => ({ value: w.id, label: w.name, image: `/weapons/${w.id}.webp`, badge: char.recommended_weapons.includes(w.id) ? '추천' : undefined }));
+    .map((w) => ({ value: w.id, label: w.name, image: `/weapons/${w.id}.webp`, badge: w.id === char.signature_weapon ? '전무' : (char.recommended_weapons.includes(w.id) ? '추천' : undefined) }));
   const setOptions: DropdownOption[] = recFirst(allSets, char.recommended_echo_sets)
     .map((s) => ({ value: s.id, label: s.name, image: `/echo-sets/${s.id}.webp`, badge: char.recommended_echo_sets.includes(s.id) ? '추천' : undefined }));
   const mainEchoOptions: DropdownOption[] = recFirst(combinedMainEchoes(state.echoSets, state.costLayout), char.recommended_main_echo)

@@ -242,5 +242,23 @@
      { "type": "echo_skill_bonus", "value": 0.20, "always": true, "target": "self", "label": "에코 어빌리티 피해 보너스 20% 증가", "short": "에코피해 +20%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
     ] }
    ]
+  },
+  {
+   "id": "crown_of_valor",
+   "name": "영광의 칼날로 만들어진 왕관",
+   "buffs": [
+    { "type": "attack_percent", "value": 0.30, "set_pieces": 3, "always": false, "id": "crown_shield_atk", "label": "실드 획득 시 공격력 +6%/스택, 최대 30% (4초, 3세트)", "short": "공격력 +{v} (5스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "critical_damage", "value": 0.20, "set_pieces": 3, "always": false, "id": "crown_shield_critdmg", "label": "실드 획득 시 크리티컬 피해 +4%/스택, 최대 20% (4초, 3세트)", "short": "크리티컬 피해 +{v} (5스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ],
+   "main_slot_echoes": [
+    { "id": "lady_of_the_sea", "name": "바다의 여인", "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "기류", "label": "자신의 기류 피해 보너스 12% 증가", "short": "기류피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+     { "type": "resonance_liberation_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 공명 해방 피해 보너스 12% 증가", "short": "공명해방피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] },
+    { "id": "the_false_sovereign", "name": "거짓의 신왕", "buffs": [
+     { "type": "element_damage_bonus", "value": 0.12, "always": true, "target": "self", "element": "전도", "label": "자신의 전도 피해 보너스 12% 증가", "short": "전도피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false },
+     { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
+    ] }
+   ]
   }
 ]

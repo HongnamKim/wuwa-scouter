@@ -464,5 +464,26 @@
     { "type": "echo_skill_amplify", "value": 0.24, "always": false, "id": "weapon_lux_umbra_echo", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "강공격 피해 시 에코 어빌리티 피해 +{v} 부스트", "short": "에코 피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
     { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_lux_umbra_defign", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "두 부스트 동시 보유 시 피해 시 목표 방어력 {v} 무시", "short": "방어력 {v} 무시", "record_only": false, "absolute_score_only": true, "default_on": true }
    ]
+  },
+  {
+   "id": "moongazers_sigil",
+   "name": "세상 만물의 진리",
+   "weapon_type": "gauntlets",
+   "base_stats": { "attack": 500, "critical_rate": 0.36 },
+   "buffs": [
+    { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
+    { "type": "resonance_liberation_bonus", "value": 0.20, "always": false, "id": "weapon_moongazer_rl", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주/공명 해방 발동 시 공명 해방 피해 +{v} (15초)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
+    { "type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_moongazer_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.60], "label": "실드 획득 시 공명 해방 피해가 목표 방어력 {v} 무시 (5스택 최대, 변주 시 최대치 유지)", "short": "방어력 {v} 무시 (5스택)", "note": "스택당 7.2~12%, 최대 5스택 → 변주로 최대치 유지 가정(×5)", "record_only": false, "absolute_score_only": true, "default_on": true }
+   ]
+  },
+  {
+   "id": "veritys_handle",
+   "name": "팔방의 천추",
+   "weapon_type": "gauntlets",
+   "base_stats": { "attack": 587, "critical_rate": 0.243 },
+   "buffs": [
+    { "type": "element_damage_bonus", "value": 0.12, "always": true, "element": "전체", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (전체 속성 피해)", "record_only": false, "absolute_score_only": false },
+    { "type": "resonance_liberation_bonus", "value": 0.48, "always": false, "id": "weapon_verity_rl", "refinement_values": [0.48, 0.60, 0.72, 0.84, 0.96], "label": "공명 해방 발동 시 공명 해방 피해 +{v} (8초, 공명 스킬로 최대 3회 연장)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+   ]
   }
 ]
