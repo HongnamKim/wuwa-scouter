@@ -591,5 +591,37 @@
       { "type": "element_damage_bonus", "value": 0.20, "element": "전체", "always": false, "target": "party", "id": "galbrena_chain4_team", "min_ascension": 4, "label": "파티 내 캐릭터가 에코 어빌리티 발동 시 파티 전체 속성 피해 +20% 증가 (4돌, 20초)", "short": "파티 전속성 피해 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
       { "type": "element_damage_amplify", "value": 0.35, "element": "용융", "always": false, "target": "self", "id": "galbrena_chain6_amp", "min_ascension": 6, "label": "불멸의 자격: 남은 불꽃 1pt당 용융 피해 +0.875% 부스트, 최대 +35% (6돌)", "short": "용융 피해 +35% 부스트 (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
+  },
+  {
+    "id": "iuno",
+    "name": "유노",
+    "version": 2.6,
+    "version_phase": "후반",
+    "element": "기류",
+    "weapon_type": "gauntlets",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 450,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_liberation",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 130,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["crown_of_valor"],
+    "recommended_main_echo": ["lady_of_the_sea"],
+    "recommended_weapons": ["moongazers_sigil", "veritys_handle", "pulsation_bracer", "stonard"],
+    "signature_weapon": "moongazers_sigil",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "all_damage_amplify", "value": 0.40, "always": false, "target": "party", "id": "iuno_moonlight_blessing", "min_ascension": 0, "label": "실드 획득 시 전체 피해 +4% 부스트/스택, 최대 +40% (10초)", "short": "전체 피해 +40% 부스트 (10스택)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "heavy_attack_amplify", "value": 0.50, "always": false, "target": "next_character", "id": "iuno_intro_heavy", "min_ascension": 0, "label": "반주 밤을 건너 새벽으로: 다음 등장 캐릭터 강공격 피해 +50% 부스트 (14초)", "short": "다음 캐릭터 강공격 피해 +50% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "attack_percent", "value": 0.40, "always": false, "target": "self", "id": "iuno_chain1_atk", "min_ascension": 1, "label": "달의 순환 상태 시 공격력 +40% (1돌)", "short": "공격력 +40% (1돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "all_damage_amplify", "value": 0.40, "always": false, "target": "party", "id": "iuno_chain2_team", "min_ascension": 2, "label": "창백한 달빛의 축복 10스택 시 전체 피해 추가 +40% 부스트 (2돌)", "short": "전체 피해 +40% 부스트 (2돌)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.65, "always": false, "target": "self", "id": "iuno_chain3_smv", "min_ascension": 3, "label": "달의 순환 시 달의 활·일반공격/경계를 넘은 활시위/달의 활·회피 반격 피해 +65% 부스트 (3돌, 특정 스킬 · 기록 전용)", "short": "달의 활 계열 피해 +65% 부스트 (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "resonance_liberation_bonus", "value": 0.20, "always": false, "target": "self", "id": "iuno_chain5_rl", "min_ascension": 5, "label": "공명 해방 피해 보너스 +20% (5돌)", "short": "공명해방 피해 +20% (5돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 16.00, "always": false, "target": "self", "id": "iuno_chain6_smv", "min_ascension": 6, "label": "강공격 · 완벽한 결말 피해 배율 +1600% (6돌, 배율 · 기록 전용)", "short": "완벽한 결말 배율 +1600% (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
+    ]
   }
 ]
