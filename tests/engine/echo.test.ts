@@ -55,7 +55,7 @@ describe('구원 공명해방 crit_scale (실제 크리율로 크피 동적 계�
       costLayout: '43311', slots: slotsFrom('43311', [], []),
       conditionalToggles: {}, manualBuffs: [], ascensionLevel: 1, requiredEnergyRegen: 130,
     };
-    // 크리율 = 0.05 기본 + 0.08 스킬노드 + 0.20 CHAIN.1 + 0.243 무기 = 0.573 → 초과 7.3% → 크피 +0.02×7.3 = 0.146
-    expect(aggregateBuffs(ctx).critical_damage).toBeCloseTo(0.146, 3);
+    // 크리율 = 0.05 기본 + 0.08 스킬노드 + 0.20 CHAIN.1 + 0.243 무기 = 0.573 → 초과 7.3% → floor(7.3)=7 → 크피 +0.02×7 = 0.14
+    expect(aggregateBuffs(ctx).critical_damage).toBeCloseTo(0.14, 3);
   });
 });

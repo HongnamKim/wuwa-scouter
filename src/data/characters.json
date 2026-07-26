@@ -623,5 +623,43 @@
       { "type": "resonance_liberation_bonus", "value": 0.20, "always": false, "target": "self", "id": "iuno_chain5_rl", "min_ascension": 5, "label": "공명 해방 피해 보너스 +20% (5돌)", "short": "공명해방 피해 +20% (5돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
       { "type": "skill_motion_value_amplify", "value": 16.00, "always": false, "target": "self", "id": "iuno_chain6_smv", "min_ascension": 6, "label": "강공격 · 완벽한 결말 피해 배율 +1600% (6돌, 배율 · 기록 전용)", "short": "완벽한 결말 배율 +1600% (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
     ]
+  },
+  {
+    "id": "augusta",
+    "name": "아우구스타",
+    "version": 2.6,
+    "version_phase": "전반",
+    "element": "전도",
+    "weapon_type": "broad_blade",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 462,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "heavy_attack_bonus", "flat_attack"],
+    "damage_bonus_type": "heavy_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 125,
+    "special_mechanism": null,
+    "recommended_echo_sets": ["crown_of_valor"],
+    "recommended_main_echo": ["the_false_sovereign"],
+    "recommended_weapons": ["thunderflare_dominion"],
+    "signature_weapon": "thunderflare_dominion",
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드", "record_only": false, "absolute_score_only": false },
+      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "next_character", "id": "augusta_intro_alldmg", "min_ascension": 0, "label": "반주 불굴의 군가: 다음 등장 캐릭터 전체 피해 +15% 부스트 (14초)", "short": "다음 캐릭터 전체 피해 +15% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.15, "always": false, "target": "self", "element": "전도", "id": "augusta_crown_element", "min_ascension": 0, "label": "만민의 염원, 영광의 왕관: 스택당 전도 피해 보너스 +15% 증가 (기본 최대 1스택)", "short": "전도피해 +15% (1스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.15, "always": false, "target": "self", "element": "전도", "id": "augusta_chain1_crown_element", "min_ascension": 1, "label": "만민의 염원 최대 2스택 → 2번째 스택 전도 피해 +15% (1돌)", "short": "전도피해 +15% (1돌, 2스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "augusta_chain1_crown_critdmg", "min_ascension": 1, "label": "만민의 염원 스택당 크리티컬 피해 +15% (2스택 = +30%, 1돌)", "short": "크피 +30% (1돌, 2스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_rate", "value": 0.40, "always": false, "target": "self", "id": "augusta_chain2_crown_crit", "min_ascension": 2, "label": "만민의 염원 스택당 크리티컬 +20% (2스택 = +40%, 2돌)", "short": "크리 +40% (2돌, 2스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 1.00, "crit_scale": { "per_percent": 0.02, "threshold": 100, "cap": 1.00 }, "always": false, "target": "self", "id": "augusta_chain2_overflow", "min_ascension": 2, "label": "크리티컬 100% 초과분 1%당 크리티컬 피해 +2% (최대 +100%, 2돌)", "short": "크피 (크리 초과분 비례, 최대 +100%)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 0.25, "always": false, "target": "self", "id": "augusta_chain3_smv", "min_ascension": 3, "label": "강공격 · 섬뢰 계열 / 습격 / 뜨거운 태양의 강림 피해 배율 +25% (3돌)", "short": "특정 스킬 배율 +25% (3돌)", "record_only": true, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "augusta_chain4_atk", "min_ascension": 4, "label": "변주 불타는 황금빛 여정 발동 시 파티 공격력 +20% (30초, 4돌)", "short": "파티 공격력 +20% (4돌)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "element_damage_bonus", "value": 0.30, "always": false, "target": "self", "element": "전도", "id": "augusta_chain6_crown_element", "min_ascension": 6, "label": "만민의 염원 최대 4스택 → 3·4번째 스택 전도 피해 +30% (6돌)", "short": "전도피해 +30% (6돌, 4스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.30, "always": false, "target": "self", "id": "augusta_chain6_crown_critdmg", "min_ascension": 6, "label": "만민의 염원 크리티컬 피해 추가 2스택 +30% (6돌)", "short": "크피 +30% (6돌, 4스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_rate", "value": 0.40, "always": false, "target": "self", "id": "augusta_chain6_crown_crit", "min_ascension": 6, "label": "만민의 염원 크리티컬 추가 2스택 +40% (6돌)", "short": "크리 +40% (6돌, 4스택)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "critical_damage", "value": 0.50, "crit_scale": { "per_percent": 0.02, "threshold": 150, "cap": 0.50 }, "always": false, "target": "self", "id": "augusta_chain6_overflow", "min_ascension": 6, "label": "크리티컬 150% 초과분 1%당 크리티컬 피해 +2% (최대 +50%, 6돌)", "short": "크피 (크리 초과분 비례, 최대 +50%)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "skill_motion_value_amplify", "value": 2.00, "always": false, "target": "self", "id": "augusta_chain6_wrath_lightning", "min_ascension": 6, "label": "강공격 · 섬뢰 · 회전 베기/올려치기 시 분노의 번개 추가 — 공격력 100% 전도 피해 2회 (6돌)", "short": "분노의 번개 추가타 배율 +200% (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
+    ]
   }
 ]
