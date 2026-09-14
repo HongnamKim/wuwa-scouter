@@ -6,6 +6,7 @@ import type { BuffSource } from '../engine/buffs';
 import type { PartyMember } from '../engine/context';
 import type { Buff } from '../types/data';
 import { loadCharacters } from '../engine/loadData';
+import { damageBonusTypeOf } from '../engine/mode';
 import { isReleased } from '../engine/release';
 import { ConfirmModal } from './ConfirmModal';
 import { Dropdown } from './Dropdown';
@@ -84,7 +85,8 @@ export function PartyTab({ state, setState, simple }: Props) {
             if (!c) return null;
             // specific_character 버프는 지금 보는 캐릭터가 그 지정 대상일 때만 노출·토글
             const provided = memberProvidedBuffsFor(c)
-              .filter(({ buff }) => buff.target !== 'specific_character' || buff.target_character === state.character.id);
+              .filter(({ buff }) => buff.target !== 'specific_character' || buff.target_character === state.character.id)
+              .filter(({ buff }) => !buff.target_damage_bonus_type || buff.target_damage_bonus_type === damageBonusTypeOf(state));
             const off = new Set(m.disabled ?? []);
             return (
               <div key={m.id} style={{ marginBottom: 14 }}>
@@ -105,6 +107,9 @@ export function PartyTab({ state, setState, simple }: Props) {
                             {buffText(buff, simple)}
                             {scaledValue != null && (
                               <span className="muted" style={{ fontSize: '0.78rem', marginLeft: 4 }}>· 현재 {+(scaledValue * 100).toFixed(1)}%</span>
+                            )}
+                            {scaledValue == null && (buff.energy_scale || buff.crit_scale) && (
+                              <span className="muted" style={{ fontSize: '0.78rem', marginLeft: 4 }}>· 파티원 빌드 저장 필요 (미적용)</span>
                             )}
                           </span>
                         </label>

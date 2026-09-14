@@ -3,7 +3,8 @@ import type { CalcContext, SubstatLine, MainPrimaryPick, ManualBuff, EchoSlot, P
 import { loadCharacters, loadWeapons, loadEchoSets, loadTwoPieceEffects } from '../engine/loadData';
 import { memberProvidedBuffs, type MemberBuild } from '../engine/buffs';
 import { computeEnergyRegen } from '../engine/build';
-import { energyScaleValue } from '../engine/mechanisms';
+import { energyScaleValue, critScaleValue } from '../engine/mechanisms';
+import { computeDisplaySpec } from '../engine/spec';
 import { optimalTwoPiecePicks } from '../engine/theory';
 import { freeTwoPieceSlots, defaultSlots, slotsFrom } from '../engine/echoSlots';
 import { costsOf } from '../engine/costLayout';
@@ -18,7 +19,7 @@ export function isRecordOnly(character: Character): boolean {
 }
 
 /** 저장된 파티원 복원: 존재하는 id·자기 자신 제외·중복 제거·최대 2명·불리언 보정 */
-function restorePartyMembers(saved: PartyMember[] | undefined, selfId: string): PartyMember[] {
+function restorePartyMembers(saved: PartyMember[] | undefined, selfId: string, buffVersion = 0): PartyMember[] {
   if (!Array.isArray(saved)) return [];
   const ids = new Set(loadCharacters().map((c) => c.id));
   const seen = new Set<string>();
@@ -26,7 +27,16 @@ function restorePartyMembers(saved: PartyMember[] | undefined, selfId: string): 
   for (const m of saved) {
     if (!m || typeof m.id !== 'string' || !ids.has(m.id) || m.id === selfId || seen.has(m.id)) continue;
     seen.add(m.id);
-    const disabled = Array.isArray(m.disabled) ? m.disabled.filter((x): x is string => typeof x === 'string') : [];
+    let disabled = Array.isArray(m.disabled) ? m.disabled.filter((x): x is string => typeof x === 'string') : [];
+    if (m.id === 'mornye' && buffVersion < 1) {
+      const char = loadCharacters().find((c) => c.id === m.id)!;
+      // 강력 필드가 기록 전용이던 목록의 #index → 현재 키. ID 있는 항목과 미확인 키는 보존.
+      const legacy = memberProvidedBuffs(loadMemberBuild(char) ?? {}, char)
+        .filter(({ buff }) => buff.id !== 'mornye_strong_field');
+      const keys = new Map(legacy.filter(({ buff }) => !buff.id)
+        .map((p) => [`#${legacy.indexOf(p)}`, p.key]));
+      disabled = disabled.map((key) => keys.get(key) ?? key);
+    }
     out.push({ id: m.id, disabled });
     if (out.length >= 2) break;
   }
@@ -59,35 +69,37 @@ function loadMemberBuild(character: Character): MemberBuild | null {
 
 /** 파티 탭 표시용: 이 파티원이 (내 저장 빌드 기준) 제공하는 버프 목록. */
 export function memberProvidedBuffsFor(character: Character) {
-  // energy_scale 버프의 현재 적용량은 파티원(제공자) 공효로 계산. 저장 빌드 없으면 null.
+  // 동적 버프는 파티원(제공자)의 저장 스탯으로 계산. 저장 빌드 없으면 null.
   const memberCtx = loadMemberContext(character);
   const memberER = memberCtx ? computeEnergyRegen(memberCtx) : null;
-  return memberProvidedBuffs(loadMemberBuild(character) ?? {}, character).map((p) => ({
+  const provided = memberProvidedBuffs(loadMemberBuild(character) ?? {}, character);
+  const memberCrit = memberCtx && provided.some(({ buff }) => buff.crit_scale)
+    ? computeDisplaySpec(memberCtx).criticalRateRaw : null;
+  return provided.map((p) => ({
     ...p,
-    scaledValue: p.buff.energy_scale && memberER != null ? energyScaleValue(p.buff.energy_scale, memberER) : null,
+    scaledValue: p.buff.energy_scale && memberER != null ? energyScaleValue(p.buff.energy_scale, memberER)
+      : p.buff.crit_scale && memberCrit != null ? critScaleValue(p.buff.crit_scale, memberCrit) : null,
   }));
 }
 
 /** partyMembers를 내 저장 빌드로 해석해 합산용 버프(Buff[])로. disabled 제외, always:true.
- * energy_scale 버프(간섭 표기 등)는 그 파티원의 공효로 실제 값을 구워 넣는다(수령자 공효가 아님). */
+ * 동적 버프는 제공자 스탯으로 구한 표시값을 사용. 미저장/미완성 빌드는 계산에서 0으로 취급한다. */
 function resolvePartyProvidedBuffs(partyMembers: PartyMember[] | undefined, selfId: string): Buff[] {
   const chars = loadCharacters();
   return (partyMembers ?? []).flatMap((pm) => {
     if (pm.id === selfId) return [];
     const char = chars.find((c) => c.id === pm.id);
     if (!char) return [];
-    const memberCtx = loadMemberContext(char);              // 완전 빌드(공효 계산용)
-    const memberER = memberCtx ? computeEnergyRegen(memberCtx) : 1;
-    const build: MemberBuild = loadMemberBuild(char) ?? {}; // 버프 목록/키는 UI(memberProvidedBuffsFor)와 동일 소스
     const off = new Set(pm.disabled ?? []);
-    return memberProvidedBuffs(build, char)
+    return memberProvidedBuffsFor(char)
       .filter(({ key }) => !off.has(key))
       // specific_character: 내가(수신자) 그 지정 캐릭터일 때만 수혜
       .filter(({ buff: b }) => b.target !== 'specific_character' || b.target_character === selfId)
-      .map(({ buff: b }): Buff => ({
+      .map(({ buff: b, scaledValue }): Buff => ({
         type: b.type,
-        value: b.energy_scale ? energyScaleValue(b.energy_scale, memberER) : b.value,
+        value: b.energy_scale || b.crit_scale ? scaledValue ?? 0 : b.value,
         element: b.element,
+        target_damage_bonus_type: b.target_damage_bonus_type,
         always: true,
       }));
   });
@@ -212,6 +224,7 @@ const SAVE_KEY = (id: string) => `wuwa-scouter:save:${id}`;
 const hasStorage = typeof localStorage !== 'undefined';
 
 interface SavedState {
+  partyBuffVersion?: number; // 1: 모니에 강력 필드 계산 반영 후의 파티 버프 인덱스
   weaponId: string | null;
   echoSetIds: string[];
   mainEchoId: string | null;
@@ -245,6 +258,7 @@ function serializeState(state: AppState): SavedState {
     requiredEnergyRegen: state.requiredEnergyRegen,
     ascensionLevel: state.ascensionLevel,
     refinementLevel: state.refinementLevel,
+    ...(state.partyMembers?.some((m) => m.id === 'mornye') ? { partyBuffVersion: 1 } : {}),
   };
 }
 
@@ -269,7 +283,18 @@ export function deleteCharacterState(characterId: string): void {
 export function isStateSaved(state: AppState): boolean {
   if (!hasStorage) return false;
   const raw = localStorage.getItem(SAVE_KEY(state.character.id));
-  return raw != null && raw === JSON.stringify(serializeState(state));
+  if (raw == null) return false;
+  const current = JSON.stringify(serializeState(state));
+  if (raw === current) return true;
+  try {
+    const saved: SavedState = JSON.parse(raw);
+    if ((saved.partyBuffVersion ?? 0) < 1 && saved.partyMembers?.some((m) => m.id === 'mornye')) {
+      saved.partyMembers = restorePartyMembers(saved.partyMembers, state.character.id);
+      saved.partyBuffVersion = 1;
+      return JSON.stringify(saved) === current;
+    }
+  } catch { /* 손상된 저장값은 현재 상태와 다름 */ }
+  return false;
 }
 
 /** 저장값이 없고 아직 기본(빈) 상태 그대로면 true — 저장/이탈 차단할 것이 없음.
@@ -320,7 +345,7 @@ export function loadCharacterState(character: Character): AppState | null {
       slots,
       twoPiecePicks: [],
       selectedMode: character.modes?.some((m) => m.id === s.selectedMode) ? s.selectedMode : character.modes?.[0]?.id,
-      partyMembers: restorePartyMembers(s.partyMembers, character.id),
+      partyMembers: restorePartyMembers(s.partyMembers, character.id, s.partyBuffVersion),
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],
       requiredEnergyRegen: s.requiredEnergyRegen,

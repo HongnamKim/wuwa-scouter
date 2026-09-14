@@ -91,6 +91,7 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
         .filter((b) => {
           const dbt = damageBonusTypeOf({ character: state.character, selectedMode: state.selectedMode });
           if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;
+          if (b.target_damage_bonus_type && b.target_damage_bonus_type !== dbt) return false;
           if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
           return true;
         })

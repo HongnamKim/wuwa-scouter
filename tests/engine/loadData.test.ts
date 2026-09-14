@@ -41,6 +41,12 @@ describe('loadData', () => {
     expect(b.type).toBe('critical_rate');
   });
 
+  it.each(['skill_motion_value_bonus', 'skill_motion_value_amplify'])('%s는 기록 전용만 허용한다', (type) => {
+    const buff = { type, value: 0.5, always: false, record_only: false, absolute_score_only: false };
+    expect(() => validateBuff(buff)).toThrow('must be record_only');
+    expect(validateBuff({ ...buff, record_only: true }).record_only).toBe(true);
+  });
+
   it('무결성: 모든 스킬노드 버프가 min_ascension(숫자) + target(self 포함)을 명시한다', () => {
     const targets = ['self', 'party', 'next_character', 'specific_character', 'party_except_self'];
     for (const c of loadCharacters()) {

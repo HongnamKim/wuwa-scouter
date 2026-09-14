@@ -48,10 +48,13 @@ export interface CritScale { per_percent: number; threshold: number; cap: number
 
 /**
  * 크리티컬 확률(소수) 초과분(threshold% 기준)으로 크리 피해 버프값을 계산.
- * 값 = min(per_percent × (크리% − threshold), cap). 예: 구원 공명해방 0.02/1%, threshold 50, cap 0.30 → 크리 65%에서 0.30.
+ * 초과분은 정수 퍼센트로 내림(floor)한 "몫"만 반영한다("1%당" = 완전한 1% 단위만 계산).
+ * 예: 초과 7.3% → floor(7.3)=7 → 0.02×7 = 0.14. 초과 0.5% → floor=0 → 0.
+ * 값 = min(per_percent × floor(크리% − threshold), cap). 예: 구원 threshold 50, cap 0.30; 아우구스타 threshold 100/150.
  */
 export function critScaleValue(s: CritScale, criticalRate: number): number {
-  return Math.min(s.per_percent * Math.max(0, criticalRate * 100 - s.threshold), s.cap);
+  const excess = Math.floor(Math.max(0, criticalRate * 100 - s.threshold));
+  return Math.min(s.per_percent * excess, s.cap);
 }
 
 /** 공명효율을 다른 스탯으로 전환하는 캐릭터인지 (예: 시그리카) */

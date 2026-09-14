@@ -20,6 +20,7 @@ export interface Buff {
   mode?: string; // 모드 전환 캐릭터 전용. 지정 시 해당 모드 선택 시에만 활성/노출 (예: 루실라 서리/에코)
   damage_bonus_type?: DamageBonusType; // 지정 시 캐릭터(모드)의 피해유형이 이 값과 일치할 때만 활성/노출 (element 게이트와 동일 개념). 예: 「강설」→공명해방 크리 분기
   exclude_damage_bonus_type?: DamageBonusType; // 지정 시 캐릭터(모드)의 피해유형이 이 값이 아닐 때만 활성/노출 (damage_bonus_type의 역). 예: 반주 분기는 공명해방 캐릭터에겐 미노출
+  target_damage_bonus_type?: DamageBonusType; // 수혜자의 주력 피해유형 제한. 파티 전달 후에도 보존(예: 에코 피해에만 크리티컬 피해 증가).
   record_only?: boolean; // 특정 스킬 계수/특정 스킬 한정 효과 — 계산 완전 제외 + 패널 숨김(순수 기록용). 예: 에이메스 종결 부스트, 루크 공중공격 보너스
   absolute_score_only?: boolean; // 부스트·방무·저무 등 — 딜 상승 수치엔 반영되나 상대 점수(비율)에선 약분. 계산 포함, 일반 표시
   default_on?: boolean; // 조건부 버프 체크박스 기본 상태(미지정 시 true). 모든 조건부 버프에 명시
