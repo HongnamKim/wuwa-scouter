@@ -48,12 +48,13 @@ export interface CritScale { per_percent: number; threshold: number; cap: number
 
 /**
  * 크리티컬 확률(소수) 초과분(threshold% 기준)으로 크리 피해 버프값을 계산.
- * 초과분은 정수 퍼센트로 내림(floor)한 "몫"만 반영한다("1%당" = 완전한 1% 단위만 계산).
+ * 프로젝트는 초과분을 정수 퍼센트로 내림(floor)해 반영한다. 게임의 정수/연속 변환 여부는 실측 미확인.
  * 예: 초과 7.3% → floor(7.3)=7 → 0.02×7 = 0.14. 초과 0.5% → floor=0 → 0.
  * 값 = min(per_percent × floor(크리% − threshold), cap). 예: 구원 threshold 50, cap 0.30; 아우구스타 threshold 100/150.
  */
 export function critScaleValue(s: CritScale, criticalRate: number): number {
-  const excess = Math.floor(Math.max(0, criticalRate * 100 - s.threshold));
+  // 113%가 부동소수점에서 112.99999999999999로 표현돼 1%를 덜 세지 않도록 보정(% 단위).
+  const excess = Math.floor(Math.max(0, criticalRate * 100 - s.threshold) + 1e-9);
   return Math.min(s.per_percent * excess, s.cap);
 }
 

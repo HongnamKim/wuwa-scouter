@@ -473,7 +473,7 @@
    "buffs": [
     { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
     { "type": "resonance_liberation_bonus", "value": 0.20, "always": false, "id": "weapon_moongazer_rl", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주/공명 해방 발동 시 공명 해방 피해 +{v} (15초)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
-    { "type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_moongazer_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.60], "label": "실드 획득 시 공명 해방 피해가 목표 방어력 {v} 무시 (5스택 최대, 변주 시 최대치 유지)", "short": "방어력 {v} 무시 (5스택)", "note": "스택당 7.2~12%, 최대 5스택 → 변주로 최대치 유지 가정(×5)", "record_only": false, "absolute_score_only": true, "default_on": true }
+    {"type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_moongazer_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.6], "label": "실드 획득 시 공명 해방 피해가 목표 방어력 {v} 무시 (5스택, 7초)", "short": "공명 해방 방어력 {v} 무시 (5스택)", "note": "스택당 7.2/8.4/9.6/10.8/12%, 최대 5스택. 실드로 0.5초마다 1회 획득, 7초 지속. 변주 발동 시 최대 스택으로 간주하는 효과는 3초만 지속하며, 이후 유노의 반복 실드 획득으로 최대치를 유지하는 분석 가정.", "record_only": false, "absolute_score_only": true, "default_on": true, "target_damage_bonus_type": "resonance_liberation"}
    ]
   },
   {
@@ -494,7 +494,7 @@
    "buffs": [
     { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
     { "type": "heavy_attack_bonus", "value": 0.20, "always": false, "id": "weapon_thunderflare_heavy", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주/공명 스킬 발동 시 강공격 피해 +{v} (15초)", "short": "강공격 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true },
-    { "type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_thunderflare_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.60], "label": "실드 획득 시 강공격이 목표 방어력 {v} 무시 (5스택 최대, 변주로 최대치 유지)", "short": "방어력 {v} 무시 (5스택)", "note": "스택당 7.2~12%, 최대 5스택 → 변주로 최대치 유지 가정(×5)", "record_only": false, "absolute_score_only": true, "default_on": true }
+    {"type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_thunderflare_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.6], "label": "실드 획득 시 강공격 피해가 목표 방어력 {v} 무시 (5스택, 7초)", "short": "강공격 방어력 {v} 무시 (5스택)", "note": "스택당 7.2/8.4/9.6/10.8/12%, 최대 5스택. 실드로 0.5초마다 1회 획득, 7초 지속. 아우구스타의 피해 발생 시 고유 실드를 반복 획득하여 최대치를 유지하는 분석 가정. 변주만으로 최대 스택을 부여하는 효과는 없다.", "record_only": false, "absolute_score_only": true, "default_on": true, "target_damage_bonus_type": "heavy_attack"}
    ]
   }
 ]
