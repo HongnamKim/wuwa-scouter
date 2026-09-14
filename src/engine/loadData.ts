@@ -26,6 +26,10 @@ export function validateBuff(b: any): Buff {
   if (b.record_only && b.absolute_score_only) {
     throw new Error(`buff cannot be both record_only and absolute_score_only: ${b.label ?? b.note ?? b.type}`);
   }
+  // 특정 스킬 배율은 에코 스탯과 별개이므로 항상 기록 전용.
+  if ((b.type === 'skill_motion_value_bonus' || b.type === 'skill_motion_value_amplify') && !b.record_only) {
+    throw new Error(`skill motion value buff must be record_only: ${b.label ?? b.note ?? b.type}`);
+  }
   return b as Buff;
 }
 

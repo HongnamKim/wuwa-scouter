@@ -111,6 +111,7 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
   if (b.provider_element && b.provider_element !== ctx.character.element) return false;
   // 피해유형 게이트(예: 「강설」→공명해방 크리 분기 / 반주 분기). 모드 전환 캐릭터는 현재 모드 피해유형 기준
   const dbt = damageBonusTypeOf(ctx);
+  if (b.target_damage_bonus_type && b.target_damage_bonus_type !== dbt) return false;
   if (b.damage_bonus_type && b.damage_bonus_type !== dbt) return false;
   if (b.exclude_damage_bonus_type && b.exclude_damage_bonus_type === dbt) return false;
   // 모드 전환 캐릭터: 버프에 mode 지정 시 해당 모드 선택일 때만 활성
@@ -222,6 +223,8 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
       const v = energyScaleValue(b.energy_scale!, energyRegen);
       if (b.type === 'critical_rate') t.critical_rate += v;
       else if (b.type === 'critical_damage') t.critical_damage += v;
+      else if (b.type === 'attack_percent') t.attack_percent += v;
+      else if (b.type === 'element_damage_bonus') t.element_bonus += v;
       else if (b.type === 'all_damage_amplify') { t.amplify += v; t.amplify_all += v; }
     }
   }
