@@ -567,5 +567,96 @@
         "note": "기류 피해 보너스 최대 스택 효과가 지속되는 동안 적용."
       }
     ]
+  },
+  {
+    "id": "blooming_jadehaven",
+    "name": "옥궐에 피는 꽃",
+    "weapon_type": "rectifier",
+    "base_stats": {
+      "attack": 587,
+      "critical_rate": 0.243
+    },
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.12,
+        "always": true,
+        "target": "self",
+        "id": "blooming_jadehaven_element",
+        "label": "전체 속성 피해 +{v}",
+        "short": "전체 속성 피해 +{v}",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "전체",
+        "refinement_values": [
+          0.12,
+          0.15,
+          0.18,
+          0.21,
+          0.24
+        ]
+      },
+      {
+        "type": "resonance_skill_amplify",
+        "value": 0.36,
+        "always": false,
+        "target": "self",
+        "id": "blooming_jadehaven_skill",
+        "label": "전자 부여·합일 대응 후 공명 스킬 피해 +{v} 부스트 (30초)",
+        "short": "전자 부여·합일 대응 후 공명 스킬 피해 +{v} 부스트 (30초)",
+        "record_only": false,
+        "absolute_score_only": true,
+        "default_on": true,
+        "refinement_values": [
+          0.36,
+          0.45,
+          0.54,
+          0.63,
+          0.72
+        ]
+      },
+      {
+        "type": "element_resistance_ignore",
+        "value": 0.1,
+        "always": false,
+        "target": "self",
+        "id": "blooming_jadehaven_res_ignore",
+        "label": "전자 부여·합일 대응 후 공명 스킬의 전도 저항 무시 {v} (30초)",
+        "short": "전자 부여·합일 대응 후 공명 스킬의 전도 저항 무시 {v} (30초)",
+        "record_only": false,
+        "absolute_score_only": true,
+        "default_on": true,
+        "element": "전도",
+        "damage_bonus_type": "resonance_skill",
+        "refinement_values": [
+          0.1,
+          0.135,
+          0.17,
+          0.205,
+          0.24
+        ]
+      },
+      {
+        "type": "anomaly_damage_amplify",
+        "value": 0.3,
+        "always": false,
+        "target": "party",
+        "id": "blooming_jadehaven_electro",
+        "label": "전자 부여·합일 대응 후 출전 중 주변 목표의 전자 피해 +{v} 부스트 (30초, 기록 전용)",
+        "short": "전자 부여·합일 대응 후 출전 중 주변 목표의 전자 피해 +{v} 부스트 (30초, 기록 전용)",
+        "record_only": true,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "전도",
+        "refinement_values": [
+          0.3,
+          0.375,
+          0.45,
+          0.525,
+          0.6
+        ],
+        "note": "0.1초마다 1회 발생. 같은 이름은 가장 높은 수치만 적용. 일반 전도 피해 부스트로 변환하지 않는다."
+      }
+    ]
   }
 ]

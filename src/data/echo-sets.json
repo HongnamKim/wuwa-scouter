@@ -341,5 +341,169 @@
         ]
       }
     ]
+  },
+  {
+    "id": "heart_of_sworn_vigil",
+    "name": "꿈으로 세상을 비추는 마음",
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.1,
+        "always": true,
+        "target": "self",
+        "id": "sworn_vigil_2pc",
+        "label": "전도 피해 +10% (2세트)",
+        "short": "전도 피해 +10% (2세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "전도",
+        "set_pieces": 2
+      },
+      {
+        "type": "critical_rate",
+        "value": 0.15,
+        "always": false,
+        "target": "self",
+        "id": "sworn_vigil_5pc_crit",
+        "label": "전자 부여·합일 획득·대응 시 크리티컬 +15% (30초, 5세트)",
+        "short": "전자 부여·합일 획득·대응 시 크리티컬 +15% (30초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "set_pieces": 5
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.225,
+        "always": false,
+        "target": "self",
+        "id": "sworn_vigil_5pc_electro",
+        "label": "전자 부여·합일 획득·대응 시 전도 피해 +22.5% (30초, 5세트)",
+        "short": "전자 부여·합일 획득·대응 시 전도 피해 +22.5% (30초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "전도",
+        "set_pieces": 5
+      }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "hsin_main_echo",
+        "name": "신규 에코 (이름 미공개)",
+        "cost": 4,
+        "buffs": [
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": true,
+            "target": "self",
+            "id": "hsin_main_echo_passive",
+            "label": "메인 슬롯: 전도 피해 +10%",
+            "short": "메인 슬롯: 전도 피해 +10%",
+            "record_only": false,
+            "absolute_score_only": false,
+            "element": "전도"
+          },
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": false,
+            "target": "self",
+            "id": "hsin_main_echo_conditional",
+            "label": "전자 부여·합일 획득·대응 시 전도 피해 추가 +10% (30초)",
+            "short": "전자 부여·합일 획득·대응 시 전도 피해 추가 +10% (30초)",
+            "record_only": false,
+            "absolute_score_only": false,
+            "default_on": true,
+            "element": "전도",
+            "note": "메인 슬롯 장착 조건부 패시브. 에코 어빌리티 피해 배율은 계산하지 않는다. 명칭 미공개, 사용자 제공 효과 기준."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "flash_of_electric_reflection",
+    "name": "거울 그림자에 번개가 스치는 찰나",
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.1,
+        "always": true,
+        "target": "self",
+        "id": "electric_reflection_2pc",
+        "label": "전도 피해 +10% (2세트)",
+        "short": "전도 피해 +10% (2세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "전도",
+        "set_pieces": 2
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.1,
+        "always": false,
+        "target": "self",
+        "id": "electric_reflection_5pc_self",
+        "label": "전자 부여 시 자신의 전도 피해 +10% (15초, 5세트)",
+        "short": "전자 부여 시 자신의 전도 피해 +10% (15초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "전도",
+        "set_pieces": 5
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.25,
+        "always": false,
+        "target": "next_character",
+        "id": "electric_reflection_5pc_next",
+        "label": "전자 부여 후 반주 시 다음 등장 캐릭터의 전도 피해 +25% (15초, 5세트)",
+        "short": "전자 부여 후 반주 시 다음 등장 캐릭터의 전도 피해 +25% (15초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "전도",
+        "set_pieces": 5,
+        "note": "자신의 전도 피해 +10% 효과가 지속되는 동안 반주 발동. 다음 변주로 등장하는 캐릭터에게 적용."
+      }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "hsin_main_echo",
+        "name": "신규 에코 (이름 미공개)",
+        "cost": 4,
+        "buffs": [
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": true,
+            "target": "self",
+            "id": "hsin_main_echo_passive",
+            "label": "메인 슬롯: 전도 피해 +10%",
+            "short": "메인 슬롯: 전도 피해 +10%",
+            "record_only": false,
+            "absolute_score_only": false,
+            "element": "전도"
+          },
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": false,
+            "target": "self",
+            "id": "hsin_main_echo_conditional",
+            "label": "전자 부여·합일 획득·대응 시 전도 피해 추가 +10% (30초)",
+            "short": "전자 부여·합일 획득·대응 시 전도 피해 추가 +10% (30초)",
+            "record_only": false,
+            "absolute_score_only": false,
+            "default_on": true,
+            "element": "전도",
+            "note": "메인 슬롯 장착 조건부 패시브. 에코 어빌리티 피해 배율은 계산하지 않는다. 명칭 미공개, 사용자 제공 효과 기준."
+          }
+        ]
+      }
+    ]
   }
 ]
