@@ -4,9 +4,9 @@ import { loadCharacterState, analysisContext, charactersInListOrder } from '../s
 import type { Character } from '../types/data';
 import type { Element } from '../types/domain';
 import { ELEMENTS } from '../types/domain';
-import { computePerf } from '../engine/perf';
-import { buildPerfInput } from '../engine/build';
-import { theoryBest, kkjakReferencePerf } from '../engine/theory';
+import type { CalcContext } from '../engine/context';
+import { useCalculation } from '../hooks/useCalculation';
+import { Skeleton } from './Skeleton';
 import { isLocked, releaseDateLabel } from '../engine/release';
 import { onImgError } from './imgFallback';
 import { useTheme, ACCENT, ELEMENT_COLOR, type ThemeVars } from '../theme';
@@ -18,17 +18,6 @@ const elementIcon = (el: Element) => `/elements/${ELEMENT_SLUG[el]}.webp`;
 
 function hasSubstats(state: AppState): boolean {
   return state.slots.some((s) => s.substats.some((l) => l.type && l.value != null));
-}
-
-/** 카드 스탯 타일 값(크크작 / 최고점). 저장값·부옵 없으면 '—'. */
-function cardScoreLines(state: AppState | null): { primary: string; secondary: string } {
-  const ctx = state ? analysisContext(state) : null;
-  if (!state || !ctx || !hasSubstats(state)) return { primary: '—', secondary: '—' };
-  const mine = computePerf(buildPerfInput(ctx));
-  return {
-    primary: `${((mine / kkjakReferencePerf(ctx)) * 100).toFixed(1)}%`,
-    secondary: `${((mine / theoryBest(ctx).perf) * 100).toFixed(1)}%`,
-  };
 }
 
 interface Opt { value: string; label: string; icon?: string }
@@ -84,6 +73,14 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
     (version === 'all' || String(Math.floor(e.character.version)) === version)
     && (element === 'all' || e.character.element === element));
 
+  const contexts: Record<string, CalcContext> = {};
+  for (const { character, state } of filtered) {
+    if (!state || !hasSubstats(state) || isLocked(character)) continue;
+    const ctx = analysisContext(state);
+    if (ctx) contexts[character.id] = ctx;
+  }
+  const { result: scores, loading, error } = useCalculation('roster', Object.keys(contexts).length ? contexts : null);
+
   type Entry = { character: Character; state: AppState | null };
   const byVersion: { major: number; items: Entry[] }[] = [];
   for (const e of filtered) {
@@ -107,7 +104,9 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
     const el = character.element;
     const color = ELEMENT_COLOR[el] ?? ACCENT;
     const recorded = !!state && !locked;
-    const { primary, secondary } = cardScoreLines(state);
+    const pending = loading && !!contexts[character.id];
+    const failed = error && !!contexts[character.id];
+    const { primary, secondary } = scores?.[character.id] ?? { primary: '—', secondary: '—' };
     const cardStyle: CSSProperties = {
       ['--el' as string]: color,
       position: 'relative', display: 'flex', flexDirection: 'column', borderRadius: 16,
@@ -137,11 +136,11 @@ export function CharacterList({ onSelect }: { onSelect: (characterId: string) =>
           {locked ? (
             <div style={{ marginTop: 12, padding: '9px', borderRadius: 8, background: vars.stat, fontSize: '0.74rem', color: vars.muted, textAlign: 'center' }}>🔒 {releaseDateLabel(character)} 출시 예정</div>
           ) : (
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }} aria-busy={pending}>
               {([['크크작', primary], ['최고점', secondary]] as const).map(([lbl, val]) => (
                 <div key={lbl} style={{ flex: 1, padding: '7px 9px', borderRadius: 8, background: vars.stat }}>
                   <div style={{ fontSize: '0.64rem', color: vars.muted, letterSpacing: '0.02em' }}>{lbl}</div>
-                  <div style={{ fontFamily: 'var(--mono)', fontSize: '0.98rem', fontWeight: 700, color: val === '—' ? vars.ghost : vars.fg, marginTop: 1 }}>{val}</div>
+                  <div title={failed ? '계산하지 못했습니다. 새로고침해 주세요.' : undefined} style={{ fontFamily: 'var(--mono)', fontSize: '0.98rem', fontWeight: 700, color: val === '—' ? vars.ghost : vars.fg, marginTop: 1 }}>{pending ? <Skeleton width="3.5em" /> : failed ? '계산 실패' : val}</div>
                 </div>
               ))}
             </div>

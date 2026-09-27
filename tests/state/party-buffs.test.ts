@@ -10,7 +10,7 @@ const storage = vi.hoisted(() => {
   return entries;
 });
 
-import { analysisContext, initialState, memberProvidedBuffsFor, saveCharacterState, loadCharacterState, isStateSaved } from '../../src/state/store';
+import { analysisContext, initialState, memberProvidedBuffsFor, saveCharacterState, loadCharacterState, isStateSaved, changePartyMemberMode } from '../../src/state/store';
 import { loadCharacters } from '../../src/engine/loadData';
 import { slotsFrom } from '../../src/engine/echoSlots';
 import { aggregateBuffs, memberProvidedBuffs } from '../../src/engine/buffs';
@@ -111,5 +111,74 @@ describe('모니에 방어력 버프 추가 전 저장 호환', () => {
     delete saved.partyBuffVersion;
     storage.set(key, JSON.stringify(saved));
     expect(isStateSaved(loadCharacterState(state.character)!)).toBe(true);
+  });
+});
+
+describe('파티 편성별 모드 선택', () => {
+  const character = (id: string) => loadCharacters().find((c) => c.id === id)!;
+
+  it('데니아의 선택 모드에 맞춰 목록과 수혜자 계산이 함께 바뀐다', () => {
+    const denia = character('denia');
+    const provided = memberProvidedBuffsFor(denia, 'cluster');
+    expect(provided.some((p) => p.buff.mode === 'flame')).toBe(false);
+    expect(provided.some((p) => p.buff.mode === 'cluster' && p.buff.type === 'all_damage_amplify')).toBe(true);
+    const state = initialState();
+    const receiver = { ...state, character: { ...state.character, element: '용융' as const } };
+    const base = aggregateBuffs(analysisContext(receiver)!);
+    const flame = aggregateBuffs(analysisContext({ ...receiver, partyMembers: [{ id: 'denia', selectedMode: 'flame' }] })!);
+    const cluster = aggregateBuffs(analysisContext({ ...receiver, partyMembers: [{ id: 'denia', selectedMode: 'cluster' }] })!);
+    expect(flame.element_bonus - base.element_bonus).toBeCloseTo(0.30);
+    expect(cluster.element_bonus - base.element_bonus).toBeCloseTo(0);
+    expect(cluster.amplify_all - base.amplify_all).toBeCloseTo(0.40);
+  });
+
+  it('루실라를 에코 모드로 선택하면 에코 피해와 크피를 제공한다', () => {
+    const state = initialState();
+    const receiver = { ...state, character: { ...state.character, damage_bonus_type: 'echo_skill' as const } };
+    const base = aggregateBuffs(analysisContext(receiver)!);
+    const echo = aggregateBuffs(analysisContext({ ...receiver, partyMembers: [{ id: 'lucilla', selectedMode: 'echo' }] })!);
+    expect(echo.critical_damage - base.critical_damage).toBeCloseTo(0.40);
+    expect(echo.damage_type_bonus - base.damage_type_bonus).toBeCloseTo(0.25);
+  });
+
+  it('에이메스의 모드별 반주 설명을 선택한 모드로 바꾼다', () => {
+    const provided = memberProvidedBuffsFor(character('aemeath'), 'flame');
+    expect(provided.some((p) => p.buff.mode === 'wave')).toBe(false);
+    expect(provided.some((p) => p.buff.label?.includes('반주(불꽃)'))).toBe(true);
+  });
+
+  it('파티에서 선택한 모드는 저장·복원되며 파티원 본인의 저장 빌드를 바꾸지 않는다', () => {
+    storage.set('wuwa-scouter:save:lucilla', JSON.stringify({ selectedMode: 'frost' }));
+    const before = storage.get('wuwa-scouter:save:lucilla');
+    const state = initialState();
+    saveCharacterState({ ...state, partyMembers: [{ id: 'lucilla', selectedMode: 'echo', disabled: ['lucilla_zoom_critdmg'] }] });
+    const restored = loadCharacterState(state.character)!;
+    expect(restored.partyMembers).toEqual([{ id: 'lucilla', disabled: ['lucilla_zoom_critdmg'], selectedMode: 'echo' }]);
+    expect(isStateSaved(restored)).toBe(true);
+    expect(storage.get('wuwa-scouter:save:lucilla')).toBe(before);
+  });
+
+  it('모드 미지정·유효하지 않은 모드는 파티원의 저장된 모드를 따른다', () => {
+    const lucilla = character('lucilla');
+    storage.set('wuwa-scouter:save:lucilla', JSON.stringify({ selectedMode: 'echo' }));
+    expect(memberProvidedBuffsFor(lucilla).some((p) => p.buff.id === 'lucilla_slowmo_echo')).toBe(true);
+    expect(memberProvidedBuffsFor(lucilla, 'missing')).toEqual(memberProvidedBuffsFor(lucilla));
+    const state = initialState();
+    saveCharacterState({ ...state, partyMembers: [{ id: 'lucilla', selectedMode: 'missing' }] });
+    expect(loadCharacterState(state.character)!.partyMembers![0].selectedMode).toBeUndefined();
+  });
+
+  it('모드 변경 시 공통 세트 버프의 꺼진 상태를 새 키로 옮긴다', () => {
+    const lucilla = character('lucilla');
+    storage.set('wuwa-scouter:save:lucilla', JSON.stringify({ selectedMode: 'frost', echoSetIds: ['moonlit_clouds'] }));
+    const before = memberProvidedBuffsFor(lucilla);
+    const set = before.find((p) => p.source === '화음 세트')!;
+    const changed = changePartyMemberMode(lucilla, { id: 'lucilla', disabled: [set.key, 'lucilla_slowmo_res'] }, 'echo');
+    const after = memberProvidedBuffsFor(lucilla, 'echo');
+    const newSet = after.find((p) => p.source === '화음 세트')!;
+    expect(newSet.key).not.toBe(set.key); // 모드마다 앞에 나오는 버프 개수가 다름
+    expect(changed.selectedMode).toBe('echo');
+    expect(changed.disabled).toEqual([newSet.key]);
+    expect(after.filter((p) => changed.disabled?.includes(p.key)).map((p) => p.source)).toEqual(['화음 세트']);
   });
 });
