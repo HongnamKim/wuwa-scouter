@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AppState } from '../state/store';
-import { memberProvidedBuffsFor } from '../state/store';
+import { memberProvidedBuffsFor, changePartyMemberMode, memberModeFor } from '../state/store';
 import type { BuffSource } from '../engine/buffs';
 import type { PartyMember } from '../engine/context';
 import type { Buff } from '../types/data';
@@ -83,14 +83,30 @@ export function PartyTab({ state, setState, simple }: Props) {
           {members.map((m) => {
             const c = chars.find((x) => x.id === m.id);
             if (!c) return null;
+            const selectedMode = memberModeFor(c, m.selectedMode);
             // specific_character 버프는 지금 보는 캐릭터가 그 지정 대상일 때만 노출·토글
-            const provided = memberProvidedBuffsFor(c)
+            const provided = memberProvidedBuffsFor(c, selectedMode)
               .filter(({ buff }) => buff.target !== 'specific_character' || buff.target_character === state.character.id)
               .filter(({ buff }) => !buff.target_damage_bonus_type || buff.target_damage_bonus_type === damageBonusTypeOf(state));
             const off = new Set(m.disabled ?? []);
             return (
               <div key={m.id} style={{ marginBottom: 14 }}>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', margin: '2px 0 6px' }}>{c.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', margin: '2px 0 6px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{c.name}</span>
+                  {c.modes && c.modes.length > 1 && (
+                    <div className="mode-toggle" role="group" aria-label={`${c.name} 모드`}>
+                      {c.modes.map((mode) => (
+                        <button key={mode.id} type="button"
+                          className={'mode-btn' + (selectedMode === mode.id ? ' active' : '')}
+                          aria-pressed={selectedMode === mode.id}
+                          onClick={() => setMembers(members.map((member) => member.id === m.id
+                            ? changePartyMemberMode(c, member, mode.id) : member))}>
+                          {mode.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 {provided.length === 0 && (
                   <div className="muted" style={{ fontSize: '0.85rem' }}>제공하는 파티 버프가 없습니다.</div>
                 )}
