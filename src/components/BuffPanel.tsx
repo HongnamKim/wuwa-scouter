@@ -41,8 +41,7 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
   // 카테고리 탭 선택 인덱스
   const [tab, setTab] = useState(0);
 
-  // 출처별 그룹. 무기·에코 세트·메인 에코는 패시브(상시)도 함께 노출(체크박스 비활성, 글씨는 검정).
-  // 고유 스킬만 조건부 노출.
+  // 출처별 그룹. 기본 스탯 노드를 제외한 고유 스킬·돌파 상시 효과는 체크된 비활성 항목으로 표시한다.
   const uniqueSets = state.echoSets.filter((s, i) => state.echoSets.findIndex((x) => x.id === s.id) === i);
   // 세트 효과 게이팅: 에코 개수(코스트 개수)보다 큰 set_pieces 효과는 착용 불가 → 잠금 표시.
   const echoCount = state.costLayout ? costsOf(state.costLayout).length : 5;
@@ -60,19 +59,22 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
     }));
   // 무기/메인에코는 미설정(null)일 수 있으므로 설정된 출처만 그룹에 포함
   const condGroups: { source: string; weaponStats: boolean; items: Item[] }[] = [
-    { source: '고유 스킬', buffs: state.character.skill_node, withPassive: false, weaponStats: false },
-    ...(state.weapon ? [{ source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, withPassive: true, weaponStats: true }] : []),
-    ...uniqueSets.map((s) => ({ source: `화음 세트: ${s.name}`, buffs: s.buffs, withPassive: true, weaponStats: false })),
-    ...(state.mainEcho ? [{ source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, withPassive: true, weaponStats: false }] : []),
-    ...(twoPieceBuffs.length ? [{ source: '보조 2세트 효과', buffs: twoPieceBuffs, withPassive: true, weaponStats: false }] : []),
+    { source: '고유 스킬', buffs: state.character.skill_node, weaponStats: false },
+    ...(state.weapon ? [{ source: `무기: ${state.weapon.name}`, buffs: state.weapon.buffs, weaponStats: true }] : []),
+    ...uniqueSets.map((s) => ({ source: `화음 세트: ${s.name}`, buffs: s.buffs, weaponStats: false })),
+    ...(state.mainEcho ? [{ source: `메인 에코: ${state.mainEcho.name}`, buffs: state.mainEcho.buffs, weaponStats: false }] : []),
+    ...(twoPieceBuffs.length ? [{ source: '보조 2세트 효과', buffs: twoPieceBuffs, weaponStats: false }] : []),
   ]
     .map((g) => ({
       source: g.source,
       weaponStats: g.weaponStats,
-      // 조건부(id 보유) + (세트/메인에코면) 상시 패시브. 돌파 미달 버프도 보여주되 아래에서 비활성
+      // 조건부(id 보유) + 상시 패시브. 돌파 미달 버프도 보여주되 아래에서 비활성
       // 모드 전환 캐릭터: 다른 모드 전용 버프는 숨김
       items: g.buffs
-        .filter((b) => (g.withPassive ? (!!b.id || !!b.always) : (!b.always && !!b.id)))
+        .filter((b) => !!b.id || !!b.always)
+        // 기본 스탯 노드는 모두 활성화한 전제이므로 계산에만 포함한다.
+        // 기존 데이터는 note, 청초는 label에 스킬 노드 출처가 기록되어 있다.
+        .filter((b) => g.source !== '고유 스킬' || !(b.note?.startsWith('스킬 노드') || b.label?.startsWith('스킬 노드')))
         // next_character(다음 등장 캐릭터 전용)·party_except_self(본인 제외 파티)는 본인이 못 받으므로 숨김 — 팀 제공 기록용.
         // party(파티 전체, 본인 포함)와 self는 본인도 받으므로 표시.
         .filter((b) => !b.target || b.target === 'self' || b.target === 'party')
@@ -199,22 +201,23 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
 
   // 한 버프 그룹 렌더 (탭 내부). 잠긴 버프는 기본 펼침(더보기 누른 상태) — 숨기기로 접을 수 있음.
   const renderGroup = (g: (typeof condGroups)[number]) => {
-    const hasLocked = g.items.some((it) => !it.passive && isLocked(it.b));
+    const hasLocked = g.items.some((it) => isLocked(it.b));
     const show = expanded[g.source] ?? defaultShow;
-    const vis = show ? g.items : g.items.filter((it) => it.passive || !isLocked(it.b));
+    const vis = show ? g.items : g.items.filter((it) => !isLocked(it.b));
     const label = catOf(g.source); // 그룹 소스가 탭 카테고리와 다르면 헤더 표시(보조 2세트 등 콜론 없는 그룹 포함)
     return (
       <div key={g.source}>
         {g.source !== label && <div style={{ margin: '9px 0 5px', fontSize: '0.74rem', fontWeight: 700, color: 'var(--muted)' }}>{g.source}</div>}
         {g.weaponStats && <div style={{ margin: '0 0 10px', paddingBottom: 10, borderBottom: '1px solid var(--rule)', fontSize: '0.8rem', color: 'var(--muted)' }}>스탯: {weaponStatLine()}</div>}
         {vis.map(({ b, passive, setLocked }, idx) => {
-          const locked = (!passive && isLocked(b)) || !!setLocked;
-          const checked = setLocked ? false : (passive ? true : (!locked && isChecked(b)));
+          const locked = isLocked(b) || !!setLocked;
+          const checked = !locked && (passive || isChecked(b));
           return (
             <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: 12, width: 'fit-content', color: locked ? 'var(--muted)' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
               <input type="checkbox" disabled={passive || locked} checked={checked} style={{ marginTop: 2 }}
-                onChange={(e) => { if (passive || setLocked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
-              <span style={{ fontSize: '0.86rem', lineHeight: 1.45 }}>{simple ? shortText(b) : fullText(b)}{passive && !setLocked ? ' (상시)' : ''}
+                onChange={(e) => { if (passive || locked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
+              <span style={{ fontSize: '0.86rem', lineHeight: 1.45 }}>{simple ? shortText(b) : fullText(b)}{passive && !locked ? ' (상시 적용)' : ''}
+                {isLocked(b) && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.min_ascension}돌 필요</span>}
                 {setLocked && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.set_pieces}세트(에코 {b.set_pieces}개↑ 필요)</span>}
                 {scaleNowText(b) && <span className="muted" style={{ marginLeft: 4 }}>· {scaleNowText(b)}</span>}
               </span>

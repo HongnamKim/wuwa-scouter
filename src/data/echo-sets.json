@@ -260,5 +260,86 @@
      { "type": "heavy_attack_bonus", "value": 0.12, "always": true, "target": "self", "label": "자신의 강공격 피해 보너스 12% 증가", "short": "강공격피해 +12%", "note": "메인슬롯 패시브", "record_only": false, "absolute_score_only": false }
     ] }
    ]
+  },
+  {
+    "id": "heart_of_evils_purge",
+    "name": "악을 씻어내는 마음",
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.1,
+        "always": true,
+        "target": "self",
+        "id": "evils_purge_2pc_aero",
+        "label": "기류 피해 +10% (2세트)",
+        "short": "기류 피해 +10% (2세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "기류",
+        "set_pieces": 2
+      },
+      {
+        "type": "critical_damage",
+        "value": 0.2,
+        "always": false,
+        "target": "self",
+        "id": "evils_purge_5pc_critdmg",
+        "label": "조화 밀집·이탈 부여 시 크리티컬 피해 +20% (15초, 5세트)",
+        "short": "조화 밀집·이탈 부여 시 크리티컬 피해 +20% (15초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "set_pieces": 5
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.3,
+        "always": false,
+        "target": "self",
+        "id": "evils_purge_5pc_aero",
+        "label": "조화 밀집·이탈 부여 시 기류 피해 +30% (15초, 5세트)",
+        "short": "조화 밀집·이탈 부여 시 기류 피해 +30% (15초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "기류",
+        "set_pieces": 5
+      }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "calamity_effigy",
+        "name": "하늘의 기관 인형 · 겁살",
+        "cost": 4,
+        "buffs": [
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": true,
+            "target": "self",
+            "id": "calamity_effigy_passive",
+            "label": "메인 슬롯: 기류 피해 +10%",
+            "short": "메인 슬롯: 기류 피해 +10%",
+            "record_only": false,
+            "absolute_score_only": false,
+            "element": "기류"
+          },
+          {
+            "type": "element_damage_bonus",
+            "value": 0.1,
+            "always": false,
+            "target": "self",
+            "id": "calamity_effigy_aero",
+            "label": "조화 밀집·이탈 부여 시 기류 피해 추가 +10% (15초)",
+            "short": "조화 밀집·이탈 부여 시 기류 피해 추가 +10% (15초)",
+            "record_only": false,
+            "absolute_score_only": false,
+            "default_on": true,
+            "element": "기류",
+            "note": "메인 슬롯 장착 패시브의 조건부 추가분. 에코 어빌리티 공격 배율 자체는 버프로 계산하지 않는다."
+          }
+        ]
+      }
+    ]
   }
 ]

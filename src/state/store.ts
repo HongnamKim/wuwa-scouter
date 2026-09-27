@@ -21,7 +21,8 @@ export function isRecordOnly(character: Character): boolean {
 /** 저장된 파티원 복원: 존재하는 id·자기 자신 제외·중복 제거·최대 2명·불리언 보정 */
 function restorePartyMembers(saved: PartyMember[] | undefined, selfId: string, buffVersion = 0): PartyMember[] {
   if (!Array.isArray(saved)) return [];
-  const ids = new Set(loadCharacters().map((c) => c.id));
+  const chars = loadCharacters();
+  const ids = new Set(chars.map((c) => c.id));
   const seen = new Set<string>();
   const out: PartyMember[] = [];
   for (const m of saved) {
@@ -37,7 +38,8 @@ function restorePartyMembers(saved: PartyMember[] | undefined, selfId: string, b
         .map((p) => [`#${legacy.indexOf(p)}`, p.key]));
       disabled = disabled.map((key) => keys.get(key) ?? key);
     }
-    out.push({ id: m.id, disabled });
+    const selectedMode = chars.find((c) => c.id === m.id)?.modes?.find((mode) => mode.id === m.selectedMode)?.id;
+    out.push({ id: m.id, disabled, ...(selectedMode ? { selectedMode } : {}) });
     if (out.length >= 2) break;
   }
   return out;
@@ -67,12 +69,20 @@ function loadMemberBuild(character: Character): MemberBuild | null {
   }
 }
 
-/** 파티 탭 표시용: 이 파티원이 (내 저장 빌드 기준) 제공하는 버프 목록. */
-export function memberProvidedBuffsFor(character: Character) {
+/** 편성별 선택 → 파티원 저장값 → 캐릭터 기본 모드 순서로 사용한다. */
+export function memberModeFor(character: Character, selectedMode?: string): string | undefined {
+  return character.modes?.find((m) => m.id === selectedMode)?.id
+    ?? loadMemberBuild(character)?.selectedMode ?? character.modes?.[0]?.id;
+}
+
+/** 파티 탭 표시용: 저장 빌드에 편성별 모드 선택을 반영한 제공 버프 목록. */
+export function memberProvidedBuffsFor(character: Character, selectedMode?: string) {
+  const build = loadMemberBuild(character) ?? {};
+  const mode = memberModeFor(character, selectedMode);
   // 동적 버프는 파티원(제공자)의 저장 스탯으로 계산. 저장 빌드 없으면 null.
-  const memberCtx = loadMemberContext(character);
+  const memberCtx = loadMemberContext(character, mode);
   const memberER = memberCtx ? computeEnergyRegen(memberCtx) : null;
-  const provided = memberProvidedBuffs(loadMemberBuild(character) ?? {}, character);
+  const provided = memberProvidedBuffs({ ...build, selectedMode: mode }, character);
   const memberCrit = memberCtx && provided.some(({ buff }) => buff.crit_scale)
     ? computeDisplaySpec(memberCtx).criticalRateRaw : null;
   return provided.map((p) => ({
@@ -80,6 +90,18 @@ export function memberProvidedBuffsFor(character: Character) {
     scaledValue: p.buff.energy_scale && memberER != null ? energyScaleValue(p.buff.energy_scale, memberER)
       : p.buff.crit_scale && memberCrit != null ? critScaleValue(p.buff.crit_scale, memberCrit) : null,
   }));
+}
+
+/** 모드에 따라 인덱스 키가 달라져도 공통 버프의 미적용 상태를 유지한다. */
+export function changePartyMemberMode(character: Character, member: PartyMember, selectedMode?: string): PartyMember {
+  const mode = character.modes?.find((m) => m.id === selectedMode)?.id;
+  const disabledBuffs = new Set(memberProvidedBuffsFor(character, member.selectedMode)
+    .filter((p) => member.disabled?.includes(p.key))
+    .map(({ source, buff }) => JSON.stringify({ source, buff })));
+  const disabled = memberProvidedBuffsFor(character, mode)
+    .filter(({ source, buff }) => disabledBuffs.has(JSON.stringify({ source, buff })))
+    .map((p) => p.key);
+  return { ...member, selectedMode: mode, disabled };
 }
 
 /** partyMembers를 내 저장 빌드로 해석해 합산용 버프(Buff[])로. disabled 제외, always:true.
@@ -91,7 +113,7 @@ function resolvePartyProvidedBuffs(partyMembers: PartyMember[] | undefined, self
     const char = chars.find((c) => c.id === pm.id);
     if (!char) return [];
     const off = new Set(pm.disabled ?? []);
-    return memberProvidedBuffsFor(char)
+    return memberProvidedBuffsFor(char, pm.selectedMode)
       .filter(({ key }) => !off.has(key))
       // specific_character: 내가(수신자) 그 지정 캐릭터일 때만 수혜
       .filter(({ buff: b }) => b.target !== 'specific_character' || b.target_character === selfId)
@@ -127,9 +149,9 @@ export function analysisContext(s: AppState, includeParty = true): CalcContext |
 }
 
 /** 파티원 캐릭터의 내 저장 빌드를 완전한 CalcContext로(파티 해석 제외). 미완성/미저장이면 null. */
-function loadMemberContext(character: Character): CalcContext | null {
+function loadMemberContext(character: Character, selectedMode?: string): CalcContext | null {
   const saved = loadCharacterState(character);
-  return saved ? analysisContext(saved, false) : null;
+  return saved ? analysisContext({ ...saved, selectedMode: selectedMode ?? saved.selectedMode }, false) : null;
 }
 
 /** 메인 에코가 이 코스트 구성에서 장착 가능한지(구성에 에코 코스트 슬롯이 존재). 구성 미선택(null)이면 제한 없음. */
@@ -252,7 +274,9 @@ function serializeState(state: AppState): SavedState {
     slots: state.slots,
     twoPiecePicks: state.twoPiecePicks ?? [],
     selectedMode: state.selectedMode,
-    partyMembers: state.partyMembers ?? [],
+    partyMembers: (state.partyMembers ?? []).map((m) => ({
+      id: m.id, disabled: m.disabled, ...(m.selectedMode ? { selectedMode: m.selectedMode } : {}),
+    })),
     conditionalToggles: state.conditionalToggles,
     manualBuffs: state.manualBuffs,
     requiredEnergyRegen: state.requiredEnergyRegen,

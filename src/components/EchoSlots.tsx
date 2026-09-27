@@ -4,6 +4,7 @@ import type { Cost, StatKey } from '../types/domain';
 import { availableCostsForSlot, defaultMainForCost } from '../engine/echoSlots';
 import { sumEffectiveTotal } from '../engine/build';
 import { effectiveSubstatsOf } from '../engine/mode';
+import { summarySubstatsOf } from './summarySubstats';
 import { Dropdown, DropdownOption } from './Dropdown';
 import { EchoEditor, SUB_LABEL, SUB_OPTION_KEYS, mainOptionsFor, pairScaleSubstats, MAIN_SHORT } from './EchoEditor';
 
@@ -58,13 +59,14 @@ export function EchoSlots({ state, setState }: Props) {
     patchSlot(active, { substats: slot.substats.map((l, idx) => (idx === li ? { ...l, ...patch } : l)) });
 
   const sum = sumEffectiveTotal(state);
+  const summaryKeys = summarySubstatsOf(state);
 
   return (
     <div className="echo-slots">
       {/* 제목 바로 아래: 전체 에코 유효옵 합 (그리드 카드) */}
-      <div className="sum-grid" style={{ gridTemplateColumns: `repeat(${eff.length}, 1fr)` }}>
-        {eff.map((k) => <div key={'h' + k} className="sum-h">{sumLabel(k)}</div>)}
-        {eff.map((k) => <div key={'v' + k} className="sum-v">{(sum[k] ?? 0).toFixed(k.startsWith('flat') ? 0 : 1)}</div>)}
+      <div className="sum-grid" style={{ gridTemplateColumns: `repeat(${summaryKeys.length}, 1fr)` }}>
+        {summaryKeys.map((k) => <div key={'h' + k} className="sum-h">{sumLabel(k)}</div>)}
+        {summaryKeys.map((k) => <div key={'v' + k} className="sum-v">{(sum[k] ?? 0).toFixed(k.startsWith('flat') ? 0 : 1)}</div>)}
       </div>
 
       {/* 아래: 에코 슬롯 편집 (탭 → 코스트 → 메인 → 부옵) */}

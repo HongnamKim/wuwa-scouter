@@ -21,6 +21,7 @@ export interface MainPrimaryPick {
 export interface PartyMember {
   id: string;          // 파티원 캐릭터 id
   disabled?: string[]; // 끈(미적용) 제공 버프 키 목록. 기본 전부 적용(빈 배열)
+  selectedMode?: string; // 이 편성에서 사용할 모드. 미지정이면 파티원 본인의 저장 모드
 }
 
 export interface EchoSlot {
