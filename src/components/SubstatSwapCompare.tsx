@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import type { CalcContext, SubstatLine, EchoSlot } from '../engine/context';
 import { ConfirmModal } from './ConfirmModal';
 import type { StatKey, DamageBonusType, ScaleStat } from '../types/domain';
@@ -6,7 +6,9 @@ import { buildPerfInput, sumEffectiveTotal, computeEnergyRegen } from '../engine
 import { computePerf } from '../engine/perf';
 import { computeDisplaySpec } from '../engine/spec';
 import { mechanismDamageTypeBonus } from '../engine/mechanisms';
-import { theoryBest, kkjakReferencePerf } from '../engine/theory';
+import { useCalculation } from '../hooks/useCalculation';
+import { CalculationError, Skeleton } from './Skeleton';
+import { summarySubstatsOf } from './summarySubstats';
 import { effectiveSubstatsOf, damageBonusTypeOf } from '../engine/mode';
 import { DropdownOption } from './Dropdown';
 import { EchoEditor, SUB_LABEL, SUB_OPTION_KEYS, pairScaleSubstats, MAIN_SHORT } from './EchoEditor';
@@ -66,10 +68,9 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
   const cost = base.slots[active].cost;
 
   // 분모(최고점·크크작)는 슬롯 교체와 무관(빌드 고정) → 한 번만 계산
-  const { best, kkjak } = useMemo(() => ({
-    best: theoryBest(base).perf,
-    kkjak: kkjakReferencePerf(base),
-  }), [base]);
+  const { result, loading, error } = useCalculation('scores', base);
+  const best = result?.best.perf;
+  const kkjak = result?.kkjak;
 
   const comparedCtx: CalcContext = { ...base, slots: base.slots.map((s, i) => ({ ...s, main: edited[i].main, substats: edited[i].substats })) };
   const current = computePerf(buildPerfInput(base));
@@ -96,8 +97,8 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
 
   const pct = (n: number, d: number) => `${(n / d * 100).toFixed(1)}%`;
   // 최고점/크크작 대비의 %p 변화(교체 후 − 현재)
-  const bestPp = (compared - current) / best * 100;
-  const kkPp = (compared - current) / kkjak * 100;
+  const bestPp = best == null ? 0 : (compared - current) / best * 100;
+  const kkPp = kkjak == null ? 0 : (compared - current) / kkjak * 100;
   const ppColor = (pp: number) => (pp > 0 ? 'var(--good)' : pp < 0 ? 'var(--bad)' : 'var(--muted)');
   const fmtPp = (pp: number) => `${pp >= 0 ? '+' : ''}${pp.toFixed(1)}%p`;
 
@@ -142,15 +143,15 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
           <div className="cmp-ab">{comma(current)} → <span>{comma(compared)}</span></div>
           <div className="cmp-delta" style={{ color: diff > 0 ? 'var(--good)' : diff < 0 ? 'var(--bad)' : 'var(--muted)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(2)}%</div>
         </div>
-        <div className="score-card">
+        <div className="score-card" aria-busy={loading}>
           <div className="cmp-lbl">최고점 대비</div>
-          <div className="cmp-ab">{pct(current, best)} → <span>{pct(compared, best)}</span></div>
-          <div className="cmp-delta" style={{ color: ppColor(bestPp) }}>{fmtPp(bestPp)}</div>
+          <div className="cmp-ab">{best != null ? <>{pct(current, best)} → <span>{pct(compared, best)}</span></> : error ? <CalculationError /> : <Skeleton />}</div>
+          <div className="cmp-delta" style={{ color: ppColor(bestPp) }}>{loading ? <Skeleton /> : best != null ? fmtPp(bestPp) : '—'}</div>
         </div>
-        <div className="score-card">
+        <div className="score-card" aria-busy={loading}>
           <div className="cmp-lbl">크크작 대비</div>
-          <div className="cmp-ab">{pct(current, kkjak)} → <span>{pct(compared, kkjak)}</span></div>
-          <div className="cmp-delta" style={{ color: ppColor(kkPp) }}>{fmtPp(kkPp)}</div>
+          <div className="cmp-ab">{kkjak != null ? <>{pct(current, kkjak)} → <span>{pct(compared, kkjak)}</span></> : error ? <CalculationError /> : <Skeleton />}</div>
+          <div className="cmp-delta" style={{ color: ppColor(kkPp) }}>{loading ? <Skeleton /> : kkjak != null ? fmtPp(kkPp) : '—'}</div>
         </div>
       </div>
 
@@ -179,7 +180,7 @@ export function SubstatSwapCompare({ base, onApply }: { base: CalcContext; onApp
         </div>
         <div style={{ flex: 1, minWidth: 240 }}>
           <div style={{ fontWeight: 800, fontSize: '1rem', margin: '0 0 10px' }}>유효옵 총합 변화</div>
-          {eff.map((k) => {
+          {summarySubstatsOf(base).map((k) => {
             const a = subA[k] ?? 0; const b = subB[k] ?? 0;
             if (a === 0 && b === 0) return null;
             const flat = k.startsWith('flat');

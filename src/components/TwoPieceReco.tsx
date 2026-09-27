@@ -1,6 +1,8 @@
 import type { AppState } from '../state/store';
 import { analysisContext } from '../state/store';
-import { twoPieceRecommendationGroups, RecoRow } from '../engine/theory';
+import type { RecoRow } from '../engine/theory';
+import { useCalculation } from '../hooks/useCalculation';
+import { CalculationError, RecommendationSkeleton } from './Skeleton';
 import { WarnTip } from './WarnTip';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
@@ -26,7 +28,9 @@ function Cell({ rows }: { rows: RecoRow[] }) {
 /** 자유 2세트 효과(1+2+2, 3+2) 조합별 상대 성능 추천 — 최고점/크크작 기준. 자유 슬롯 0이면 렌더 안 함 */
 export function TwoPieceReco({ state }: { state: AppState }) {
   const ctx = analysisContext(state);
-  const groups = ctx ? twoPieceRecommendationGroups(ctx) : null;
+  const { result: groups, loading, error } = useCalculation('twoPiece', ctx);
+  if (loading) return <RecommendationSkeleton labels={[]} />;
+  if (error) return <CalculationError />;
   if (!groups) return null;
   return (
     <div className="reco-card">

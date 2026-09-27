@@ -1,6 +1,9 @@
 import type { AppState } from '../state/store';
 import { analysisContext } from '../state/store';
-import { mainRecommendation, RecoRow } from '../engine/theory';
+import { hasNamedModes, type RecoRow } from '../engine/theory';
+import { costsOf } from '../engine/costLayout';
+import { useCalculation } from '../hooks/useCalculation';
+import { CalculationError, RecommendationSkeleton } from './Skeleton';
 import { WarnTip } from './WarnTip';
 
 function Cell({ rows }: { rows: RecoRow[] }) {
@@ -23,6 +26,7 @@ function Cell({ rows }: { rows: RecoRow[] }) {
 
 export function MainReco({ state }: { state: AppState }) {
   const ctx = analysisContext(state);
+  const { result: groups, loading, error } = useCalculation('main', ctx);
   if (!ctx) {
     return (
       <p className="muted" style={{ margin: '8px 0' }}>
@@ -30,7 +34,10 @@ export function MainReco({ state }: { state: AppState }) {
       </p>
     );
   }
-  const groups = mainRecommendation(ctx);
+  if (loading) return <RecommendationSkeleton labels={hasNamedModes(ctx)
+    ? (costsOf(ctx.costLayout).includes(3) ? ['4코 메인', '3코 조합'] : ['4코 조합']) : ['메인 조합']} />;
+  if (error) return <CalculationError />;
+  if (!groups) return null;
   // 후보가 많은 그룹(44111 4코 조합, ER 전환형 3코 조합 등)은 상위 3건만 표시
   const top = (rows: RecoRow[]) => rows.slice(0, 3);
   return (

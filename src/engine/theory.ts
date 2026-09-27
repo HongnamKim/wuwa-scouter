@@ -9,6 +9,7 @@ import { hasEnergyConversion } from './mechanisms';
 import { loadTwoPieceEffects } from './loadData';
 import { freeTwoPieceSlots, slotsFrom } from './echoSlots';
 import { effectiveSubstatsOf } from './mode';
+import { aggregateBuffs } from './buffs';
 
 // 크크작 부옵 기대 분포 (공식 확률 기반 30만 회 시뮬). 총 25줄 = 에코 5개 × 5줄.
 // 크리·크피는 각 5줄 확정(평균 합). 나머지 15줄은 아래 11종에 균등(각 ~1.36줄, 평균 합).
@@ -124,8 +125,32 @@ function* mainCombos(layout: Cost[], ctx: CalcContext): Generator<MainPrimaryPic
   yield* rec(0, []);
 }
 
-/** 유효옵 줄 배분 (각 0~5, 합 = totalLines) 전수 */
-function* subAllocations(keys: StatKey[], totalLines: number): Generator<number[]> {
+/** 유효옵 줄 배분 (각 0~5, 합 = totalLines). 혼합 유형 보너스는 같은 총 줄 수의 최상 배분만 탐색. */
+function* subAllocations(keys: StatKey[], totalLines: number, ctx?: CalcContext): Generator<number[]> {
+  const mix = ctx?.character.damage_type_mix;
+  if (mix?.length) {
+    // 유형 보너스 부옵은 같은 증가항에 선형 합산된다. 총 줄 수가 같다면
+    // share × 최고 단계가 큰 유형부터 5줄씩 채우는 배분이 다른 모든 배분 이상이다.
+    const factor = 1 + aggregateBuffs(ctx!).damage_type_bonus_factor;
+    const ranked = keys.map((key, index) => ({ key, index,
+      share: mix.find((m) => `${m.type}_bonus` === key)?.share,
+    })).filter((entry) => entry.share != null)
+      .sort((a, b) => factor * (b.share! * substatMaxStage(b.key) - a.share! * substatMaxStage(a.key)));
+    if (ranked.length > 1) {
+      const others = keys.map((key, index) => ({ key, index })).filter((entry) => !ranked.some((r) => r.index === entry.index));
+      for (let n = 0; n <= Math.min(totalLines, ranked.length * 5); n++) {
+        for (const otherAlloc of subAllocations(others.map((o) => o.key), totalLines - n)) {
+          const alloc = keys.map(() => 0);
+          others.forEach((o, i) => { alloc[o.index] = otherAlloc[i]; });
+          let remaining = n;
+          for (const r of ranked) { alloc[r.index] = Math.min(5, remaining); remaining -= alloc[r.index]; }
+          yield alloc;
+        }
+      }
+      return;
+    }
+  }
+  if (!keys.length) { if (totalLines === 0) yield []; return; }
   function* rec(idx: number, remaining: number, acc: number[]): Generator<number[]> {
     if (idx === keys.length - 1) {
       if (remaining >= 0 && remaining <= 5) yield [...acc, remaining];
@@ -227,7 +252,7 @@ export function theoryBest(ctx: CalcContext): TheoryResult {
     const erLines = constrained ? erLinesForCombo(ctx, picks)
       : (ctx.character.energy_regen_mode === 'premise' ? energyRegenLines(ctx) : 0);
     const budget = Math.min(totalSubstatLines(ctx) - erLines, dealKeys.length * 5);
-    for (const alloc of subAllocations(dealKeys, budget)) {
+    for (const alloc of subAllocations(dealKeys, budget, ctx)) {
       const lines: SubstatLine[] = [];
       dealKeys.forEach((k, idx) => { if (alloc[idx] > 0) lines.push({ type: k, value: alloc[idx] * substatMaxStage(k) }); });
       if (constrained && erLines > 0) lines.push({ type: 'energy_regen', value: erLines * substatMaxStage('energy_regen') });
@@ -332,7 +357,7 @@ function bestSubAllocationPerf(ctx: CalcContext, picks: MainPrimaryPick[]): numb
   const keys = effectiveSubstatsOf(ctx);
   const total = Math.min(totalSubstatLines(ctx) - energyRegenLines(ctx), keys.length * 5);
   let best = 0;
-  for (const alloc of subAllocations(keys, total)) {
+  for (const alloc of subAllocations(keys, total, ctx)) {
     const sub: SubstatLine[][] = keys.map((k, idx) =>
       alloc[idx] > 0 ? [{ type: k, value: alloc[idx] * substatMaxStage(k) }] : []);
     const p = perfWithMain(ctx, picks, sub);
@@ -365,7 +390,7 @@ function erTheoryDealEr(ctx: CalcContext, picks: MainPrimaryPick[]): DealEr {
   const budget = Math.min(totalSubstatLines(ctx) - erLines, dealKeys.length * 5);
   let best = 0;
   let erMet = 0;
-  for (const alloc of subAllocations(dealKeys, budget)) {
+  for (const alloc of subAllocations(dealKeys, budget, ctx)) {
     const lines: SubstatLine[] = [];
     dealKeys.forEach((k, idx) => { if (alloc[idx] > 0) lines.push({ type: k, value: alloc[idx] * substatMaxStage(k) }); });
     if (erLines > 0) lines.push({ type: 'energy_regen', value: erLines * substatMaxStage('energy_regen') });

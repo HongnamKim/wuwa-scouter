@@ -6,8 +6,10 @@ import type { Character } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { computePerf } from '../engine/perf';
 import { buildPerfInput, computeEnergyRegen } from '../engine/build';
-import { theoryBest, kkjakPerf, kkjakReferencePerf, optimalThreeCoModeKkjak, threeCoModeOptions, hasNamedModes, energyRegenLines, ThreeCoMode, erConstrained } from '../engine/theory';
-import { effectiveSubstatsOf } from '../engine/mode';
+import { threeCoModeOptions, hasNamedModes, energyRegenLines, ThreeCoMode, erConstrained } from '../engine/theory';
+import { useCalculation } from '../hooks/useCalculation';
+import { CalculationError, Skeleton } from './Skeleton';
+import { summarySubstatsOf } from './summarySubstats';
 import { Dropdown } from './Dropdown';
 
 const STAT_LABEL: Partial<Record<StatKey, string>> = {
@@ -36,14 +38,14 @@ function Help({ children }: { children: ReactNode }) {
 }
 
 /** 점수 카드 하나 (라벨 + 도움말/드롭다운 + 큰 수치 + 보조줄). */
-function ScoreCard({ label, help, extra, big, bigAccent, sub, subline }:
-  { label: string; help?: ReactNode; extra?: ReactNode; big: ReactNode; bigAccent?: boolean; sub?: ReactNode; subline?: ReactNode }) {
+function ScoreCard({ label, help, extra, big, bigAccent, sub, subline, loading = false, error = false }:
+  { label: string; help?: ReactNode; extra?: ReactNode; big: ReactNode; bigAccent?: boolean; sub?: ReactNode; subline?: ReactNode; loading?: boolean; error?: boolean }) {
   return (
-    <div className="score-card">
+    <div className="score-card" aria-busy={loading}>
       {/* 드롭다운(크크작 모드)은 우측 상단으로 빼서 라벨/수치 높이를 다른 카드와 맞춘다 */}
       {extra && <div className="score-card-extra">{extra}</div>}
       <div className="lbl">{label}{help && <Help>{help}</Help>}</div>
-      <div className="big" style={bigAccent ? { color: 'var(--accent)' } : undefined}>{big}</div>
+      <div className="big" style={bigAccent ? { color: 'var(--accent)' } : undefined}>{loading ? <Skeleton width="3.5em" /> : error ? <CalculationError /> : big}</div>
       {sub != null && <div className="sub">{sub}</div>}
       {subline}
     </div>
@@ -122,19 +124,20 @@ function RecordScore({ ctx, character }: { ctx: CalcContext | null; character: C
 
 function ScoresInner({ ctx, dealSubline }: { ctx: CalcContext | null; dealSubline?: ReactNode }) {
   const [mode, setMode] = useState<ThreeCoMode | null>(null);
+  const { result, loading, error } = useCalculation('scores', ctx);
 
   const named = ctx ? hasNamedModes(ctx) : false;
   // 현재 레이아웃에서 유효한 명명 모드(레이아웃 변경 시 스테일 방지). 없거나 일반형이면 null → 자동 기준.
   const opts = ctx && named ? threeCoModeOptions(ctx) : [];
   const effMode: ThreeCoMode | null = named
-    ? (mode && opts.some((o) => o.value === mode) ? mode : (ctx ? optimalThreeCoModeKkjak(ctx) : null))
+    ? (mode && opts.some((o) => o.value === mode) ? mode : (result?.mode ?? null))
     : null;
 
   const hasSub = hasAnySub(ctx);
-  const mine = ctx ? computePerf(buildPerfInput(ctx)) : null;
-  const best = ctx ? theoryBest(ctx) : null;
+  const mine = result?.mine ?? null;
+  const best = result?.best ?? null;
   // 명명 레이아웃은 선택 모드 기준, 일반형(직접 입력 등)은 전수 최고 기준.
-  const kk = ctx ? (effMode ? kkjakPerf(ctx, effMode) : kkjakReferencePerf(ctx)) : null;
+  const kk = result ? (effMode ? result.modes[effMode] : result.kkjak) : null;
 
   // 딜 상승 수치: 설정+부옵 있어야 계산 가능
   const dealText = ctx && hasSub && mine != null ? comma(mine) : '-';
@@ -147,14 +150,16 @@ function ScoresInner({ ctx, dealSubline }: { ctx: CalcContext | null; dealSublin
   const erLines = ctx ? energyRegenLines(ctx) : 0;
   const mainDesc = best ? best.mainPicks.map((p) => `${p.cost}코 ${lab(p.type)}`).join(' / ') : '';
   const subDesc = best && ctx
-    ? effectiveSubstatsOf(ctx).map((k) => `${lab(k)} ${best.subAllocation[k] ?? 0}줄`).join(', ')
+    ? summarySubstatsOf(ctx).map((k) => `${lab(k)} ${best.subAllocation[k] ?? 0}줄`).join(', ')
     : '';
 
   return (
     <div className="dc-scores-grid">
-      <ScoreCard label="딜 상승 수치" help={DEAL_TIP} big={dealText} subline={dealSubline} />
+      <ScoreCard label="딜 상승 수치" help={DEAL_TIP} big={dealText} subline={dealSubline} loading={loading && hasSub} error={error && hasSub} />
       <ScoreCard
         label="최고점 대비"
+        loading={loading}
+        error={error}
         help={<>
           최고점 에코 = 유효옵을 각각 최고 단계로 최대 배분(전제형은 필요 공명 효율 도달에 필요한 줄 수만큼 차감) + 메인 옵션 최적 선택 시의 이론 상한.
           {best && (<>
@@ -163,10 +168,12 @@ function ScoresInner({ ctx, dealSubline }: { ctx: CalcContext | null; dealSublin
           </>)}
         </>}
         big={pctNode(best ? best.perf : null)}
-        sub={best ? comma(best.perf) : undefined}
+        sub={loading ? <Skeleton /> : best ? comma(best.perf) : undefined}
       />
       <ScoreCard
         label="크크작 대비"
+        loading={loading}
+        error={error}
         bigAccent
         help={<>
           크크작 = 크리 5줄·크피 5줄을 고정하고 나머지 옵션이 평균적으로 붙는 에코작. <br />실제 파밍에서 흔히 나오는 현실적 대비 대상입니다.
@@ -178,7 +185,7 @@ function ScoresInner({ ctx, dealSubline }: { ctx: CalcContext | null; dealSublin
             onChange={(v) => setMode(v as ThreeCoMode)} />
         ) : undefined}
         big={pctNode(kk)}
-        sub={kk != null ? comma(kk) : undefined}
+        sub={loading ? <Skeleton /> : kk != null ? comma(kk) : undefined}
       />
     </div>
   );
