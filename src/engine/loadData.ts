@@ -26,6 +26,12 @@ export function validateBuff(b: any): Buff {
   if (b.record_only && b.absolute_score_only) {
     throw new Error(`buff cannot be both record_only and absolute_score_only: ${b.label ?? b.note ?? b.type}`);
   }
+  if (b.hp_scale && (
+    !['flat_attack', 'element_damage_bonus'].includes(b.type) ||
+    (b.target != null && b.target !== 'self') || b.energy_scale || b.crit_scale ||
+    !Number.isFinite(b.hp_scale.per_hp) || b.hp_scale.per_hp < 0 ||
+    !Number.isFinite(b.hp_scale.cap) || b.hp_scale.cap < 0
+  )) throw new Error(`invalid hp_scale buff: ${b.id ?? b.type}`);
   // 특정 스킬 배율은 에코 스탯과 별개이므로 항상 기록 전용.
   if ((b.type === 'skill_motion_value_bonus' || b.type === 'skill_motion_value_amplify') && !b.record_only) {
     throw new Error(`skill motion value buff must be record_only: ${b.label ?? b.note ?? b.type}`);
@@ -62,6 +68,9 @@ export function loadCharacters(): Character[] {
       if (!hasTimezoneOffset(c.release_at)) {
         throw new Error(`release_at에 타임존 오프셋이 없습니다. 한국 기준이면 '+09:00'을 붙이세요 (예: "2026-07-11T11:00:00+09:00"): ${c.release_at} (${c.id})`);
       }
+    }
+    if (c.skill_node.some((b: Buff) => b.hp_scale) && !(c.base_hp > 0)) {
+      throw new Error(`hp_scale requires base_hp: ${c.id}`);
     }
     // 무결성: 스킬노드 버프는 min_ascension(돌파 요구치, 0 포함)과 target(self 포함)을 반드시 명시한다
     (c.skill_node as any[]).forEach((b) => {

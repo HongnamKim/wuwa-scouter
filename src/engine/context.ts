@@ -39,6 +39,7 @@ export interface CalcContext {
   slots: EchoSlot[]; // 길이 = 코스트 개수(가변, 1~5), 코스트 멀티셋 = costsOf(costLayout)
   twoPiecePicks?: string[];       // 자유 2세트 효과 선택(풀 id). 길이 = 선택 세트에서 파생된 자유 슬롯 수. 0이면 빈 배열/미지정
   conditionalToggles: Record<string, boolean>;
+  additionalBuffsEnabled?: boolean; // false면 조건부·파티·수동 버프 중지. 상시 효과와 개별 선택은 유지
   manualBuffs: ManualBuff[];
   requiredEnergyRegen?: number; // 필요 공효(%). 이론 최고에서 도달 최소 줄 수만큼 딜 슬롯 차감(전제형). 미지정 시 30
   ascensionLevel?: number; // 돌파(공명 체인) 0~6. 일부 캐릭터의 스택형 자체 버프에 영향. 미지정 시 0

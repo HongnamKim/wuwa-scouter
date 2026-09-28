@@ -567,5 +567,187 @@
         "note": "기류 피해 보너스 최대 스택 효과가 지속되는 동안 적용."
       }
     ]
+  },
+  {
+    "id": "blooming_jadehaven",
+    "name": "옥궐에 피는 꽃",
+    "weapon_type": "rectifier",
+    "base_stats": {
+      "attack": 587,
+      "critical_rate": 0.243
+    },
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.12,
+        "always": true,
+        "target": "self",
+        "id": "blooming_jadehaven_element",
+        "label": "전체 속성 피해 +{v}",
+        "short": "전체 속성 피해 +{v}",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "전체",
+        "refinement_values": [
+          0.12,
+          0.15,
+          0.18,
+          0.21,
+          0.24
+        ]
+      },
+      {
+        "type": "resonance_skill_amplify",
+        "value": 0.36,
+        "always": false,
+        "target": "self",
+        "id": "blooming_jadehaven_skill",
+        "label": "전자 부여·합일 대응 후 공명 스킬 피해 +{v} 부스트 (30초)",
+        "short": "전자 부여·합일 대응 후 공명 스킬 피해 +{v} 부스트 (30초)",
+        "record_only": false,
+        "absolute_score_only": true,
+        "default_on": true,
+        "refinement_values": [
+          0.36,
+          0.45,
+          0.54,
+          0.63,
+          0.72
+        ]
+      },
+      {
+        "type": "element_resistance_ignore",
+        "value": 0.1,
+        "always": false,
+        "target": "self",
+        "id": "blooming_jadehaven_res_ignore",
+        "label": "전자 부여·합일 대응 후 공명 스킬의 전도 저항 무시 {v} (30초)",
+        "short": "전자 부여·합일 대응 후 공명 스킬의 전도 저항 무시 {v} (30초)",
+        "record_only": false,
+        "absolute_score_only": true,
+        "default_on": true,
+        "element": "전도",
+        "damage_bonus_type": "resonance_skill",
+        "refinement_values": [
+          0.1,
+          0.135,
+          0.17,
+          0.205,
+          0.24
+        ]
+      },
+      {
+        "type": "anomaly_damage_amplify",
+        "value": 0.3,
+        "always": false,
+        "target": "party",
+        "id": "blooming_jadehaven_electro",
+        "label": "전자 부여·합일 대응 후 출전 중 주변 목표의 전자 피해 +{v} 부스트 (30초, 기록 전용)",
+        "short": "전자 부여·합일 대응 후 출전 중 주변 목표의 전자 피해 +{v} 부스트 (30초, 기록 전용)",
+        "record_only": true,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "전도",
+        "refinement_values": [
+          0.3,
+          0.375,
+          0.45,
+          0.525,
+          0.6
+        ],
+        "note": "0.1초마다 1회 발생. 같은 이름은 가장 높은 수치만 적용. 일반 전도 피해 부스트로 변환하지 않는다."
+      }
+    ]
+  },
+  {
+    "id": "thousandfold_deliverance",
+    "name": "수많은 인도",
+    "weapon_type": "broad_blade",
+    "base_stats": {
+      "attack": 412,
+      "hp_percent": 0.722
+    },
+    "buffs": [
+      {
+        "type": "element_damage_bonus",
+        "value": 0.12,
+        "always": true,
+        "target": "self",
+        "id": "weapon_deliverance_element",
+        "label": "전체 속성 피해 +{v}",
+        "short": "전체 속성 피해 +{v}",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "전체",
+        "refinement_values": [
+          0.12,
+          0.15,
+          0.18,
+          0.21,
+          0.24
+        ]
+      },
+      {
+        "type": "critical_damage",
+        "value": 0.24,
+        "always": false,
+        "target": "self",
+        "id": "weapon_deliverance_critdmg",
+        "label": "변주·실드 획득 시 봉천: 크리티컬 피해 +{v} (6스택, 7초)",
+        "short": "변주·실드 획득 시 봉천: 크리티컬 피해 +{v} (6스택, 7초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "refinement_values": [
+          0.24,
+          0.3,
+          0.36,
+          0.42,
+          0.48
+        ],
+        "note": "스택당 4/5/6/7/8%. 실드 획득으로 0.5초마다 발동, 교대 시 제거."
+      },
+      {
+        "type": "critical_rate",
+        "value": 0.12,
+        "always": false,
+        "target": "self",
+        "id": "weapon_deliverance_crit",
+        "label": "봉천 6스택: 강공격 크리티컬 +{v}",
+        "short": "봉천 6스택: 강공격 크리티컬 +{v}",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "target_damage_bonus_type": "heavy_attack",
+        "refinement_values": [
+          0.12,
+          0.15,
+          0.18,
+          0.21,
+          0.24
+        ]
+      },
+      {
+        "type": "defense_ignore",
+        "value": 0.3,
+        "always": false,
+        "target": "self",
+        "id": "weapon_deliverance_defignore",
+        "label": "강공격 발동 시 포용 2스택 소모: 방어력 {v} 무시 (2초)",
+        "short": "강공격 발동 시 포용 2스택 소모: 방어력 {v} 무시 (2초)",
+        "record_only": false,
+        "absolute_score_only": true,
+        "default_on": true,
+        "target_damage_bonus_type": "heavy_attack",
+        "refinement_values": [
+          0.3,
+          0.35,
+          0.4,
+          0.45,
+          0.5
+        ],
+        "note": "변주·실드로 포용 획득. 스택당 15/17.5/20/22.5/25%, 최대 2스택 소모. 교대 시 제거."
+      }
+    ]
   }
 ]
