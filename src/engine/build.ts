@@ -109,7 +109,7 @@ export function buildPerfInput(ctx: CalcContext): PerfInput {
     (ctx.weapon.base_stats[percentKey] ?? 0) +
     scalePercentBuff + (sub[percentKey] ?? 0) / 100 + (main[percentKey] ?? 0);
 
-  const flatAttack = (sub[flatKey] ?? 0) + secondaryFlat(ctx);
+  const flatAttack = (sub[flatKey] ?? 0) + secondaryFlat(ctx) + (scale === 'attack' ? buffs.flat_attack : 0);
 
   const criticalRate =
     BASE_CRIT +

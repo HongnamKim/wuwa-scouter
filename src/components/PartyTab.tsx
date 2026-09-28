@@ -118,7 +118,7 @@ export function PartyTab({ state, setState, simple }: Props) {
                       <div className="muted" style={{ fontSize: '0.74rem', fontWeight: 700, margin: '9px 0 5px' }}>{src}</div>
                       {items.map(({ key, buff, scaledValue }) => (
                         <label key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: 7, paddingLeft: 10 }}>
-                          <input type="checkbox" checked={!off.has(key)} onChange={(e) => toggleBuff(m.id, key, e.target.checked)} style={{ marginTop: 2 }} />
+                          <input type="checkbox" disabled={state.additionalBuffsEnabled === false} checked={!off.has(key)} onChange={(e) => toggleBuff(m.id, key, e.target.checked)} style={{ marginTop: 2 }} />
                           <span style={{ fontSize: '0.85rem', lineHeight: 1.45 }}>
                             {buffText(buff, simple)}
                             {scaledValue != null && (

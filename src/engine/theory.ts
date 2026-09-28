@@ -35,7 +35,8 @@ export type ThreeCoMode =
 
 // 명명 모드 UI를 유지하는 레이아웃. 그 외(직접 입력·41111·43111 등)는 일반형(전수 상위 N) 경로.
 export const NAMED_LAYOUTS = new Set<string>(['43311', '44111']);
-export function hasNamedModes(ctx: CalcContext): boolean { return NAMED_LAYOUTS.has(ctx.costLayout); }
+function hasHpConversion(ctx: CalcContext): boolean { return ctx.character.skill_node.some((b) => b.hp_scale); }
+export function hasNamedModes(ctx: CalcContext): boolean { return NAMED_LAYOUTS.has(ctx.costLayout) && !hasHpConversion(ctx); }
 
 /** 캐릭터의 계수 스탯에 해당하는 '스탯% 메인' 주옵 키. 공격형=attack_percent(기존과 동일). */
 function scaleMain(ctx: CalcContext): StatKey {
@@ -74,6 +75,7 @@ const KKJAK_MODES: Record<ThreeCoMode, { pair: StatKey[]; layout: CostLayout; er
 
 /** 코스트 구성별 선택 가능한 크크작 조합 모드 (43311=3코 조합, 44111=4코 조합; ER 전환형만 공효 모드 노출) */
 export function threeCoModeOptions(ctx: CalcContext): { value: ThreeCoMode; label: string }[] {
+  if (!hasNamedModes(ctx)) return [];
   const showEr = hasEnergyConversion(ctx.character.special_mechanism) || erConstrained(ctx);
   return (Object.keys(KKJAK_MODES) as ThreeCoMode[])
     .filter((m) => KKJAK_MODES[m].layout === ctx.costLayout && (showEr || !KKJAK_MODES[m].er))
@@ -111,6 +113,7 @@ function mainOptionsFor(cost: Cost, ctx: CalcContext): StatKey[] {
   const all = Object.keys(MAIN_PRIMARY[cost]) as StatKey[];
   // 딜 관련: 스탯% 메인(계수 스탯), element_damage_bonus, critical_rate, critical_damage
   const dealKeys: StatKey[] = [scaleMain(ctx), 'element_damage_bonus', 'critical_rate', 'critical_damage', 'energy_regen'];
+  if (hasHpConversion(ctx)) dealKeys.push('hp_percent');
   return all.filter((k) => dealKeys.includes(k));
 }
 
@@ -119,6 +122,8 @@ function* mainCombos(layout: Cost[], ctx: CalcContext): Generator<MainPrimaryPic
   function* rec(i: number, acc: MainPrimaryPick[]): Generator<MainPrimaryPick[]> {
     if (i === layout.length) { yield acc; return; }
     for (const type of mainOptionsFor(layout[i], ctx)) {
+      // HP·공격력 혼합형은 동일 코스트 내 순열을 제거해 전수 탐색량을 줄인다.
+      if (hasHpConversion(ctx) && i > 0 && layout[i] === layout[i - 1] && type < acc[i - 1].type) continue;
       yield* rec(i + 1, [...acc, { cost: layout[i], type }]);
     }
   }
@@ -127,6 +132,35 @@ function* mainCombos(layout: Cost[], ctx: CalcContext): Generator<MainPrimaryPic
 
 /** 유효옵 줄 배분 (각 0~5, 합 = totalLines). 혼합 유형 보너스는 같은 총 줄 수의 최상 배분만 탐색. */
 function* subAllocations(keys: StatKey[], totalLines: number, ctx?: CalcContext): Generator<number[]> {
+  if (ctx && hasHpConversion(ctx)) {
+    // HP%/깡HP는 같은 HP 최대치로, 공격력%/깡공은 같은 공격력으로 합산된다.
+    // 같은 줄 수라면 실제 스탯 증가량이 큰 옵션부터 채워도 최댓값을 잃지 않는다.
+    // HP 전환이 상한에 도달해도 더 많은 HP가 성능을 낮추지는 않는다.
+    const groups: { index: number; gain: number }[][] = [];
+    const grouped = new Set<number>();
+    for (const [percent, flat, base] of [
+      ['hp_percent', 'flat_hp', ctx.character.base_hp ?? 0],
+      ['attack_percent', 'flat_attack', ctx.character.base_attack + ctx.weapon.base_stats.attack],
+    ] as [StatKey, StatKey, number][]) {
+      const group = keys.map((key, index) => ({ key, index }))
+        .filter(({ key }) => key === percent || key === flat)
+        .map(({ key, index }) => ({ index, gain: substatMaxStage(key) * (key === percent ? base / 100 : 1) }))
+        .sort((a, b) => b.gain - a.gain);
+      if (group.length) { groups.push(group); group.forEach(({ index }) => grouped.add(index)); }
+    }
+    keys.forEach((_, index) => { if (!grouped.has(index)) groups.push([{ index, gain: 0 }]); });
+    function* groupedAlloc(i: number, remaining: number, alloc: number[]): Generator<number[]> {
+      if (i === groups.length) { if (remaining === 0) yield alloc; return; }
+      for (let n = 0; n <= Math.min(remaining, groups[i].length * 5); n++) {
+        const next = [...alloc];
+        let rest = n;
+        for (const { index } of groups[i]) { next[index] = Math.min(5, rest); rest -= next[index]; }
+        yield* groupedAlloc(i + 1, remaining - n, next);
+      }
+    }
+    yield* groupedAlloc(0, totalLines, keys.map(() => 0));
+    return;
+  }
   const mix = ctx?.character.damage_type_mix;
   if (mix?.length) {
     // 유형 보너스 부옵은 같은 증가항에 선형 합산된다. 총 줄 수가 같다면
@@ -466,8 +500,8 @@ const MAIN_ABBR: Partial<Record<StatKey, string>> = {
   element_damage_bonus: '속', energy_regen: '공효', hp_percent: '체%', defense_percent: '방%',
 };
 /** 조합 라벨: 1코 제외, 코스트 내림차순으로 약어 이어붙임. 예: '크피·속·공' */
-function comboLabel(picks: MainPrimaryPick[]): string {
-  return picks.filter((p) => p.cost !== 1)
+function comboLabel(picks: MainPrimaryPick[], includeOneCost = false): string {
+  return picks.filter((p) => includeOneCost || p.cost !== 1)
     .slice().sort((a, b) => b.cost - a.cost)
     .map((p) => MAIN_ABBR[p.type] ?? p.type).join('·');
 }
@@ -482,11 +516,11 @@ function genericMainReco(ctx: CalcContext): RecoGroup {
   return {
     label: '메인 조합',
     theory: (erConstrained(ctx)
-      ? rowsEr(uniq.map((p) => [comboLabel(p), bestErCoOptTwoPiece(ctx, p, erTheoryDealEr)]), ctx.requiredEnergyRegen ?? 0)
-      : rows(uniq.map((p) => [comboLabel(p), bestPerfCoOptTwoPiece(ctx, p, bestSubAllocationPerf)]))).slice(0, 3),
+      ? rowsEr(uniq.map((p) => [comboLabel(p, hasHpConversion(ctx)), bestErCoOptTwoPiece(ctx, p, erTheoryDealEr)]), ctx.requiredEnergyRegen ?? 0)
+      : rows(uniq.map((p) => [comboLabel(p, hasHpConversion(ctx)), bestPerfCoOptTwoPiece(ctx, p, bestSubAllocationPerf)]))).slice(0, 3),
     kkjak: (erConstrained(ctx)
-      ? rowsEr(uniq.map((p) => [comboLabel(p), bestErCoOptTwoPiece(ctx, p, erKkjakDealEr)]), ctx.requiredEnergyRegen ?? 0)
-      : rows(uniq.map((p) => [comboLabel(p), bestPerfCoOptTwoPiece(ctx, p, (c, pp) => perfWithMain(c, pp, kkjakSub(c)))]))).slice(0, 3),
+      ? rowsEr(uniq.map((p) => [comboLabel(p, hasHpConversion(ctx)), bestErCoOptTwoPiece(ctx, p, erKkjakDealEr)]), ctx.requiredEnergyRegen ?? 0)
+      : rows(uniq.map((p) => [comboLabel(p, hasHpConversion(ctx)), bestPerfCoOptTwoPiece(ctx, p, (c, pp) => perfWithMain(c, pp, kkjakSub(c)))]))).slice(0, 3),
   };
 }
 

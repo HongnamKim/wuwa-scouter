@@ -27,7 +27,7 @@ function renderParty(member: PartyMember) {
 }
 
 describe('파티원 모드 선택', () => {
-  it.each([['denia', '데니아'], ['lucilla', '루실라'], ['aemeath', '에이메스'], ['lynae', '린네']])('%s는 모드 선택을 표시한다', (id, name) => {
+  it.each([['denia', '데니아'], ['lucilla', '루실라'], ['aemeath', '에이메스'], ['lynae', '린네'], ['hsin', '여우의 별자리']])('%s는 모드 선택을 표시한다', (id, name) => {
     const html = renderParty({ id });
     expect(html).toContain(`aria-label="${name} 모드"`);
     expect(html).not.toContain('저장된 모드 사용');
@@ -40,6 +40,13 @@ describe('파티원 모드 선택', () => {
     expect(html).toMatch(/<button[^>]*aria-pressed="true"[^>]*>에코<\/button>/);
     expect(html).toContain('슬로우 모션(에코)');
     expect(html).not.toContain('슬로우 모션(서리)');
+  });
+
+  it('여우의 별자리 전자 모드는 합일 반주를 제공하지 않는다', () => {
+    const html = renderParty({ id: 'hsin', selectedMode: 'electro_flare' });
+    expect(html).toMatch(/<button[^>]*aria-pressed="true"[^>]*>전자<\/button>/);
+    expect(html).toContain('자신을 제외한 파티원의 전도 피해');
+    expect(html).not.toContain('서로를 비추는 등불');
   });
 
   it('별도 선택이 없으면 파티원의 저장된 모드를 기본 선택한다', () => {

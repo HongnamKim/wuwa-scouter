@@ -46,6 +46,11 @@ export function energyScaleValue(s: EnergyScale, energyRegen: number): number {
 
 export interface CritScale { per_percent: number; threshold: number; cap: number; }
 
+/** HP 최대치에 연속 비례하는 버프. 각 효과의 상한을 개별 적용한다. */
+export function hpScaleValue(s: { per_hp: number; cap: number }, maxHp: number): number {
+  return Math.min(s.per_hp * maxHp, s.cap);
+}
+
 /**
  * 크리티컬 확률(소수) 초과분(threshold% 기준)으로 크리 피해 버프값을 계산.
  * 프로젝트는 초과분을 정수 퍼센트로 내림(floor)해 반영한다. 게임의 정수/연속 변환 여부는 실측 미확인.

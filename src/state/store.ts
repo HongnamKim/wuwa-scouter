@@ -144,7 +144,7 @@ export function analysisContext(s: AppState, includeParty = true): CalcContext |
   return {
     ...s, weapon: s.weapon, mainEcho: s.mainEcho ?? EMPTY_MAIN_ECHO, costLayout: s.costLayout,
     // includeParty=false: 파티원 빌드 해석 시 재귀/무한루프 방지용(파티원의 파티는 다시 풀지 않음)
-    partyProvidedBuffs: includeParty ? resolvePartyProvidedBuffs(s.partyMembers, s.character.id) : [],
+    partyProvidedBuffs: includeParty && s.additionalBuffsEnabled !== false ? resolvePartyProvidedBuffs(s.partyMembers, s.character.id) : [],
   };
 }
 
@@ -246,6 +246,7 @@ const SAVE_KEY = (id: string) => `wuwa-scouter:save:${id}`;
 const hasStorage = typeof localStorage !== 'undefined';
 
 interface SavedState {
+  additionalBuffsEnabled?: boolean;
   partyBuffVersion?: number; // 1: 모니에 강력 필드 계산 반영 후의 파티 버프 인덱스
   weaponId: string | null;
   echoSetIds: string[];
@@ -267,6 +268,8 @@ interface SavedState {
 
 function serializeState(state: AppState): SavedState {
   return {
+    // 기본 on은 생략해 기존 저장분과의 동일성 비교를 유지한다.
+    ...(state.additionalBuffsEnabled === false ? { additionalBuffsEnabled: false } : {}),
     weaponId: state.weapon?.id ?? null,
     echoSetIds: state.echoSets.map((e) => e.id),
     mainEchoId: state.mainEcho?.id ?? null,
@@ -370,6 +373,7 @@ export function loadCharacterState(character: Character): AppState | null {
       twoPiecePicks: [],
       selectedMode: character.modes?.some((m) => m.id === s.selectedMode) ? s.selectedMode : character.modes?.[0]?.id,
       partyMembers: restorePartyMembers(s.partyMembers, character.id, s.partyBuffVersion),
+      additionalBuffsEnabled: s.additionalBuffsEnabled !== false,
       conditionalToggles: s.conditionalToggles ?? {},
       manualBuffs: s.manualBuffs ?? [],
       requiredEnergyRegen: s.requiredEnergyRegen,
