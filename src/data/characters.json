@@ -1497,5 +1497,240 @@
         "note": "전자 효과 한정 고정값. 본인의 일반 크리티컬 피해에 더하지 않는다."
       }
     ]
+  },
+  {
+    "id": "jingran",
+    "name": "경연",
+    "version": 3.6,
+    "version_phase": "후반",
+    "element": "용융",
+    "weapon_type": "broad_blade",
+    "cost_layout": "44111",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 312,
+    "base_hp": 15375,
+    "base_defense": 0,
+    "effective_substats": [
+      "critical_rate",
+      "critical_damage",
+      "hp_percent",
+      "flat_hp",
+      "attack_percent",
+      "flat_attack",
+      "heavy_attack_bonus"
+    ],
+    "damage_bonus_type": "heavy_attack",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 120,
+    "special_mechanism": null,
+    "recommended_echo_sets": [
+      "lamp_of_nether_road"
+    ],
+    "recommended_main_echo": [
+      "myriad_snare_rustfire_chassis"
+    ],
+    "recommended_weapons": [
+      "thousandfold_deliverance",
+      "thunderflare_dominion"
+    ],
+    "signature_weapon": "thousandfold_deliverance",
+    "skill_node": [
+      {
+        "type": "critical_rate",
+        "value": 0.08,
+        "always": true,
+        "target": "self",
+        "id": "jingran_node_crit",
+        "label": "스킬 노드: 크리티컬 +8%",
+        "short": "스킬 노드: 크리티컬 +8%",
+        "record_only": false,
+        "absolute_score_only": false,
+        "note": "스킬 노드: 모두 활성화",
+        "min_ascension": 0
+      },
+      {
+        "type": "hp_percent",
+        "value": 0.12,
+        "always": true,
+        "target": "self",
+        "id": "jingran_node_hp",
+        "label": "스킬 노드: HP +12%",
+        "short": "스킬 노드: HP +12%",
+        "record_only": false,
+        "absolute_score_only": false,
+        "note": "스킬 노드: 모두 활성화",
+        "min_ascension": 0
+      },
+      {
+        "type": "flat_attack",
+        "value": 0,
+        "always": true,
+        "target": "self",
+        "id": "jingran_hp_attack",
+        "label": "양변음합: HP 1000당 공격력 +36 (최대 1800)",
+        "short": "양변음합: HP 1000당 공격력 +36 (최대 1800)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "hp_scale": {
+          "per_hp": 0.036,
+          "cap": 1800
+        },
+        "min_ascension": 0
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0,
+        "always": true,
+        "target": "self",
+        "id": "jingran_hp_fusion",
+        "label": "어둠 속에서 타오른 빛: HP 1000당 용융 피해 +1.5% (최대 75%)",
+        "short": "어둠 속에서 타오른 빛: HP 1000당 용융 피해 +1.5% (최대 75%)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "element": "용융",
+        "hp_scale": {
+          "per_hp": 1.5e-05,
+          "cap": 0.75
+        },
+        "min_ascension": 0
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0,
+        "always": false,
+        "target": "self",
+        "id": "jingran_intro_base",
+        "label": "화 또는 복 25스택: 변주 시 HP에 따라 용융 피해 증가 (15초)",
+        "short": "화 또는 복 25스택: 변주 시 HP에 따라 용융 피해 증가 (15초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "용융",
+        "hp_scale": {
+          "per_hp": 1.25e-05,
+          "cap": 0.625
+        },
+        "note": "전투 진입 시 귀신의 가호 25pt를 확보한 뒤 변주 발동 가정. 스택당 HP 1000당 0.05%, 최대 2.5%. 교대 시 종료.",
+        "min_ascension": 0
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0,
+        "always": false,
+        "target": "self",
+        "id": "jingran_intro_extra",
+        "label": "화 또는 복 추가 25스택: HP에 따라 용융 피해 증가 (15초)",
+        "short": "화 또는 복 추가 25스택: HP에 따라 용융 피해 증가 (15초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": false,
+        "element": "용융",
+        "hp_scale": {
+          "per_hp": 1.25e-05,
+          "cap": 0.625
+        },
+        "note": "귀신의 가호를 추가로 확보해 총 50스택으로 변주할 때 선택. 기본 25스택과 합산.",
+        "min_ascension": 0
+      },
+      {
+        "type": "skill_motion_value_amplify",
+        "value": 0.8,
+        "always": true,
+        "target": "self",
+        "id": "jingran_chain1_motion",
+        "label": "1돌: 지정 공명 스킬 4종의 피해 배율 +80%",
+        "short": "1돌: 지정 공명 스킬 4종의 피해 배율 +80%",
+        "record_only": true,
+        "absolute_score_only": false,
+        "min_ascension": 1,
+        "note": "뼈를 갉는 음기·황천을 건너는 길·몸을 사르는 양기·왕생으로 가는 길. 공격 중단 면역은 계산 제외."
+      },
+      {
+        "type": "skill_motion_value_amplify",
+        "value": 0.46,
+        "always": true,
+        "target": "self",
+        "id": "jingran_chain2_motion",
+        "label": "2돌: 혼백 탈취·북두칠성 피해 배율 +46%",
+        "short": "2돌: 혼백 탈취·북두칠성 피해 배율 +46%",
+        "record_only": true,
+        "absolute_score_only": false,
+        "min_ascension": 2,
+        "note": "생명의 불꽃에 의한 HP 비례 배율 증가 효과도 46% 강화. 모두 특정 스킬 배율이므로 기록 전용."
+      },
+      {
+        "type": "heavy_attack_amplify",
+        "value": 1.8,
+        "always": false,
+        "target": "self",
+        "id": "jingran_chain2_boon",
+        "label": "2돌 어둠 속으로: 혼백 탈취·북두칠성 피해 180% 부스트 (4초)",
+        "short": "2돌 어둠 속으로: 혼백 탈취·북두칠성 피해 180% 부스트 (4초)",
+        "record_only": true,
+        "absolute_score_only": false,
+        "default_on": true,
+        "min_ascension": 2,
+        "note": "특정 두 공격 한정. 공명 에너지 최대치 25% 회복은 공명 효율 증가가 아님."
+      },
+      {
+        "type": "flat_attack",
+        "value": 0,
+        "always": false,
+        "target": "self",
+        "id": "jingran_chain3_attack",
+        "label": "3돌 음양상생: 해방 후 공격력 전환 강화 (HP 1000당 36→50, 최대 1800→2500, 15초)",
+        "short": "3돌 음양상생: 해방 후 공격력 전환 강화 (15초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "min_ascension": 3,
+        "hp_scale": {
+          "per_hp": 0.014,
+          "cap": 700
+        },
+        "note": "양변음합을 대체하므로 기본 36에 추가 14만 합산. 현재 표시 수치는 추가분. 혼백 탈취·북두칠성 발동 시 귀신의 가호 5pt 획득은 별도 자원 효과."
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.2,
+        "always": false,
+        "target": "party",
+        "id": "jingran_chain4_element",
+        "label": "4돌: 실드 획득 시 파티 전체 속성 피해 +20% (30초)",
+        "short": "4돌: 실드 획득 시 파티 전체 속성 피해 +20% (30초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "min_ascension": 4,
+        "element": "전체"
+      },
+      {
+        "type": "heavy_attack_amplify",
+        "value": 0.4,
+        "always": true,
+        "target": "self",
+        "id": "jingran_chain6_heavy",
+        "label": "6돌: 목표가 경연에게 받는 강공격 피해 +40%",
+        "short": "6돌: 목표가 경연에게 받는 강공격 피해 +40%",
+        "record_only": false,
+        "absolute_score_only": true,
+        "min_ascension": 6,
+        "note": "기존 계산기의 피해 부스트 항에 반영하는 받는 피해 증가 근사. 강공격 대표 피해 내 상대 점수에서는 상수로 약분."
+      },
+      {
+        "type": "skill_motion_value_amplify",
+        "value": 0.8,
+        "always": true,
+        "target": "self",
+        "id": "jingran_chain6_motion",
+        "label": "6돌: 이매망량 피해 배율 +80%",
+        "short": "6돌: 이매망량 피해 배율 +80%",
+        "record_only": true,
+        "absolute_score_only": false,
+        "min_ascension": 6,
+        "note": "만귀동행의 이매망량 추가 공격 최대 8회는 회전/타수 효과로 별도 계산하지 않는다."
+      }
+    ]
   }
 ]

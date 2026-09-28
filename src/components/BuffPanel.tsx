@@ -4,12 +4,12 @@ import { analysisContext } from '../state/store';
 import type { Buff } from '../types/data';
 import type { StatKey } from '../types/domain';
 import { Dropdown } from './Dropdown';
-import { defaultBuffChecked } from '../engine/buffs';
+import { defaultBuffChecked, computeMaxHp } from '../engine/buffs';
 import { costsOf } from '../engine/costLayout';
 import { loadTwoPieceEffects } from '../engine/loadData';
 import { damageBonusTypeOf } from '../engine/mode';
 import { computeEnergyRegen } from '../engine/build';
-import { energyScaleValue, critScaleValue } from '../engine/mechanisms';
+import { energyScaleValue, critScaleValue, hpScaleValue } from '../engine/mechanisms';
 import { computeDisplaySpec } from '../engine/spec';
 import { PartyTab } from './PartyTab';
 
@@ -29,6 +29,7 @@ const BUFF_TYPES: { key: StatKey; label: string }[] = [
 interface Props { state: AppState; setState: (s: AppState) => void; hideTitle?: boolean }
 
 export function BuffPanel({ state, setState, hideTitle }: Props) {
+  const enabled = state.additionalBuffsEnabled !== false;
   // 라벨 표기: 간략(유형+수치) ⇄ 풀(label). 선택은 localStorage에 저장.
   const [simple, setSimple] = useState<boolean>(() => {
     try { return localStorage.getItem(SIMPLE_KEY) === '1'; } catch { return false; }
@@ -111,6 +112,10 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
   const ctx = analysisContext(state);
   const currentER = ctx ? computeEnergyRegen(ctx) : null;
   const scaleNowText = (b: Buff): string | null => {
+    if (b.hp_scale && ctx) {
+      const value = hpScaleValue(b.hp_scale, computeMaxHp(ctx));
+      return b.type === 'flat_attack' ? `현재 +${+value.toFixed(1)}` : `현재 ${+(value * 100).toFixed(2)}%`;
+    }
     if (b.energy_scale && currentER != null) return `현재 ${+(energyScaleValue(b.energy_scale, currentER) * 100).toFixed(2)}%`;
     // 크리율 스케일(구원 공명해방 등): 현재 크리율로 계산
     if (b.crit_scale && ctx) return `현재 ${+(critScaleValue(b.crit_scale, computeDisplaySpec(ctx).criticalRateRaw) * 100).toFixed(2)}%`;
@@ -165,24 +170,6 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
   // 간략: JSON의 short(수치 치환). 미지정 시 풀로 폴백 — 코드로 간략문을 만들지 않음
   const shortText = (b: Buff) => (b.short ? tmpl(b.short, b) : fullText(b));
 
-  // 전체 적용/미적용: 잠기지 않은 조건부 + 파티/기타 버프를 일괄 on/off (1회 액션)
-  const condItems = condGroups.flatMap((g) => g.items.filter((it) => !it.passive && !!it.b.id && !isLocked(it.b)).map((it) => it.b));
-  const condIds = condItems.map((b) => b.id!);
-  const toggleCount = condIds.length + state.manualBuffs.length;
-  // 활성화 가능한 버프가 모두 체크되어 있는지 → 버튼이 '전체 미적용'(해제)일지 '전체 적용'일지 결정
-  const allOn = toggleCount > 0
-    && condItems.every((b) => isChecked(b))
-    && state.manualBuffs.every((m) => m.enabled !== false);
-  const setAll = (value: boolean) => {
-    const next = { ...state.conditionalToggles };
-    condIds.forEach((id) => { next[id] = value; });
-    setState({
-      ...state,
-      conditionalToggles: next,
-      manualBuffs: state.manualBuffs.map((m) => ({ ...m, enabled: value })),
-    });
-  };
-
   // 카테고리 탭: 고유 스킬 / 무기 / 화음 세트(메인 에코 포함) / 파티·기타. 라벨은 짧게(무기: X → 무기).
   const catOf = (source: string) =>
     source.startsWith('무기') ? '무기'
@@ -214,8 +201,8 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
           const checked = !locked && (passive || isChecked(b));
           return (
             <label key={b.id ?? `${g.source}-${idx}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: 12, width: 'fit-content', color: locked ? 'var(--muted)' : undefined, cursor: (passive || locked) ? 'default' : undefined }}>
-              <input type="checkbox" disabled={passive || locked} checked={checked} style={{ marginTop: 2 }}
-                onChange={(e) => { if (passive || locked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
+              <input type="checkbox" disabled={!enabled || passive || locked} checked={checked} style={{ marginTop: 2 }}
+                onChange={(e) => { if (!enabled || passive || locked) return; setState({ ...state, conditionalToggles: { ...state.conditionalToggles, [b.id!]: e.target.checked } }); }} />
               <span style={{ fontSize: '0.86rem', lineHeight: 1.45 }}>{simple ? shortText(b) : fullText(b)}{passive && !locked ? ' (상시 적용)' : ''}
                 {isLocked(b) && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.min_ascension}돌 필요</span>}
                 {setLocked && <span className="muted" style={{ marginLeft: 4 }}>· 🔒 {b.set_pieces}세트(에코 {b.set_pieces}개↑ 필요)</span>}
@@ -238,15 +225,18 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
 
   return (
     <div>
-      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: hideTitle ? 'flex-end' : 'space-between', gap: 8, marginTop: hideTitle ? 8 : undefined }}>
-        {!hideTitle && '추가 버프'}
+      <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: hideTitle ? 8 : undefined }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {!hideTitle && '추가 버프'}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.82rem', fontWeight: 'normal' }}>
+            <input type="checkbox" aria-label="추가 버프 적용" checked={enabled}
+              onChange={(e) => setState({ ...state, additionalBuffsEnabled: e.target.checked })} /> 적용
+          </label>
+        </span>
         <span style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: '0.78rem', fontWeight: 'normal' }}>
           <label style={{ display: 'flex', gap: 5, alignItems: 'center', color: 'var(--muted)' }}>
             <input type="checkbox" checked={simple} onChange={(e) => toggleSimple(e.target.checked)} /> 간략 설명
           </label>
-          <button type="button" disabled={toggleCount === 0} onClick={() => setAll(!allOn)} style={{ height: 30, padding: '0 12px', fontSize: '0.78rem' }}>
-            {allOn ? '전체 미적용' : '전체 적용'}
-          </button>
         </span>
       </h3>
       {/* 카테고리 탭 — 버튼이 패널 좌우 폭을 모두 채우도록 각 버튼 flex:1 */}
@@ -256,7 +246,8 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
         ))}
       </div>
 
-      <div className="buff-body">
+      {/* 적용 전환 시 열린 드롭다운도 닫아 미적용 상태의 편집을 막는다. */}
+      <fieldset key={String(enabled)} className="buff-body" disabled={!enabled} aria-label="추가 버프 설정">
       {activeTab ? (
         <div>{activeTab.groups.map(renderGroup)}</div>
       ) : activeIdx === buffTabs.length ? (
@@ -265,7 +256,7 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
         <div>
           {state.manualBuffs.map((mb, i) => (
             <div className="sub-row" key={i}>
-              <input type="checkbox" checked={mb.enabled !== false} onChange={(e) => {
+              <input type="checkbox" disabled={!enabled} checked={mb.enabled !== false} onChange={(e) => {
                 const next = state.manualBuffs.map((x, idx) => idx === i ? { ...x, enabled: e.target.checked } : x);
                 setState({ ...state, manualBuffs: next });
               }} />
@@ -286,7 +277,7 @@ export function BuffPanel({ state, setState, hideTitle }: Props) {
           <button onClick={() => setState({ ...state, manualBuffs: [...state.manualBuffs, { type: '', value: null, enabled: true }] })}>+ 버프 추가</button>
         </div>
       )}
-      </div>
+      </fieldset>
     </div>
   );
 }

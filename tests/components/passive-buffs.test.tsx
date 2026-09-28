@@ -4,6 +4,7 @@ import { BuffPanel } from '../../src/components/BuffPanel';
 import { loadCharacters } from '../../src/engine/loadData';
 import { analysisContext, defaultStateForCharacter } from '../../src/state/store';
 import { aggregateBuffs } from '../../src/engine/buffs';
+import { CharacterSpec } from '../../src/components/CharacterSpec';
 
 function renderPanel(ascensionLevel: number, conditionalToggles: Record<string, boolean> = {}) {
   const state = defaultStateForCharacter(loadCharacters().find((c) => c.id === 'qingxiao')!);
@@ -17,6 +18,20 @@ function row(html: string, text: string) {
 }
 
 describe('상시 고유 스킬·돌파 버프 표시', () => {
+  it('경연의 HP 전환 패시브와 실제 체력을 표시하고 스킬 노드는 숨긴다', () => {
+    const state = defaultStateForCharacter(loadCharacters().find((c) => c.id === 'jingran')!);
+    const html = renderToStaticMarkup(<BuffPanel state={state} setState={() => {}} />);
+    const buff = row(html, '양변음합:');
+    expect(buff).toContain('상시 적용');
+    expect(buff).toContain('disabled=""');
+    expect(buff).toContain('현재 +');
+    expect(buff).not.toContain('현재 +0');
+    expect(html).not.toContain('스킬 노드:');
+    expect(row(html, '화 또는 복 추가 25스택')).not.toContain('checked=""');
+    const spec = renderToStaticMarkup(<CharacterSpec state={state} />);
+    expect(spec).toContain('<th>체력</th>');
+    expect(spec).toContain('<th>공격력</th>');
+  });
   it('3돌 상시 크피 효과를 체크된 비활성 토글과 함께 표시한다', () => {
     const buff = row(renderPanel(3), '공명 해방 크리티컬 피해 +100%');
     expect(buff).toContain('disabled=""');

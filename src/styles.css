@@ -240,7 +240,8 @@ th { background: var(--stat); color: var(--muted); }
 .echo-edit .dd-subval .dropdown-label { font-family: var(--mono); font-size: 0.82rem; font-weight: 400; }
 .echo-edit .dd-sub .dropdown-arrow, .echo-edit .dd-subval .dropdown-arrow { color: var(--muted); font-size: 0.68rem; }
 /* 추가 버프 본문 카드 */
-.buff-body { border: 1px solid var(--cardBorder); border-radius: 14px; background: var(--card); padding: 14px 16px; min-height: 160px; }
+.buff-body { border: 1px solid var(--cardBorder); border-radius: 14px; background: var(--card); padding: 14px 16px; min-height: 160px; margin: 0; min-width: 0; }
+.buff-body:disabled { opacity: 0.6; }
 .echo-tabs { display: flex; gap: 6px; flex-wrap: nowrap; margin: 8px 0 12px; }
 .echo-tab { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; border: 1px solid var(--ctrlBorder); border-radius: 10px; cursor: pointer; background: var(--ctrl); color: var(--fg); }
 .echo-tab > span:first-child { font-size: 0.82rem; font-weight: 700; }

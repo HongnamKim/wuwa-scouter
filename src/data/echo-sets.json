@@ -505,5 +505,83 @@
         ]
       }
     ]
+  },
+  {
+    "id": "lamp_of_nether_road",
+    "name": "황천길을 밝히는 등불",
+    "buffs": [
+      {
+        "type": "hp_percent",
+        "value": 0.1,
+        "always": true,
+        "target": "self",
+        "id": "set_nether_hp",
+        "label": "HP +10% (2세트)",
+        "short": "HP +10% (2세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "set_pieces": 2
+      },
+      {
+        "type": "critical_rate",
+        "value": 0.2,
+        "always": false,
+        "target": "self",
+        "id": "set_nether_crit",
+        "label": "실드 획득 시 크리티컬 +20% (4스택, 5초, 5세트)",
+        "short": "실드 획득 시 크리티컬 +20% (4스택, 5초, 5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "set_pieces": 5,
+        "note": "스택당 5%, 최대 4스택. 실드 획득으로 0.5초마다 1회 발생."
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.15,
+        "always": false,
+        "target": "self",
+        "id": "set_nether_fusion",
+        "label": "실드 효과 최대 스택 시 용융 피해 +15% (5세트)",
+        "short": "실드 효과 최대 스택 시 용융 피해 +15% (5세트)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "element": "용융",
+        "set_pieces": 5
+      }
+    ],
+    "main_slot_echoes": [
+      {
+        "id": "myriad_snare_rustfire_chassis",
+        "name": "만와뢰 · 잔해",
+        "cost": 4,
+        "buffs": [
+          {
+            "type": "element_damage_bonus",
+            "value": 0.12,
+            "always": true,
+            "target": "self",
+            "id": "rustfire_fusion",
+            "label": "메인 슬롯: 용융 피해 +12%",
+            "short": "메인 슬롯: 용융 피해 +12%",
+            "record_only": false,
+            "absolute_score_only": false,
+            "element": "용융"
+          },
+          {
+            "type": "heavy_attack_bonus",
+            "value": 0.12,
+            "always": true,
+            "target": "self",
+            "id": "rustfire_heavy",
+            "label": "메인 슬롯: 강공격 피해 +12%",
+            "short": "메인 슬롯: 강공격 피해 +12%",
+            "record_only": false,
+            "absolute_score_only": false
+          }
+        ]
+      }
+    ]
   }
 ]

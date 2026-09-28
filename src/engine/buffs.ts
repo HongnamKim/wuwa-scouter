@@ -3,15 +3,16 @@ import type { StatKey, DamageBonusType } from '../types/domain';
 import type { CalcContext } from './context';
 import { loadTwoPieceEffects } from './loadData';
 import { damageBonusTypeOf, activeModeId } from './mode';
-import { MAIN_PRIMARY, BASE_CRIT } from './constants';
-import { energyScaleValue, critScaleValue } from './mechanisms';
+import { MAIN_PRIMARY, MAIN_SECONDARY, BASE_CRIT } from './constants';
+import { energyScaleValue, critScaleValue, hpScaleValue } from './mechanisms';
 import { costsOf } from './costLayout';
 
 export interface BuffTotals {
   critical_rate: number;
   critical_damage: number;
   attack_percent: number;
-  hp_percent: number;         // 스케일 스탯이 hp인 캐릭터용
+  flat_attack: number;
+  hp_percent: number;         // HP 계수·HP 전환 버프용
   defense_percent: number;    // 스케일 스탯이 defense인 캐릭터용
   element_bonus: number;      // element_damage_bonus (일치)
   damage_type_bonus: number;  // 캐릭터 damage_bonus_type 해당 *_bonus (단일유형 하위호환)
@@ -119,10 +120,32 @@ function isActive(b: Buff, ctx: CalcContext): boolean {
   // 돌파(공명 체인) 조건: 미달이면 비활성 (예: 히유키 6돌 2스택)
   if (b.min_ascension != null && (ctx.ascensionLevel ?? 0) < b.min_ascension) return false;
   if (b.always) return true;
+  if (ctx.additionalBuffsEnabled === false) return false;
   if (!b.id) return true;
   // 조건부: 개별 토글에 따름. 미터치(undefined) 시 default_on/default_on_from_ascension 기준
   const t = ctx.conditionalToggles[b.id];
   return t !== undefined ? t : defaultBuffChecked(b, ctx.ascensionLevel ?? 0);
+}
+
+function maxHpFromBuffs(ctx: CalcContext, hpBuff: number): number {
+  let percent = (ctx.weapon.base_stats.hp_percent ?? 0) + hpBuff;
+  let flat = ctx.weapon.base_stats.flat_hp ?? 0;
+  for (const slot of ctx.slots) {
+    if (slot.cost != null) {
+      if (slot.main === 'hp_percent') percent += (MAIN_PRIMARY[slot.cost].hp_percent ?? 0) / 100;
+      const secondary = MAIN_SECONDARY[slot.cost];
+      if (secondary.stat === 'flat_hp') flat += secondary.value;
+    }
+    for (const line of slot.substats) {
+      if (line.type === 'hp_percent') percent += (line.value ?? 0) / 100;
+      if (line.type === 'flat_hp') flat += line.value ?? 0;
+    }
+  }
+  return (ctx.character.base_hp ?? 0) * (1 + percent) + flat;
+}
+
+export function computeMaxHp(ctx: CalcContext): number {
+  return maxHpFromBuffs(ctx, aggregateBuffs(ctx).hp_percent);
 }
 
 function damageTypeBonusKey(ctx: CalcContext): StatKey | null {
@@ -132,7 +155,7 @@ function damageTypeBonusKey(ctx: CalcContext): StatKey | null {
 
 export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   const t: BuffTotals = {
-    critical_rate: 0, critical_damage: 0, attack_percent: 0, hp_percent: 0, defense_percent: 0,
+    critical_rate: 0, critical_damage: 0, attack_percent: 0, flat_attack: 0, hp_percent: 0, defense_percent: 0,
     element_bonus: 0, damage_type_bonus: 0, damage_type_bonus_by: {}, amplify: 0, amplify_element: 0, amplify_damage_type: 0, amplify_damage_type_by: {}, amplify_all: 0, damage_type_bonus_factor: 0, energy_regen: 0,
     defense_ignore: 0, element_resistance_ignore: 0,
   };
@@ -162,11 +185,11 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     ...uniqueSets.flatMap((s) => s.buffs).filter(setBuffActive),
     ...twoPieceBuffs,
     // 편성 파티원이 제공하는 버프(store가 내 저장 빌드로 해석·주입. element/피해유형 필터는 내 캐릭터 기준).
-    ...(ctx.partyProvidedBuffs ?? []),
+    ...(ctx.additionalBuffsEnabled === false ? [] : ctx.partyProvidedBuffs ?? []),
   ];
   const manualBuffs: Buff[] = ctx.manualBuffs
-    .filter((m) => m.type && m.value != null && m.enabled !== false)
-    .map((m): Buff => ({ type: m.type as StatKey, value: (m.value as number) / 100, always: false }));
+    .filter((m) => ctx.additionalBuffsEnabled !== false && m.type && m.value != null && m.enabled !== false)
+    .map((m): Buff => ({ type: m.type as StatKey, value: (m.value as number) / (m.type!.startsWith('flat_') ? 1 : 100), always: false }));
 
   const entries: { b: Buff; active: boolean }[] = [
     ...dataBuffs.map((b) => ({ b, active: isActive(b, ctx) })),
@@ -175,14 +198,17 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
 
   const scaled: Buff[] = []; // 공효 스케일 버프는 공효 계산 후 2패스로 반영
   const critScaled: Buff[] = []; // 크리율 스케일 버프는 크리율 계산 후 2패스로 반영
+  const hpScaled: Buff[] = [];
   for (const { b, active } of entries) {
     if (!active) continue;
     if (b.energy_scale) { scaled.push(b); continue; }
     if (b.crit_scale) { critScaled.push(b); continue; }
+    if (b.hp_scale) { hpScaled.push(b); continue; }
 
     if (b.type === 'critical_rate') t.critical_rate += b.value;
     else if (b.type === 'critical_damage') t.critical_damage += b.value;
     else if (b.type === 'attack_percent') t.attack_percent += b.value;
+    else if (b.type === 'flat_attack') t.flat_attack += b.value;
     else if (b.type === 'hp_percent') t.hp_percent += b.value;
     else if (b.type === 'defense_percent') t.defense_percent += b.value;
     else if (b.type === 'element_damage_bonus') t.element_bonus += b.value;
@@ -206,6 +232,15 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
     else if (b.type === 'energy_regen') t.energy_regen += b.value; // 딜 무영향, 표시용 집계
     else if (b.type === 'defense_ignore') t.defense_ignore += b.value;
     else if (b.type === 'element_resistance_ignore') t.element_resistance_ignore += b.value; // isActive에서 element 일치 필터됨
+  }
+
+  if (hpScaled.length > 0) {
+    const hp = maxHpFromBuffs(ctx, t.hp_percent);
+    for (const b of hpScaled) {
+      const value = hpScaleValue(b.hp_scale!, hp);
+      if (b.type === 'flat_attack') t.flat_attack += value;
+      else if (b.type === 'element_damage_bonus') t.element_bonus += value;
+    }
   }
 
   // 공효 스케일 버프: 실제 공효(초과분)로 값 계산 후 반영. min(per_percent × 초과공효%, cap)

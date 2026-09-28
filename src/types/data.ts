@@ -30,6 +30,8 @@ export interface Buff {
   energy_scale?: { per_percent: number; cap: number; base?: number };
   // 크리티컬 확률 초과분 스케일 버프(예: 구원 공명해방). 실제 크리율로 값 계산: min(per_percent × (크리% − threshold), cap). value는 무시.
   crit_scale?: { per_percent: number; threshold: number; cap: number };
+  // HP 최대치 비례 자기 버프. 공격력 실수/속성 피해 보너스만 지원하며 value 대신 계산한다.
+  hp_scale?: { per_hp: number; cap: number };
   note?: string;
 }
 
@@ -64,7 +66,7 @@ export interface Character {
   skill_damage_coefficient?: number; // 주력 스킬 피해 계수(소수, 예: 수수 0.2863 = 변주·공명 스킬 28.63%HP). 딜 상승 수치에 곱함 — 상수라 상대 점수엔 약분. HP/방어 계수 캐릭터의 딜 자릿수 정규화용. 미지정 시 1
   matrix_cost: number; // 매트릭스(파티 편성) 코스트. 현재 전원 1, 신규 기본 1 (향후 매트릭스 파티 구성 기능용)
   base_attack: number;
-  base_hp?: number;       // scale_stat이 hp인 캐릭터용 기초 스탯 (attack 스케일이면 불필요)
+  base_hp?: number;       // HP 계수 또는 HP 전환 버프를 사용하는 캐릭터의 기초 HP
   base_defense?: number;  // scale_stat이 defense인 캐릭터용 기초 스탯 (예: 모니에)
   effective_substats: StatKey[];
   damage_bonus_type: DamageBonusType | null;
