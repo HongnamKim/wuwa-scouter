@@ -1192,7 +1192,23 @@
         "min_ascension": 0,
         "mode": "electro_flare",
         "element": "전도",
-        "note": "전도 방랑자와 같은 파티에서 방랑자 변주 발동 시. 방랑자 본인에게도 적용되나 미등록 캐릭터의 수혜 경로는 이번 추가 범위 밖."
+        "note": "전도 방랑자와 같은 파티에서 방랑자 변주 발동 시. 여우의 별자리 자신의 수혜분이며, 방랑자 수혜분은 hsin_electro_rover_party로 분리한다."
+      },
+      {
+        "type": "element_damage_bonus",
+        "value": 0.2,
+        "always": false,
+        "target": "specific_character",
+        "target_character": "rover_electro",
+        "id": "hsin_electro_rover_party",
+        "label": "전도 방랑자의 몰아치는 뇌전 발동 시 방랑자의 전도 피해 +20% (30초)",
+        "short": "전도 방랑자의 변주 발동 시 방랑자의 전도 피해 +20% (30초)",
+        "record_only": false,
+        "absolute_score_only": false,
+        "default_on": true,
+        "min_ascension": 0,
+        "mode": "electro_flare",
+        "element": "전도"
       },
       {
         "type": "harmony",
@@ -1731,6 +1747,74 @@
         "min_ascension": 6,
         "note": "만귀동행의 이매망량 추가 공격 최대 8회는 회전/타수 효과로 별도 계산하지 않는다."
       }
+    ]
+  },
+  {
+    "id": "rover_electro",
+    "name": "방랑자 · 전도",
+    "version": 3.5,
+    "version_phase": "전반",
+    "element": "전도",
+    "weapon_type": "sword",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 437,
+    "base_hp": 10775,
+    "base_defense": 1136,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_skill_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_skill",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 120,
+    "special_mechanism": null,
+    "signature_weapon": null,
+    "recommended_weapons": ["emerald_of_genesis", "blazing_brilliance", "red_spring", "march_overture"],
+    "recommended_echo_sets": ["moonlit_clouds", "flash_of_electric_reflection"],
+    "recommended_main_echo": ["impermanence_heron", "hsin_main_echo"],
+    "skill_node": [
+      { "type": "critical_rate", "value": 0.08, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드: 크리티컬 +8%", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드: 공격력 +12%", "record_only": false, "absolute_score_only": false },
+      { "type": "attack_percent", "value": 0.10, "always": false, "target": "party", "min_ascension": 0, "id": "rover_electro_overshock_atk", "label": "과부하 짧게 발동 시 파티 공격력 +10% (20초)", "short": "과부하 짧게 발동 시 파티 공격력 +10% (20초)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "resonance_skill_bonus", "value": 0.20, "always": false, "target": "self", "min_ascension": 0, "id": "rover_electro_apex_skill", "label": "중추 귀환: 과부하 길게 발동 시 공명 스킬 피해 +20% (20초)", "short": "과부하 길게 발동 시 공명 스킬 피해 +20% (20초)", "record_only": false, "absolute_score_only": false, "default_on": false, "note": "교대 시 즉시 종료. 기본 지원 운용은 과부하를 짧게 사용하므로 해제한다." },
+      { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 0, "id": "rover_electro_outro", "label": "천둥의 울림: 다음 등장 캐릭터가 이상 효과 추가 시 전체 피해 +25% 부스트 (14초)", "short": "다음 캐릭터가 이상 효과 추가 시 전체 피해 +25% 부스트 (14초)", "record_only": false, "absolute_score_only": true, "default_on": true, "note": "반주로 번개의 정수 획득 후 20초 안에 수혜자가 이상 효과를 추가해야 발동. 다른 캐릭터로 전환 시 종료." },
+      { "type": "skill_motion_value_amplify", "value": 0.20, "always": true, "target": "self", "min_ascension": 3, "id": "rover_electro_chain3_overshock", "label": "과부하 피해 배율 +20% (3돌, 기록 전용)", "short": "과부하 피해 배율 +20% (3돌, 기록 전용)", "record_only": true, "absolute_score_only": false },
+      { "type": "skill_motion_value_amplify", "value": 0.20, "always": true, "target": "self", "min_ascension": 4, "id": "rover_electro_chain4_liberation", "label": "최종 전략 피해 배율 +20% (4돌, 기록 전용)", "short": "최종 전략 피해 배율 +20% (4돌, 기록 전용)", "record_only": true, "absolute_score_only": false },
+      { "type": "critical_damage", "value": 0.20, "always": false, "target": "self", "min_ascension": 5, "id": "rover_electro_chain5_critdmg", "label": "임계 공명 상태에서 크리티컬 피해 +20% (5돌)", "short": "임계 공명 상태에서 크리티컬 피해 +20% (5돌)", "record_only": false, "absolute_score_only": false, "default_on": false, "note": "과부하를 길게 사용하여 임계 공명 상태로 공격할 때 적용. 기본 지원 운용에서는 해제한다." },
+      { "type": "skill_motion_value_amplify", "value": 0.20, "always": true, "target": "self", "min_ascension": 6, "id": "rover_electro_chain6_thunder", "label": "밀려온 천개의 소리·천둥의 추락 피해 배율 +20% (6돌, 기록 전용)", "short": "밀려온 천개의 소리·천둥의 추락 피해 배율 +20% (6돌, 기록 전용)", "record_only": true, "absolute_score_only": false }
+    ]
+  },
+  {
+    "id": "buling",
+    "name": "복링",
+    "version": 2.8,
+    "version_phase": "후반",
+    "element": "전도",
+    "weapon_type": "rectifier",
+    "cost_layout": "43311",
+    "scale_stat": "attack",
+    "matrix_cost": 1,
+    "base_attack": 225,
+    "base_hp": 10625,
+    "base_defense": 1259,
+    "effective_substats": ["critical_rate", "critical_damage", "attack_percent", "resonance_liberation_bonus", "flat_attack"],
+    "damage_bonus_type": "resonance_liberation",
+    "energy_regen_mode": "premise",
+    "default_required_energy_regen": 180,
+    "special_mechanism": null,
+    "signature_weapon": null,
+    "recommended_weapons": ["variation", "cosmic_ripples", "stringmaster", "call_of_the_abyss"],
+    "recommended_echo_sets": ["rejuvenating_glow", "moonlit_clouds"],
+    "recommended_main_echo": ["fallacy_of_no_return", "bell_borne_geochelone", "impermanence_heron"],
+    "skill_node": [
+      { "type": "attack_percent", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드: 공격력 +12%", "record_only": false, "absolute_score_only": false },
+      { "type": "healing_bonus", "value": 0.12, "always": true, "target": "self", "min_ascension": 0, "note": "스킬 노드: 치료 효과 보너스 +12%", "record_only": false, "absolute_score_only": false },
+      { "type": "resonance_skill_bonus", "value": 0.10, "always": false, "target": "party", "min_ascension": 0, "id": "buling_forte_first_intro", "label": "뇌법 · 음양의 조화: 퇴마진 중 변주 1회 후 등장 캐릭터의 공명 스킬 피해 +10%", "short": "퇴마진 중 변주 1회: 공명 스킬 피해 +10%", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "오뢰 퇴마진은 24초 지속. 파티 내 등장 캐릭터에게만 적용하며 대기 중 피해에는 적용하지 않는다." },
+      { "type": "resonance_skill_bonus", "value": 0.15, "always": false, "target": "party", "min_ascension": 0, "id": "buling_forte_second_intro", "label": "뇌법 · 천지인 합일: 퇴마진 중 변주 2회 후 공명 스킬 피해 추가 +15% (합계 25%)", "short": "퇴마진 중 변주 2회: 공명 스킬 피해 추가 +15% (합계 25%)", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "음양의 조화 10%를 25%로 대체하므로 차액 15%만 기록. 첫 변주 항목과 함께 적용한다." },
+      { "type": "healing_bonus", "value": 0.25, "always": false, "target": "self", "min_ascension": 0, "id": "buling_low_hp_healing", "label": "길시가 되었으니, 액운은 물러가라!: HP 50% 미만 캐릭터 치료 시 치료 효과 +25%", "short": "HP 50% 미만 캐릭터 치료 시 치료 효과 +25%", "record_only": false, "absolute_score_only": false, "default_on": false },
+      { "type": "all_damage_amplify", "value": 0.15, "always": false, "target": "party", "min_ascension": 0, "id": "buling_outro", "label": "삿된 것을 몰아내라!: 반주 후 파티 전체 피해 +15% 부스트 (30초)", "short": "반주 후 파티 전체 피해 +15% 부스트 (30초)", "record_only": false, "absolute_score_only": true, "default_on": true },
+      { "type": "critical_rate", "value": 0.20, "always": true, "target": "self", "min_ascension": 1, "id": "buling_chain1_crit", "damage_bonus_type": "resonance_liberation", "label": "비뢰결 · 귀일 크리티컬 +20% (1돌)", "short": "비뢰결 · 귀일 크리티컬 +20% (1돌)", "record_only": false, "absolute_score_only": false, "note": "대표 피해는 강화 해방 비뢰결 · 귀일. 일반 공격·공명 스킬·기본 비뢰결·전자 효과에는 적용하지 않는다." },
+      { "type": "healing_bonus", "value": 0.20, "always": true, "target": "self", "min_ascension": 4, "id": "buling_chain4_healing", "label": "치료 효과 보너스 +20% (4돌)", "short": "치료 효과 보너스 +20% (4돌)", "record_only": false, "absolute_score_only": false },
+      { "type": "resonance_skill_bonus", "value": 0.25, "always": false, "target": "party", "min_ascension": 6, "id": "buling_chain6_skill", "label": "뇌법 · 천지인 합일: 공명 스킬 피해 추가 +25% (합계 50%, 6돌)", "short": "천지인 합일: 공명 스킬 피해 추가 +25% (합계 50%, 6돌)", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "천지인 합일의 25%를 50%로 대체하므로 차액 25%만 기록. 변주 1·2회 항목과 함께 적용한다." }
     ]
   }
 ]
