@@ -1,7 +1,51 @@
 import { describe, it, expect } from 'vitest';
-import { loadCharacters, loadWeapons, loadEchoSets, validateBuff, getWeapon } from '../../src/engine/loadData';
+import { loadCharacters, loadWeapons, loadEchoSets, loadTwoPieceEffects, validateBuff, getWeapon } from '../../src/engine/loadData';
+import { characters } from '../../src/data/characters';
+import { weapons } from '../../src/data/weapons';
+import { echoSets } from '../../src/data/echo-sets';
+import { twoPieceEffects } from '../../src/data/two-piece-effects';
 
 describe('loadData', () => {
+  it('영문 ID로 조회하는 데이터와 기존 배열 로더가 같은 값·순서를 제공한다', () => {
+    expect(characters.hsin.id).toBe('hsin');
+    expect(weapons.variation.id).toBe('variation');
+    expect(loadCharacters()).toEqual(Object.values(characters));
+    expect(loadWeapons()).toEqual(Object.values(weapons));
+    expect(loadEchoSets()).toEqual(Object.values(echoSets));
+    expect(loadTwoPieceEffects()).toEqual(Object.values(twoPieceEffects));
+  });
+
+  it('데이터 키와 내부 ID가 일치한다', () => {
+    for (const registry of [characters, weapons, echoSets, twoPieceEffects]) {
+      for (const [key, value] of Object.entries(registry)) expect(value.id).toBe(key);
+    }
+  });
+
+  it('추천 장비와 특정 캐릭터 참조가 실제 데이터로 연결된다', () => {
+    const chars = loadCharacters();
+    const items = loadWeapons();
+    const sets = loadEchoSets();
+    const mainEchoIds = new Set(sets.flatMap((s) => s.main_slot_echoes.map((e) => e.id)));
+    for (const c of chars) {
+      for (const id of [...c.recommended_weapons, ...(c.signature_weapon ? [c.signature_weapon] : [])]) {
+        expect(items.find((w) => w.id === id)?.weapon_type, `${c.id}: ${id}`).toBe(c.weapon_type);
+      }
+      for (const id of c.recommended_echo_sets) expect(sets.some((s) => s.id === id), `${c.id}: ${id}`).toBe(true);
+      for (const id of c.recommended_main_echo) expect(mainEchoIds.has(id), `${c.id}: ${id}`).toBe(true);
+    }
+    const characterIds = new Set(chars.map((c) => c.id));
+    const buffs = [
+      ...chars.flatMap((c) => c.skill_node), ...items.flatMap((w) => w.buffs),
+      ...sets.flatMap((s) => [...s.buffs, ...s.main_slot_echoes.flatMap((e) => e.buffs)]),
+    ];
+    for (const b of buffs) {
+      // 기존 파수인의 방랑자 공효 항목은 속성 공통 ID 'rover'를 사용한다.
+      for (const id of [b.target_character, b.only_character]) {
+        if (id && id !== 'rover') expect(characterIds.has(id), b.id ?? b.label).toBe(true);
+      }
+    }
+  });
+
   it('loads hiyuki', () => {
     const c = loadCharacters().find((x) => x.id === 'hiyuki')!;
     expect(c.base_attack).toBe(462);
