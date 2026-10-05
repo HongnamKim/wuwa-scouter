@@ -8,7 +8,7 @@ export interface Buff {
   always: boolean;        // true=상시, false=조건부
   id?: string;            // 조건부 토글 식별자
   label?: string;         // 풀 표기(조건부 표시). {v}는 현재 수치로 치환
-  short?: string;         // 간략 표기. JSON에서 직접 관리. 미지정 시 label로 폴백. {v} 치환 지원
+  short?: string;         // 간략 표기. TS 데이터에서 직접 관리. 미지정 시 label로 폴백. {v} 치환 지원
   element?: BuffElement;  // 지정 시 캐릭터 element 일치할 때만. '전체'=전체 속성피해(게이트 없이 모든 원소에 적용). 파티 제공 시 수혜자 원소로 재검사됨(예: 인멸 방무=인멸 딜러용)
   provider_element?: BuffElement; // 착용자(제공자) 원소 게이트. element와 달리 파티 제공 시 수혜자 원소는 무관(브랜치 선택·제공자 조건용, 예: 깃털 5세트 응결분기=착용자만 응결이면 파티 전체 공격력↑)
   set_pieces?: SetPieces; // 에코세트 버프 전용 (1|2|3|5)

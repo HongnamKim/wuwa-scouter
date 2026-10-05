@@ -1,5 +1,7 @@
-[
-  {
+import type { EchoSetData } from './schema';
+
+export const echoSets = {
+  wishes_of_quiet_snowfall: {
     "id": "wishes_of_quiet_snowfall",
     "name": "소리 없이 내려앉은 기도의 눈",
     "buffs": [
@@ -27,7 +29,7 @@
       }
     ]
   },
-  {
+  trailblazing_star: {
     "id": "trailblazing_star",
     "name": "긴 여정을 떠나는 별",
     "buffs": [
@@ -45,7 +47,7 @@
       }
     ]
   },
-  {
+  sound_of_true_name: {
     "id": "sound_of_true_name",
     "name": "함의의 소리를 따라",
     "buffs": [
@@ -64,7 +66,7 @@
       }
     ]
   },
-  {
+  pack_of_neonlight_leap: {
     "id": "pack_of_neonlight_leap",
     "name": "역광 속 눈부신 서약",
     "buffs": [
@@ -81,7 +83,7 @@
       }
     ]
   },
-  {
+  rite_of_gilded_revelation: {
     "id": "rite_of_gilded_revelation",
     "name": "흐르는 금빛 속 진리의 답",
     "buffs": [
@@ -101,7 +103,7 @@
       }
     ]
   },
-  {
+  shadow_of_shattered_dreams: {
     "id": "shadow_of_shattered_dreams",
     "name": "꿈을 깨뜨리는 망령의 악몽",
     "buffs": [
@@ -114,7 +116,7 @@
       ] }
     ]
   },
-  {
+  moonlit_clouds: {
     "id": "moonlit_clouds",
     "name": "떠오르는 구름",
     "buffs": [
@@ -127,7 +129,7 @@
       ] }
     ]
   },
-  {
+  chromatic_foam: {
     "id": "chromatic_foam",
     "name": "오색찬란한 거품",
     "buffs": [
@@ -141,7 +143,7 @@
       ] }
     ]
   },
-  {
+  reel_of_spliced_memories: {
     "id": "reel_of_spliced_memories",
     "name": "마음을 엮은 꿈의 그림자",
     "buffs": [
@@ -154,7 +156,7 @@
       ] }
     ]
   },
-  {
+  halo_of_starry_radiance: {
    "id": "halo_of_starry_radiance",
    "name": "빛을 쫓는 별의 고리",
    "buffs": [
@@ -165,7 +167,7 @@
     { "id": "reactor_husk", "name": "리액터 허스크", "buffs": [ { "type": "energy_regen", "value": 0.10, "always": true, "target": "self", "label":"공명 효율 10% 증가", "short":"공명 효율 +10%", "note": "메인슬롯 패시브: 공명 효율 +10%", "record_only": false, "absolute_score_only": false } ] }
    ]
   },
-  {
+  thread_of_severed_fate: {
    "id": "thread_of_severed_fate",
    "name": "운명을 붕괴시키는 현",
    "buffs": [
@@ -179,7 +181,7 @@
     ] }
    ]
   },
-  {
+  law_of_harmony: {
    "id": "law_of_harmony",
    "name": "만물의 숨결에 비롯된 울림",
    "buffs": [
@@ -193,7 +195,7 @@
     ] }
    ]
   },
-  {
+  rejuvenating_glow: {
    "id": "rejuvenating_glow",
    "name": "찬란한 광휘",
    "buffs": [
@@ -210,7 +212,7 @@
     ] }
    ]
   },
-  {
+  song_of_feathered_trace: {
    "id": "song_of_feathered_trace",
    "name": "내려앉은 깃털의 노래",
    "buffs": [
@@ -229,7 +231,7 @@
     ] }
    ]
   },
-  {
+  flamewings_shadow: {
    "id": "flamewings_shadow",
    "name": "불타는 깃털을 펼친 사냥꾼의 그림자",
    "buffs": [
@@ -243,7 +245,7 @@
     ] }
    ]
   },
-  {
+  crown_of_valor: {
    "id": "crown_of_valor",
    "name": "영광의 칼날로 만들어진 왕관",
    "buffs": [
@@ -261,7 +263,7 @@
     ] }
    ]
   },
-  {
+  heart_of_evils_purge: {
     "id": "heart_of_evils_purge",
     "name": "악을 씻어내는 마음",
     "buffs": [
@@ -342,7 +344,7 @@
       }
     ]
   },
-  {
+  heart_of_sworn_vigil: {
     "id": "heart_of_sworn_vigil",
     "name": "꿈으로 세상을 비추는 마음",
     "buffs": [
@@ -423,7 +425,7 @@
       }
     ]
   },
-  {
+  flash_of_electric_reflection: {
     "id": "flash_of_electric_reflection",
     "name": "거울 그림자에 번개가 스치는 찰나",
     "buffs": [
@@ -506,7 +508,7 @@
       }
     ]
   },
-  {
+  lamp_of_nether_road: {
     "id": "lamp_of_nether_road",
     "name": "황천길을 밝히는 등불",
     "buffs": [
@@ -584,4 +586,4 @@
       }
     ]
   }
-]
+} satisfies Record<string, EchoSetData>;

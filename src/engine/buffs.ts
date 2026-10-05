@@ -167,7 +167,7 @@ export function aggregateBuffs(ctx: CalcContext): BuffTotals {
   // 세트 효과 게이팅: 에코 개수(코스트 개수)보다 큰 set_pieces 효과는 착용 불가 → 계산 제외.
   const echoCount = costsOf(ctx.costLayout).length;
   const setBuffActive = (b: Buff) => b.set_pieces == null || b.set_pieces <= echoCount;
-  // 무기 재련(공진 1~5): 버프량은 weapons.json의 refinement_values[공진-1] 데이터에서 조회 (없으면 기본 value)
+  // 무기 재련(공진 1~5): 버프량은 weapons.ts의 refinement_values[공진-1] 데이터에서 조회 (없으면 기본 value)
   const ref = ctx.refinementLevel ?? 1;
   const weaponBuffs: Buff[] = ctx.weapon.buffs.map((b) => ({ ...b, value: b.refinement_values?.[ref - 1] ?? b.value }));
   // 자유 2세트 효과(원소피해/공격력 등): 선택 id를 버프로 환산. 같은 id 2회 선택 시 2배(예: 회절+회절)

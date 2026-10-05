@@ -1,5 +1,7 @@
-[
-  {
+import type { WeaponData } from './schema';
+
+export const weapons = {
+  frostbound_flame: {
     "id": "frostbound_flame",
     "name": "서린 불꽃",
     "weapon_type": "sword",
@@ -10,7 +12,7 @@
       { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "서리효과 부여 시 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  emerald_of_genesis: {
     "id": "emerald_of_genesis",
     "name": "천년의 회류",
     "weapon_type": "sword",
@@ -20,7 +22,7 @@
       { "type": "attack_percent", "value": 0.12, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "공명스킬 발동 시 공격력 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  eternal_morningstar: {
     "id": "eternal_morningstar",
     "name": "영원한 샛별",
     "weapon_type": "sword",
@@ -31,7 +33,7 @@
       { "type": "element_resistance_ignore", "value": 0.10, "always": false, "element": "용융", "id": "weapon_fusion_res_ignore", "refinement_values": [0.10, 0.15, 0.20, 0.25, 0.30], "label": "조화 파동 · 이탈 혹은 불꽃 효과 추가 시 용융 저항 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  freeze_frame: {
     "id": "freeze_frame",
     "name": "프리즈 프레임",
     "weapon_type": "rectifier",
@@ -42,7 +44,7 @@
       { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "서리효과 부여 시 팀 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  stringmaster: {
     "id": "stringmaster",
     "name": "꼭두각시의 손",
     "weapon_type": "rectifier",
@@ -53,7 +55,7 @@
       { "type": "attack_percent", "value": 0.24, "always": false, "id": "weapon_offfield_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "미출전 상태 시 공격력 +{v} (2스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  cosmic_ripples: {
     "id": "cosmic_ripples",
     "name": "파도의 기록",
     "weapon_type": "rectifier",
@@ -63,7 +65,7 @@
       { "type": "basic_attack_bonus", "value": 0.16, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "일반공격 적중 시 일반공격피해 +{v} (5스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  augment: {
     "id": "augment",
     "name": "청음",
     "weapon_type": "rectifier",
@@ -72,14 +74,14 @@
       { "type": "attack_percent", "value": 0.15, "always": false, "id": "weapon_lib_atk", "refinement_values": [0.15, 0.2325, 0.315, 0.3975, 0.48], "label": "공명해방 발동 시 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  variation: {
     "id": "variation",
     "name": "판타지 변주",
     "weapon_type": "rectifier",
     "base_stats": { "attack": 338, "energy_regen": 0.5184 },
     "buffs": []
   },
-  {
+  solsworn_ciphers: {
     "id": "solsworn_ciphers",
     "name": "솔스원의 해석",
     "weapon_type": "gauntlets",
@@ -90,7 +92,7 @@
       { "type": "defense_ignore", "value": 0.10, "always": false, "element": "기류", "id": "weapon_aero_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "에코 어빌리티 피해 시 기류 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  daybreakers_spine: {
     "id": "daybreakers_spine",
     "name": "한낮의 의지",
     "weapon_type": "gauntlets",
@@ -102,7 +104,7 @@
       { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_basic_def_ignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "「조화 밀집·이탈」 추가 후 일반공격 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  pulsation_bracer: {
     "id": "pulsation_bracer",
     "name": "격동의 조력",
     "weapon_type": "gauntlets",
@@ -112,7 +114,7 @@
       { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_bonus", "refinement_values": [0.24, 0.268, 0.30, 0.328, 0.36], "label": "「조화 밀집·간섭」 목표 가격 후 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  blazing_justice: {
     "id": "blazing_justice",
     "name": "불빛의 심판",
     "weapon_type": "gauntlets",
@@ -122,7 +124,7 @@
       { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_def_ignore", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "일반공격 발동 시 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  stonard: {
     "id": "stonard",
     "name": "황금 권갑",
     "weapon_type": "gauntlets",
@@ -131,7 +133,7 @@
       { "type": "resonance_liberation_bonus", "value": 0.18, "always": false, "id": "weapon_skill_lib_bonus", "refinement_values": [0.18, 0.27, 0.36, 0.45, 0.54], "label": "공명 스킬 발동 시 공명해방피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  aether_strike: {
     "id": "aether_strike",
     "name": "거침없는 비상",
     "weapon_type": "gauntlets",
@@ -141,7 +143,7 @@
       { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_lib_bonus", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명해방 발동 시 공명해방피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  celestial_spiral: {
     "id": "celestial_spiral",
     "name": "천상의 나선",
     "weapon_type": "gauntlets",
@@ -150,7 +152,7 @@
       { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_skill_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  laser_shearer: {
     "id": "laser_shearer",
     "name": "레이저 변형",
     "weapon_type": "sword",
@@ -160,7 +162,7 @@
       { "type": "resonance_skill_bonus", "value": 0.24, "always": false, "id": "weapon_skill_bonus", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 가격 후 공명스킬피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  blazing_brilliance: {
     "id": "blazing_brilliance",
     "name": "솟아오르는 화염",
     "weapon_type": "sword",
@@ -170,7 +172,7 @@
       { "type": "resonance_skill_bonus", "value": 0.56, "always": false, "id": "weapon_feather_stack", "refinement_values": [0.56, 0.70, 0.84, 0.98, 1.12], "label": "빛나는 깃털 14스택 시 공명스킬피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  red_spring: {
     "id": "red_spring",
     "name": "날카로운 봄",
     "weapon_type": "sword",
@@ -181,7 +183,7 @@
       { "type": "basic_attack_bonus", "value": 0.40, "always": false, "id": "weapon_concerto_basic", "refinement_values": [0.40, 0.50, 0.60, 0.70, 0.80], "label": "협주 에너지 소모 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  unflickering_valor: {
     "id": "unflickering_valor",
     "name": "흔들리지 않는 용기",
     "weapon_type": "sword",
@@ -192,7 +194,7 @@
       { "type": "basic_attack_bonus", "value": 0.24, "always": false, "id": "weapon_basic_basic", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "일반공격 적중 시 일반공격피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  defiers_thron: {
     "id": "defiers_thron",
     "name": "숙명에 맞서는 관",
     "weapon_type": "sword",
@@ -203,7 +205,7 @@
       { "type": "all_damage_amplify", "value": 0.20, "always": false, "id": "weapon_aero_erosion_amp", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "풍식 효과 보유 목표에게 피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  emerald_sentence: {
     "id": "emerald_sentence",
     "name": "푸른 의지",
     "weapon_type": "sword",
@@ -215,7 +217,7 @@
       { "type": "echo_skill_bonus", "value": 0.20, "always": false, "target": "party", "id": "weapon_party_echo", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "변주 스킬 발동 시 파티 에코 어빌리티피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  bloodpacts_pledge: {
     "id": "bloodpacts_pledge",
     "name": "혈맹의 약속",
     "weapon_type": "sword",
@@ -225,7 +227,7 @@
       { "type": "element_damage_amplify", "value": 0.10, "always": false, "element": "기류", "target": "party", "id": "weapon_aero_party_amp", "refinement_values": [0.10, 0.14, 0.18, 0.22, 0.26], "label": "방랑자·기류 공명스킬 발동 시 파티 기류피해 +{v} 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  spectrum_blaster: {
     "id": "spectrum_blaster",
     "name": "스펙트럼 블래스터",
     "weapon_type": "pistols",
@@ -236,7 +238,7 @@
       { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "id": "weapon_team_alldmg", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "조화 파동/밀집·이탈 부여 시 파티 전체 피해 +{v} (3스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  static_mist: {
     "id": "static_mist",
     "name": "부동의 안개",
     "weapon_type": "pistols",
@@ -248,7 +250,7 @@
         "note": "반주 스킬 후 교체(다음) 캐릭터 공격력 +10~20%", "record_only": false, "absolute_score_only": false }
     ]
   },
-  {
+  phasic_homogenizer: {
     "id": "phasic_homogenizer",
     "name": "위상의 파동",
     "weapon_type": "pistols",
@@ -258,7 +260,7 @@
       { "type": "element_damage_bonus", "value": 0.20, "always": false, "id": "weapon_break_alldmg", "refinement_values": [0.20, 0.225, 0.25, 0.275, 0.30], "label": "조화도 파괴 스킬 후 자신 전체 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  solar_flame: {
     "id": "solar_flame",
     "name": "태양 불꽃",
     "weapon_type": "pistols",
@@ -268,14 +270,14 @@
       { "type": "heavy_attack_bonus", "value": 0.088, "always": false, "id": "weapon_hit_heavy", "refinement_values": [0.088, 0.136, 0.188, 0.236, 0.288], "label": "일반/강공격 시 강공격피해 +{v} (4스택)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  cadenza: {
     "id": "cadenza",
     "name": "화려한 악곡",
     "weapon_type": "pistols",
     "base_stats": { "attack": 337, "energy_regen": 0.518 },
     "buffs": []
   },
-  {
+  spectral_trigger: {
     "id": "spectral_trigger",
     "name": "스펙트럴 트리거",
     "weapon_type": "pistols",
@@ -287,7 +289,7 @@
       { "type": "defense_ignore", "value": 0.10, "always": false, "id": "weapon_hack_defignore", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "해킹·이탈 시 강공격 방어력 무시 +{v}", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  skull_thrasher: {
     "id": "skull_thrasher",
     "name": "스컬 스래셔",
     "weapon_type": "pistols",
@@ -299,18 +301,18 @@
       { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_hack_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "해킹·이탈 시 파티 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  forged_dwarf_star: {
     "id": "forged_dwarf_star",
     "name": "위조된 작은별",
     "weapon_type": "rectifier",
-    "base_stats": { "attack": 587, "critical_rate": 0.36 },
+    "base_stats": { "attack": 500, "critical_rate": 0.36 },
     "buffs": [
       { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
-      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "불꽃/조율 부여 시 공명해방 피해 +{v} 증가 (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "불꽃/조화밀집·이탈 부여 후 (해당 캐릭터) 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "장착자가 불꽃 효과 또는 조화 밀집·이탈 부여 시 공명 해방 피해 보너스 +{v} (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "무기의 공명 해방 피해 보너스 적용 중, 불꽃 효과 또는 조화 밀집·이탈을 부여한 파티 내 캐릭터의 공격력 +{v} (15초, 동명 효과 중첩 불가)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  starfield_calibrator: {
    "id": "starfield_calibrator",
    "name": "별하늘 연산 측정기",
    "weapon_type": "broad_blade",
@@ -320,14 +322,14 @@
     { "type": "critical_damage", "value": 0.20, "always": false, "target": "party", "id": "weapon_starcalib_heal_critdmg", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "치료 효과 발동 시 파티 크리티컬 피해 +{v} (4초)", "short": "파티 크피 +{v} (치료 시)", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  discord: {
    "id": "discord",
    "name": "기묘한 울림",
    "weapon_type": "broad_blade",
    "base_stats": { "attack": 337, "energy_regen": 0.518 },
    "buffs": []
   },
-  {
+  dauntless_evernight: {
    "id": "dauntless_evernight",
    "name": "장야의 불빛",
    "weapon_type": "broad_blade",
@@ -337,7 +339,7 @@
     { "type": "defense_percent", "value": 0.15, "always": false, "id": "weapon_dauntless_def", "refinement_values": [0.15, 0.1875, 0.225, 0.2625, 0.30], "label": "변주 스킬 발동 시 방어력 +{v} (15초)", "short": "방어력 +{v} (변주 후)", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  kumokiri: {
    "id": "kumokiri",
    "name": "쿠모키리",
    "weapon_type": "broad_blade",
@@ -348,7 +350,7 @@
     { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "element": "전체", "id": "weapon_kumokiri_party", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "3스택 시 파티 「이상 효과」 추가 시 전체 속성피해 +{v}", "short": "파티 전체속성피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  wildfire_mark: {
    "id": "wildfire_mark",
    "name": "불길",
    "weapon_type": "broad_blade",
@@ -359,7 +361,7 @@
     { "type": "element_damage_bonus", "value": 0.24, "always": false, "target": "party", "element": "용융", "id": "weapon_searing_party", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "효과 연장 성공 시 파티 용융 피해 +{v}", "short": "파티 용융피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  radiance_cleaver: {
    "id": "radiance_cleaver",
    "name": "에너지 절단",
    "weapon_type": "broad_blade",
@@ -369,7 +371,7 @@
     { "type": "resonance_liberation_bonus", "value": 0.24, "always": false, "id": "weapon_energysever_rl", "refinement_values": [0.24, 0.27, 0.30, 0.33, 0.36], "label": "「조화 밀집·간섭」 적 피해 후 공명해방 피해 +{v}", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  autumntrace: {
    "id": "autumntrace",
    "name": "가을의 무늬",
    "weapon_type": "broad_blade",
@@ -378,7 +380,7 @@
     { "type": "attack_percent", "value": 0.20, "always": false, "id": "weapon_autumn_atk", "refinement_values": [0.20, 0.31, 0.42, 0.53, 0.64], "label": "일반/강공격 시 공격력 +{v} (최대 5스택)", "short": "공격력 +{v}", "note": "스택당 4~12.8%, 최대 5스택 → value ×5", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  waning_redshift: {
    "id": "waning_redshift",
    "name": "멸망의 주파수",
    "weapon_type": "broad_blade",
@@ -387,7 +389,7 @@
     { "type": "attack_percent", "value": 0.10, "always": false, "id": "weapon_doom_atk", "refinement_values": [0.10, 0.125, 0.15, 0.175, 0.20], "label": "공명 스킬 발동 시 공격력 +{v} (16초)", "short": "공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  meditations_on_mercy: {
    "id": "meditations_on_mercy",
    "name": "용서의 명상록",
    "weapon_type": "broad_blade",
@@ -396,7 +398,7 @@
     { "type": "attack_percent", "value": 0.16, "always": false, "id": "weapon_forgiveness_atk", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "「이상 효과」 몬스터 피해 시 공격력 +{v} (최대 4스택)", "short": "공격력 +{v}", "note": "스택당 4~8%, 최대 4스택 → value ×4", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  keen_feather: {
    "id": "keen_feather",
    "name": "예리한 날개깃",
    "weapon_type": "sword",
@@ -406,14 +408,14 @@
     { "type": "resonance_liberation_bonus", "value": 0.108, "always": false, "id": "weapon_keenfeather_rl", "refinement_values": [0.108, 0.167, 0.226, 0.286, 0.345], "label": "공명 해방 발동 시 공명해방 피해 +{v} (15초)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  march_overture: {
    "id": "march_overture",
    "name": "행진의 서곡",
    "weapon_type": "sword",
    "base_stats": { "attack": 338, "energy_regen": 0.518 },
    "buffs": []
   },
-  {
+  stellar_symphony: {
    "id": "stellar_symphony",
    "name": "뭇별의 교향곡",
    "weapon_type": "rectifier",
@@ -423,7 +425,7 @@
     { "type": "attack_percent", "value": 0.14, "always": false, "target": "party", "id": "weapon_stellar_party_atk", "refinement_values": [0.14, 0.175, 0.21, 0.245, 0.28], "label": "공명 스킬로 치료 효과 발동 시 파티 공격력 +{v} (30초)", "short": "파티 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  call_of_the_abyss: {
    "id": "call_of_the_abyss",
    "name": "심해의 메아리",
    "weapon_type": "rectifier",
@@ -432,7 +434,7 @@
     { "type": "healing_bonus", "value": 0.16, "always": false, "id": "weapon_abyss_heal", "refinement_values": [0.16, 0.20, 0.24, 0.28, 0.32], "label": "공명 해방 발동 시 치료 효과 보너스 +{v} (15초)", "short": "치료 효과 +{v}", "note": "치료, 딜 무관", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  azure_oath: {
    "id": "azure_oath",
    "name": "아득히 푸른 하늘",
    "weapon_type": "sword",
@@ -443,7 +445,7 @@
     { "type": "defense_ignore", "value": 0.12, "always": false, "id": "weapon_azure_defign", "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "label": "「암흑 효과」 추가 시 강공격이 목표 방어력 {v} 무시 (8초)", "short": "강공격 방어력 {v} 무시", "record_only": false, "absolute_score_only": true, "default_on": true }
    ]
   },
-  {
+  firstlights_herald: {
    "id": "firstlights_herald",
    "name": "노을에 깃든 이슬",
    "weapon_type": "rectifier",
@@ -453,7 +455,7 @@
     { "type": "attack_percent", "value": 0.20, "always": false, "target": "party", "id": "weapon_firstlights_party_atk", "refinement_values": [0.20, 0.25, 0.30, 0.35, 0.40], "label": "「잔잔한 비취빛」 보유 캐릭터 공격력 +{v} (변주/공명 스킬로 부여, 30초)", "short": "파티 공격력 +{v}", "note": "온필드 시 파티에 부여, 오프필드 시 물들은 하얀 눈+생생한 잔물결 동시 보유로 강제 적용. 순효과=파티 공격력 증가", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  lux_and_umbra: {
    "id": "lux_and_umbra",
    "name": "얽혀진 빛과 그림자",
    "weapon_type": "pistols",
@@ -465,7 +467,7 @@
     { "type": "defense_ignore", "value": 0.08, "always": false, "id": "weapon_lux_umbra_defign", "refinement_values": [0.08, 0.10, 0.12, 0.14, 0.16], "label": "두 부스트 동시 보유 시 피해 시 목표 방어력 {v} 무시", "short": "방어력 {v} 무시", "record_only": false, "absolute_score_only": true, "default_on": true }
    ]
   },
-  {
+  moongazers_sigil: {
    "id": "moongazers_sigil",
    "name": "세상 만물의 진리",
    "weapon_type": "gauntlets",
@@ -476,7 +478,7 @@
     {"type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_moongazer_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.6], "label": "실드 획득 시 공명 해방 피해가 목표 방어력 {v} 무시 (5스택, 7초)", "short": "공명 해방 방어력 {v} 무시 (5스택)", "note": "스택당 7.2/8.4/9.6/10.8/12%, 최대 5스택. 실드로 0.5초마다 1회 획득, 7초 지속. 변주 발동 시 최대 스택으로 간주하는 효과는 3초만 지속하며, 이후 유노의 반복 실드 획득으로 최대치를 유지하는 분석 가정.", "record_only": false, "absolute_score_only": true, "default_on": true, "target_damage_bonus_type": "resonance_liberation"}
    ]
   },
-  {
+  veritys_handle: {
    "id": "veritys_handle",
    "name": "팔방의 천추",
    "weapon_type": "gauntlets",
@@ -486,7 +488,7 @@
     { "type": "resonance_liberation_bonus", "value": 0.48, "always": false, "id": "weapon_verity_rl", "refinement_values": [0.48, 0.60, 0.72, 0.84, 0.96], "label": "공명 해방 발동 시 공명 해방 피해 +{v} (8초, 공명 스킬로 최대 3회 연장)", "short": "공명해방 피해 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
    ]
   },
-  {
+  thunderflare_dominion: {
    "id": "thunderflare_dominion",
    "name": "천둥벼락을 다스리는 권능",
    "weapon_type": "broad_blade",
@@ -497,7 +499,7 @@
     {"type": "defense_ignore", "value": 0.36, "always": false, "id": "weapon_thunderflare_defign", "refinement_values": [0.36, 0.42, 0.48, 0.54, 0.6], "label": "실드 획득 시 강공격 피해가 목표 방어력 {v} 무시 (5스택, 7초)", "short": "강공격 방어력 {v} 무시 (5스택)", "note": "스택당 7.2/8.4/9.6/10.8/12%, 최대 5스택. 실드로 0.5초마다 1회 획득, 7초 지속. 아우구스타의 피해 발생 시 고유 실드를 반복 획득하여 최대치를 유지하는 분석 가정. 변주만으로 최대 스택을 부여하는 효과는 없다.", "record_only": false, "absolute_score_only": true, "default_on": true, "target_damage_bonus_type": "heavy_attack"}
    ]
   },
-  {
+  glint_of_clouds: {
     "id": "glint_of_clouds",
     "name": "옥빛 구름",
     "weapon_type": "sword",
@@ -568,7 +570,7 @@
       }
     ]
   },
-  {
+  blooming_jadehaven: {
     "id": "blooming_jadehaven",
     "name": "옥궐에 피는 꽃",
     "weapon_type": "rectifier",
@@ -659,7 +661,7 @@
       }
     ]
   },
-  {
+  thousandfold_deliverance: {
     "id": "thousandfold_deliverance",
     "name": "수많은 인도",
     "weapon_type": "broad_blade",
@@ -750,4 +752,4 @@
       }
     ]
   }
-]
+} satisfies Record<string, WeaponData>;
