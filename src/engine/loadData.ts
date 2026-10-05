@@ -3,10 +3,10 @@ import { STAT_KEYS, BUFF_ELEMENTS, BUFF_TARGETS, WEAPON_TYPES } from '../types/d
 import { MECHANISM_KEYS } from './mechanisms';
 import { hasTimezoneOffset } from './release';
 import { isValidCostLayout } from './costLayout';
-import charactersRaw from '../data/characters.json';
-import weaponsRaw from '../data/weapons.json';
-import echoSetsRaw from '../data/echo-sets.json';
-import twoPieceRaw from '../data/two-piece-effects.json';
+import { characters } from '../data/characters';
+import { weapons } from '../data/weapons';
+import { echoSets } from '../data/echo-sets';
+import { twoPieceEffects } from '../data/two-piece-effects';
 
 export function validateBuff(b: any): Buff {
   if (!STAT_KEYS.includes(b.type)) throw new Error(`unknown buff type: ${b.type}`);
@@ -39,16 +39,16 @@ export function validateBuff(b: any): Buff {
   return b as Buff;
 }
 
-function validateBuffs(buffs: any[]): Buff[] {
+function validateBuffs(buffs: Buff[]): Buff[] {
   return buffs.map(validateBuff);
 }
 
-function validateWeaponType(t: any, owner: string): void {
+function validateWeaponType(t: Weapon['weapon_type'], owner: string): void {
   if (!WEAPON_TYPES.includes(t)) throw new Error(`unknown weapon type: ${t} (${owner})`);
 }
 
 export function loadCharacters(): Character[] {
-  return (charactersRaw as any[]).map((c) => {
+  return Object.values(characters).map((c: Character) => {
     validateWeaponType(c.weapon_type, c.id);
     if (!isValidCostLayout(c.cost_layout)) {
       throw new Error(`invalid cost_layout: ${c.cost_layout} (${c.id}) — 4/3/1, 1~5개, 합≤12`);
@@ -69,47 +69,47 @@ export function loadCharacters(): Character[] {
         throw new Error(`release_at에 타임존 오프셋이 없습니다. 한국 기준이면 '+09:00'을 붙이세요 (예: "2026-07-11T11:00:00+09:00"): ${c.release_at} (${c.id})`);
       }
     }
-    if (c.skill_node.some((b: Buff) => b.hp_scale) && !(c.base_hp > 0)) {
+    if (c.skill_node.some((b: Buff) => b.hp_scale) && !((c.base_hp ?? 0) > 0)) {
       throw new Error(`hp_scale requires base_hp: ${c.id}`);
     }
     // 무결성: 스킬노드 버프는 min_ascension(돌파 요구치, 0 포함)과 target(self 포함)을 반드시 명시한다
-    (c.skill_node as any[]).forEach((b) => {
+    c.skill_node.forEach((b) => {
       if (typeof b.min_ascension !== 'number') {
         throw new Error(`skill_node buff missing min_ascension: ${c.id} / ${b.label ?? b.note ?? b.type}`);
       }
-      if (!BUFF_TARGETS.includes(b.target)) {
+      if (b.target == null || !BUFF_TARGETS.includes(b.target)) {
         throw new Error(`skill_node buff missing/invalid target: ${c.id} / ${b.label ?? b.note ?? b.type}`);
       }
     });
     return { ...c, skill_node: validateBuffs(c.skill_node) };
-  }) as Character[];
+  });
 }
 
 export function loadWeapons(): Weapon[] {
-  return (weaponsRaw as any[]).map((w) => {
+  return Object.values(weapons).map((w: Weapon) => {
     validateWeaponType(w.weapon_type, w.id);
     return { ...w, buffs: validateBuffs(w.buffs) };
-  }) as Weapon[];
+  });
 }
 
 export function loadEchoSets(): EchoSet[] {
-  return (echoSetsRaw as any[]).map((s) => ({
+  return Object.values(echoSets).map((s: EchoSet) => ({
     ...s,
     buffs: validateBuffs(s.buffs),
-    main_slot_echoes: (s.main_slot_echoes ?? []).map((e: any) => ({ ...e, buffs: validateBuffs(e.buffs) })),
-  })) as EchoSet[];
+    main_slot_echoes: s.main_slot_echoes.map((e) => ({ ...e, buffs: validateBuffs(e.buffs) })),
+  }));
 }
 
 // 자유 2세트 효과 풀 (메모이즈: aggregateBuffs 핫패스에서 반복 호출됨)
 let _twoPiece: TwoPieceEffect[] | null = null;
 export function loadTwoPieceEffects(): TwoPieceEffect[] {
   if (_twoPiece) return _twoPiece;
-  _twoPiece = (twoPieceRaw as any[]).map((e) => {
+  _twoPiece = Object.values(twoPieceEffects).map((e: TwoPieceEffect) => {
     if (!STAT_KEYS.includes(e.type)) throw new Error(`unknown two-piece type: ${e.type}`);
     if (typeof e.id !== 'string' || typeof e.value !== 'number') {
       throw new Error(`invalid two-piece effect: ${JSON.stringify(e)}`);
     }
-    return e as TwoPieceEffect;
+    return e;
   });
   return _twoPiece;
 }

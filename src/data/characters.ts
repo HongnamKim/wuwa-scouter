@@ -1,5 +1,7 @@
-[
-  {
+import type { CharacterData } from './schema';
+
+export const characters = {
+  hiyuki: {
     "id": "hiyuki",
     "name": "히유키",
     "version": 3.3,
@@ -33,7 +35,7 @@
       { "type": "anomaly_damage_amplify", "value": 0.25, "element": "응결", "always": false, "target": "party", "id": "hiyuki_chain6_anomaly", "min_ascension": 6, "label": "눈의 침식 3스택: 범위 목표가 받는 냉해효과 최종 피해 +25% 증가 (6돌)", "short": "파티 냉해효과 최종피해 +25% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  aemeath: {
     "id": "aemeath",
     "name": "에이메스",
     "version": 3.1,
@@ -80,7 +82,7 @@
       { "type": "all_damage_amplify", "value": 0.20, "always": false, "target": "next_character", "mode": "flame", "min_ascension": 0, "label": "반주(불꽃): 다음 등장 캐릭터 전체 피해 +10%(불꽃 효과 시 20%) 부스트", "short": "다음 캐릭터 전체 피해 +20% 부스트", "record_only": false, "absolute_score_only": true }
     ]
   },
-  {
+  lucilla: {
     "id": "lucilla",
     "name": "루실라",
     "version": 3.4,
@@ -120,7 +122,7 @@
       { "type": "attack_percent", "value": 0.30, "always": false, "target": "self", "id": "lucilla_chain4_atk", "min_ascension": 4, "label": "망각 발동 시 공격력 +30% (3스택, 4돌)", "short": "공격력 +30%", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  sigrika: {
     "id": "sigrika",
     "name": "시그리카",
     "version": 3.2,
@@ -150,7 +152,7 @@
       { "type": "all_damage_amplify", "value": 0.30, "always": false, "target": "self", "id": "sigrika_chain6_vuln", "min_ascension": 6, "label": "목표가 받는 시그리카 피해 +30% 부스트 (취약, 6돌)", "short": "받는 피해 +30% 부스트 (취약)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  lynae: {
     "id": "lynae",
     "name": "린네",
     "version": 3.0,
@@ -193,7 +195,7 @@
       { "type": "all_damage_amplify", "value": 0.25, "always": false, "target": "next_character", "min_ascension": 2, "label": "반주(공명 체인 2): 다음 등장 캐릭터 전체 피해 +25% 부스트 추가", "short": "다음 캐릭터 전체 피해 +25% 부스트", "record_only": false, "absolute_score_only": true }
     ]
   },
-  {
+  lucy: {
     "id": "lucy",
     "name": "루시",
     "version": 3.4,
@@ -227,7 +229,7 @@
       { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "target": "self", "id": "lucy_s6_heavy", "min_ascension": 6, "label": "해킹·이탈/간섭 대상이 받는 강공격 피해 +40% 부스트 (6돌)", "short": "강공격 받는 피해 +40% 부스트 (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  rebecca: {
     "id": "rebecca",
     "name": "레베카",
     "version": 3.4,
@@ -267,7 +269,7 @@
       { "type": "heavy_attack_amplify", "value": 0.35, "always": false, "target": "next_character", "id": "rebecca_intro_next_heavy", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터(엣지러너의 유대) 강공격 피해 +35% 부스트 (오버리미트 최대)", "short": "다음 캐릭터 강공격 피해 +35% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  denia: {
     "id": "denia",
     "name": "데니아",
     "version": 3.3,
@@ -307,7 +309,7 @@
       { "type": "element_damage_bonus", "value": 0.60, "element": "용융", "always": false, "target": "self", "id": "denia_chain6_fusion", "min_ascension": 6, "label": "엔트로피 변이 강화 · 용융피해 +60% 증가 (6돌)", "short": "용융피해 +60% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  luuk: {
     "id": "luuk",
     "name": "루크",
     "version": 3.1,
@@ -338,7 +340,7 @@
       { "type": "skill_motion_value_amplify", "value": 0.30, "always": false, "target": "self", "id": "luuk_chain6_vuln", "min_ascension": 6, "label": "햇무리참살·이코르배열·대지를가르는판결 받는 피해 +30% 부스트 (일반공격 적용, 6돌)", "short": "받는 일반공격 피해 +30% 부스트 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  mornye: {
     "id": "mornye",
     "name": "모니에",
     "version": 3.0,
@@ -377,7 +379,7 @@
       { "type": "skill_motion_value_amplify", "value": 4.00, "always": false, "target": "self", "id": "mornye_chain6", "min_ascension": 6, "label": "CHAIN.6: 공명 해방 임계 프로토콜로 입히는 피해 +400%", "short": "임계프로토콜 피해 +400% (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  shorekeeper: {
     "id": "shorekeeper",
     "name": "파수인",
     "version": 1.3,
@@ -413,7 +415,7 @@
       { "type": "skill_motion_value_amplify", "value": 0.42, "always": false, "target": "self", "id": "shorekeeper_chain6_smv", "min_ascension": 6, "label": "변주 스킬 통찰(특수 변주) 피해 배율 +42% (6돌)", "short": "특수 변주 배율 +42% (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  chisa: {
     "id": "chisa",
     "name": "치사",
     "version": 2.8,
@@ -450,7 +452,7 @@
       { "type": "anomaly_damage_amplify", "value": 0.30, "element": "인멸", "always": false, "target": "self", "id": "chisa_chain6_anomaly", "min_ascension": 6, "label": "「흔적·종말」 목표가 받는 이상효과 피해 +30% 부스트 (6돌)", "short": "이상효과 피해 +30% 부스트 (6돌)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
-  {
+  qiuyuan: {
     "id": "qiuyuan",
     "name": "구원",
     "version": 2.7,
@@ -487,7 +489,7 @@
       { "type": "echo_skill_amplify", "value": 0.50, "always": false, "target": "next_character", "id": "guwon_intro_echoamp", "min_ascension": 0, "label": "반주: 다음 등장 캐릭터 에코 어빌리티 +50% 부스트", "short": "다음 캐릭터 에코 어빌리티 +50% 부스트", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  yangyang_xuanling: {
     "id": "yangyang_xuanling",
     "name": "양양·현령",
     "version": 3.5,
@@ -523,7 +525,7 @@
       { "type": "heavy_attack_amplify", "value": 0.40, "always": false, "target": "self", "id": "yy_chain6_vuln", "min_ascension": 6, "label": "만음이 흐르고 — 목표가 양양에게 받는 강공격 피해 +40% (6돌)", "short": "받는 강공격 피해 +40% (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  suisui: {
     "id": "suisui",
     "name": "수수",
     "version": 3.5,
@@ -563,7 +565,7 @@
       { "type": "critical_damage", "value": 5.00, "always": false, "target": "self", "id": "suisui_chain6_critdmg", "min_ascension": 6, "label": "공명 스킬 깨어난 봄기운, 변주 스킬 크리티컬 피해 +500% (6돌)", "short": "변주/공명 스킬 크리티컬 피해 +500% (6돌)", "record_only": false, "absolute_score_only": false, "default_on": false }
     ]
   },
-  {
+  galbrena: {
     "id": "galbrena",
     "name": "갈브레나",
     "version": 2.7,
@@ -597,7 +599,7 @@
       { "type": "element_damage_amplify", "value": 0.35, "element": "용융", "always": false, "target": "self", "id": "galbrena_chain6_amp", "min_ascension": 6, "label": "불멸의 자격: 남은 불꽃 1pt당 용융 피해 +0.875% 부스트, 최대 +35% (6돌)", "short": "용융 피해 +35% 부스트 (6돌)", "record_only": false, "absolute_score_only": true, "default_on": true }
     ]
   },
-  {
+  iuno: {
     "id": "iuno",
     "name": "유노",
     "version": 2.6,
@@ -629,7 +631,7 @@
       {"type": "skill_motion_value_bonus", "value": 16.0, "always": false, "target": "self", "id": "iuno_chain6_smv", "min_ascension": 6, "label": "강공격 · 완벽한 결말 피해 배율 +1600%p (6돌, 기록 전용)", "short": "완벽한 결말 배율 +1600%p (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "기존 배율에 1600%p 가산. 10레벨 159.05% → 1759.05%이며 기존 배율을 17배로 만드는 효과가 아니다. 발동 후 초승달 재진입·영성 100pt·경계를 넘은 활시위 쿨타임 초기화는 자원/사이클 효과로 계산하지 않는다."}
     ]
   },
-  {
+  augusta: {
     "id": "augusta",
     "name": "아우구스타",
     "version": 2.6,
@@ -667,7 +669,7 @@
       {"type": "skill_motion_value_bonus", "value": 2.0, "always": false, "target": "self", "id": "augusta_chain6_wrath_lightning", "min_ascension": 6, "label": "강공격 · 섬뢰 · 회전 베기/올려치기 시 분노의 번개 추가 — 공격력 100% 전도 피해 2회 (6돌)", "short": "분노의 번개 추가타 100%×2 (6돌)", "record_only": true, "absolute_score_only": false, "default_on": true, "note": "전도 추가타 2회이며 강공격 피해로 판정. value 2.0은 공격력 100%×2회의 합계이며 기존 스킬 배율의 상대 증가가 아니다. 기록 전용."}
     ]
   },
-  {
+  qingxiao: {
     "id": "qingxiao",
     "name": "청초",
     "version": 3.6,
@@ -1043,7 +1045,7 @@
       }
     ]
   },
-  {
+  hsin: {
     "id": "hsin",
     "name": "여우의 별자리",
     "version": 3.7,
@@ -1514,7 +1516,7 @@
       }
     ]
   },
-  {
+  jingran: {
     "id": "jingran",
     "name": "경연",
     "version": 3.6,
@@ -1749,7 +1751,7 @@
       }
     ]
   },
-  {
+  rover_electro: {
     "id": "rover_electro",
     "name": "방랑자 · 전도",
     "version": 3.5,
@@ -1783,7 +1785,7 @@
       { "type": "skill_motion_value_amplify", "value": 0.20, "always": true, "target": "self", "min_ascension": 6, "id": "rover_electro_chain6_thunder", "label": "밀려온 천개의 소리·천둥의 추락 피해 배율 +20% (6돌, 기록 전용)", "short": "밀려온 천개의 소리·천둥의 추락 피해 배율 +20% (6돌, 기록 전용)", "record_only": true, "absolute_score_only": false }
     ]
   },
-  {
+  buling: {
     "id": "buling",
     "name": "복링",
     "version": 2.8,
@@ -1817,4 +1819,6 @@
       { "type": "resonance_skill_bonus", "value": 0.25, "always": false, "target": "party", "min_ascension": 6, "id": "buling_chain6_skill", "label": "뇌법 · 천지인 합일: 공명 스킬 피해 추가 +25% (합계 50%, 6돌)", "short": "천지인 합일: 공명 스킬 피해 추가 +25% (합계 50%, 6돌)", "record_only": false, "absolute_score_only": false, "default_on": true, "note": "천지인 합일의 25%를 50%로 대체하므로 차액 25%만 기록. 변주 1·2회 항목과 함께 적용한다." }
     ]
   }
-]
+} satisfies Record<string, CharacterData>;
+
+export type CharacterId = keyof typeof characters;

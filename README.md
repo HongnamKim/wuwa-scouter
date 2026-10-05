@@ -59,7 +59,7 @@ src/
 │  ├─ build.ts     빌드 입력 집계·공명 효율 계산
 │  └─ perf.ts      통합 성능(딜 근사) 계산
 ├─ components/  React UI (분석·비교·목록·버프 패널 등)
-├─ data/        캐릭터·무기·에코·화음 세트 데이터 (JSON)
+├─ data/        영문 ID를 키로 하는 TS 데이터 객체와 작성용 타입 (schema.ts)
 ├─ state/       상태 스토어 (localStorage 저장)
 └─ content/     FAQ (Markdown)
 tests/          Vitest 단위 테스트
