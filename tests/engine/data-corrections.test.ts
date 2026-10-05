@@ -1,13 +1,26 @@
 import { describe, it, expect } from 'vitest';
-import { loadCharacters, loadEchoSets } from '../../src/engine/loadData';
+import { loadCharacters, loadEchoSets, loadWeapons } from '../../src/engine/loadData';
 import { aggregateBuffs } from '../../src/engine/buffs';
 import { buildPerfInput } from '../../src/engine/build';
 import { computePerf } from '../../src/engine/perf';
+import { computeDisplaySpec } from '../../src/engine/spec';
 import { energyScaleValue } from '../../src/engine/mechanisms';
 import { slotsFrom } from '../../src/engine/echoSlots';
 import { hiyukiBaseCtx } from './fixtures';
 
 describe('위키 대조 데이터의 계산 의미', () => {
+  it.each([[1, 1147], [5, 1258]])('위조된 작은별 %s공진 장착 시 데니아의 상시 공격력을 계산한다', (refinementLevel, expectedAttack) => {
+    const ctx = {
+      ...hiyukiBaseCtx(),
+      character: loadCharacters().find((c) => c.id === 'denia')!,
+      weapon: loadWeapons().find((w) => w.id === 'forged_dwarf_star')!,
+      echoSets: [], mainEcho: { id: 'empty', name: '', buffs: [] }, slots: [],
+      refinementLevel, additionalBuffsEnabled: false,
+    };
+    // (캐릭터 425 + 무기 500) × (1 + 스킬 노드 12% + 무기 패시브 12%/24%).
+    expect(computeDisplaySpec(ctx).attack).toBeCloseTo(expectedAttack, 10);
+  });
+
   it('스킬 배율·추가타 기록은 계산에서 제외하고 에코와 같은 크리티컬 피해 스탯은 반영한다', () => {
     const base = hiyukiBaseCtx();
     const records = loadCharacters().flatMap((c) => c.skill_node)

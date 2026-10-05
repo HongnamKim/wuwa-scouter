@@ -305,11 +305,11 @@ export const weapons = {
     "id": "forged_dwarf_star",
     "name": "위조된 작은별",
     "weapon_type": "rectifier",
-    "base_stats": { "attack": 587, "critical_rate": 0.36 },
+    "base_stats": { "attack": 500, "critical_rate": 0.36 },
     "buffs": [
       { "type": "attack_percent", "value": 0.12, "always": true, "refinement_values": [0.12, 0.15, 0.18, 0.21, 0.24], "note": "무기 패시브 (공격력)", "record_only": false, "absolute_score_only": false },
-      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "불꽃/조율 부여 시 공명해방 피해 +{v} 증가 (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
-      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "불꽃/조화밀집·이탈 부여 후 (해당 캐릭터) 공격력 +{v}", "record_only": false, "absolute_score_only": false, "default_on": true }
+      { "type": "resonance_liberation_bonus", "value": 0.36, "always": false, "refinement_values": [0.36, 0.45, 0.54, 0.63, 0.72], "id": "weapon_dwarf_rl", "label": "장착자가 불꽃 효과 또는 조화 밀집·이탈 부여 시 공명 해방 피해 보너스 +{v} (5초)", "record_only": false, "absolute_score_only": false, "default_on": true },
+      { "type": "attack_percent", "value": 0.24, "always": false, "target": "party", "id": "weapon_dwarf_team_atk", "refinement_values": [0.24, 0.30, 0.36, 0.42, 0.48], "label": "무기의 공명 해방 피해 보너스 적용 중, 불꽃 효과 또는 조화 밀집·이탈을 부여한 파티 내 캐릭터의 공격력 +{v} (15초, 동명 효과 중첩 불가)", "record_only": false, "absolute_score_only": false, "default_on": true }
     ]
   },
   starfield_calibrator: {
